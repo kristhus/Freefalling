@@ -10,7 +10,8 @@ gradlew
 gradlew.bat
 local.properties
 *.gradle
-
+/gradle
+/gradle/wrapper
 /.idea/.name
 /.idea/*.xml
 

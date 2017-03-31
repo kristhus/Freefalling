@@ -1,4 +1,4 @@
-package com.pa_gruppe11.freefalling;
+package com.pa_gruppe11.freefalling.Singletons;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Scanner;
 
 /** Created by Kristian on 24/03/2017
   * 

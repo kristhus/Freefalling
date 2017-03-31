@@ -1,4 +1,4 @@
-package com.pa_gruppe11.freefalling;
+package com.pa_gruppe11.freefalling.Singletons;
 
 
 /** Created by Kristian on 24/03/2017

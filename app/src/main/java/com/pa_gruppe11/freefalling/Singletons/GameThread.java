@@ -1,9 +1,7 @@
-package com.pa_gruppe11.freefalling;
+package com.pa_gruppe11.freefalling.Singletons;
 
 import android.app.Activity;
 import android.graphics.Canvas;
-import android.util.Log;
-import android.view.SurfaceView;
 import android.view.View;
 
 /**
@@ -79,13 +77,13 @@ public class GameThread extends Thread {
     }
 	
 	
-	public Activity getCurrentActivity() {
+	public GameActivity getCurrentActivity() {
 		return activity;
 	}
 	public void setActivity(Activity activity) {
 		this.activity = activity;
 	}
-	public View getCurrentView() {
+	public GameView getCurrentView() {
 		return view;
 	}
 	public void setView(View view) {
