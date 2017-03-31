@@ -13,9 +13,13 @@ public final class DataHandler {
 	public static int bgmLevel = 50;
 	public static boolean sfxMuted = false;
 	public static boolean bgmMuted = false;
+
+	private static DataHandler dataHandler = new DataHandler();
 	
-	private static DataHandler = new DataHandler();
 	private DataHandler() {}	// No need to initiate this file by other classes.
-	
+
+	public static DataHandler getInstance() {
+		return dataHandler;
+	}
 	
 }

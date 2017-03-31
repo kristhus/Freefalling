@@ -3,6 +3,8 @@ package com.pa_gruppe11.freefalling.Singletons;
 import android.content.Context;
 import android.util.Log;
 
+import com.pa_gruppe11.freefalling.gameControllers.GameMenu;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,25 +28,25 @@ public class Config {
 		
 	public void readFile(GameMenu context) {
 		try {
-			FileInputStream fis = context.openFileOutput(filename, Context.MODE_PRIVATE);
+			FileInputStream fis = context.openFileInput(filename);
 			ObjectInputStream is = new ObjectInputStream(fis);
 			DataHandler datahandler = (DataHandler) is.readObject();
 			is.close();
 			fis.close();
-		} catch(IOException e) {
-			Log.w("Config", "Could not find file"));
+		} catch(Exception e) {
+			Log.w("Config", "Could not find file");
 		}
 	}
 	
-	public void saveFile() {
+	public void saveFile(GameMenu context) {
 		try {
 			FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
 			ObjectOutputStream os = new ObjectOutputStream(fos);
-			os.writeObject(DataHandler);
+			os.writeObject(DataHandler.getInstance());
 			os.close();
 			fos.close();
 		} catch(IOException e) {
-			Log.w("Config", "Could not find file"));
+			Log.w("Config", "Could not find file");
 		}
 	}
 	
