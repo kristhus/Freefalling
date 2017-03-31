@@ -1,12 +1,15 @@
 package com.pa_gruppe11.freefalling.Models;
 
+import android.graphics.Canvas;
 import android.widget.ImageView;
+
+import com.pa_gruppe11.freefalling.Drawable;
 
 /**
  * Created by kjetilvaagen on 31/03/17.
  */
 
-public class Character {
+public class Character implements Drawable{
 
     private int dt;
     private ImageView image;
@@ -21,4 +24,13 @@ public class Character {
 
     }
 
+    @Override
+    public void Drawable(int x, int y, int id) {
+
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+
+    }
 }
