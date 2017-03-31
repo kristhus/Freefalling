@@ -20,6 +20,12 @@ public class Collidable implements Drawable {
     private int width;
 
 
+    public Collidable(int height, int width){
+        this.height = height;
+        this.width = width;
+    }
+
+
     public boolean collides(){
         //some condition
         return true;
