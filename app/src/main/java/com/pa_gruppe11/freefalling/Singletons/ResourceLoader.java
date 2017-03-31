@@ -31,7 +31,7 @@ public final class ResourceLoader {
             try {
                 drawableId = field.getInt(clz);
                 imageList.put(drawableId, BitmapFactory.decodeResource(context.getResources(), drawableId));
-            } catch (Exception e) {
+            } catch (Exception e) { //
                 continue;
             }
         /* make use of drawableId for accessing Drawables here */
