@@ -4,14 +4,16 @@ import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.view.MotionEvent;
 import android.widget.ImageView;
+import com.pa_gruppe11.freefalling.Models.Character;
 
-import com.pa_gruppe11.freefalling.R;
+
 
 public class Player {
     ImageView currentView;
     float x, y, currentX, currentY, dy;
     int width, height, velX = 20, velY=20;
     Rect rect = new Rect(0, 0, 0, 0);
+    private Character character;
 
     public Player(ImageView imageView) {
         currentView = imageView;
@@ -40,7 +42,7 @@ public class Player {
         return false;
     }
 
-    @Override
+  //  @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
@@ -61,4 +63,13 @@ public class Player {
         }
         return true;
     }
+
+
+    public void setCharacter(Character character) {
+        this.character = character;
+    }
+    public Character getCharacter() {
+        return character;
+    }
+
 }
