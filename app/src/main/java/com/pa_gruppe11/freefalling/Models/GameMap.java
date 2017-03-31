@@ -18,7 +18,7 @@ public class GameMap {
         this.id = id;
         this.image = image;
         this.powerups = powerups;
-        this.obstacles = obstacles
+        this.obstacles = obstacles;
     }
 
 
