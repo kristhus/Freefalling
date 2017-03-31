@@ -1,5 +1,7 @@
 package com.pa_gruppe11.freefalling.Singletons;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.widget.ImageView;
 
@@ -16,10 +18,11 @@ public final class ResourceLoader {
 
     private static final ResourceLoader INSTANCE =  new ResourceLoader();
 
-    private HashMap<Integer, ImageView> imageList;
+    private HashMap<Integer, Bitmap> imageList;
+
+    private GameMenu context;
 
     //private LoadingScreen view;
-
 
     public static void loadDrawables(Class<?> clz){
         final Field[] fields = clz.getDeclaredFields();
@@ -27,6 +30,7 @@ public final class ResourceLoader {
             final int drawableId;
             try {
                 drawableId = field.getInt(clz);
+                imageList.put(drawableId, BitmapFactory.decodeResource(context.getResources(), drawableId));
             } catch (Exception e) {
                 continue;
             }
@@ -39,9 +43,11 @@ public final class ResourceLoader {
 
     }
 
+    public ImageView getImage() {
 
+    }
 
-    public ImageView loadImage(int id){
+    public Bitmap loadImage(int id){
 
         return imageList.get(id);
     }
@@ -49,7 +55,8 @@ public final class ResourceLoader {
     public void recycleAll(){
 
         for (int i : imageList.keySet()){
-            ((BitmapDrawable)imageList.get(i).getDrawable()).getBitmap().recycle();     // Removes element for element in the hashmap.
+            imageList.get(i).recycle();
+ //           ((BitmapDrawable)imageList.get(i).getDrawable()).getBitmap().recycle();     // Removes element for element in the hashmap.
         }
 
     }
@@ -62,5 +69,12 @@ public final class ResourceLoader {
     public HashMap getImageList(){
         return imageList;
     }
+
+    public void setContext(GameMenu context) {
+        this.context = context;
+    }
+
+
+
 
 }
