@@ -11,7 +11,7 @@ gradlew.bat
 local.properties
 *.gradle
 /gradle
-/gradle/wrapper
+/gradle/wrapper/gradle-wrapper.jar
 /.idea/.name
 /.idea/*.xml
 

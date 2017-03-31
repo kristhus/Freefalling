@@ -54,8 +54,8 @@ public class Config {
 	}
 
 	//public void setContext(GameMenu context) {
-		this.context = context;
-	}
+		//this.context = context;
+	//}
 
 
 }
