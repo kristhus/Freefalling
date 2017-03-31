@@ -10,7 +10,7 @@ import com.pa_gruppe11.freefalling.Singletons.GameThread;
 public class GameActivity extends GameMenu {
 
     private Player[] players;
-    private GameMap gameMap;
+    private GameMap gameMap; //
 
 
 

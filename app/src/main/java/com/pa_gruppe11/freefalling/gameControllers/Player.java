@@ -6,7 +6,7 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 import com.pa_gruppe11.freefalling.Models.Character;
 
-import com.pa_gruppe11.freefalling.R;
+
 
 public class Player {
     ImageView currentView;
