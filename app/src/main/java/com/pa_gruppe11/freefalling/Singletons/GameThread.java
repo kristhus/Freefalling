@@ -11,7 +11,7 @@ import android.view.View;
  * If the thread is ajour or better, it will sleep to maintain FPS. 
  * The FPS can be changed on a need-be-basis 
  */
-public class GameThread extends Thread {
+public class GameThread extends Thread { //
 
     private GameActivity activity;										// Activity to be updated
     private GameView view;												// View to be redrawn
