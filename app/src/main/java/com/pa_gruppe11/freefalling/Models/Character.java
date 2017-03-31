@@ -9,11 +9,11 @@ import android.widget.ImageView;
 public class Character {
 
     private int dt;
-    ImageView image;
+    private ImageView image;
 
     public Character(int dt, ImageView image){
         this.dt = dt;
-        this.image = image
+        this.image = image;
     }
 
 
