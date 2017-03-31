@@ -18,7 +18,7 @@ public class Lobby extends GameMenu {
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
-        setContentView(R.layout.Lobby);
+        setContentView(R.layout.lobby);
     }
 
     public void inviteToGame(String id){
@@ -30,7 +30,7 @@ public class Lobby extends GameMenu {
     }
 
     public boolean isReady(){
-
+        return true;
     }
 
     public void invite(String id){

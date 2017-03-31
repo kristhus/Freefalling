@@ -15,7 +15,7 @@ public class AboutMenu extends GameMenu {
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
-        setContentView(R.layout.AboutMenu);
+        setContentView(R.layout.aboutmenu);
     }
 
 }
