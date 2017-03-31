@@ -14,7 +14,7 @@ public class MainMenu extends GameMenu{
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
-        setContentView(R.layout.MainMenu);
+        setContentView(R.layout.mainmenu);
     }
 
 

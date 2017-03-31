@@ -8,7 +8,7 @@ import com.pa_gruppe11.freefalling.R;
  * Created by skars on 31.03.2017.
  */
 
-public class FriendsMenu extends GameMenu
+public class FriendsMenu extends GameMenu{
 
     @Override
     public void onCreate(Bundle savedInstance){
