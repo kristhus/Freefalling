@@ -2,7 +2,10 @@ package com.pa_gruppe11.freefalling.Singletons;
 
 import android.app.Activity;
 import android.graphics.Canvas;
+import android.view.SurfaceView;
 import android.view.View;
+
+import com.pa_gruppe11.freefalling.gameControllers.GameActivity;
 
 /**
  * Created by Kristian on 21/03/2017.
@@ -11,10 +14,10 @@ import android.view.View;
  * If the thread is ajour or better, it will sleep to maintain FPS. 
  * The FPS can be changed on a need-be-basis 
  */
-public class GameThread extends Thread {
+public class GameThread extends Thread { //
 
     private GameActivity activity;										// Activity to be updated
-    private GameView view;												// View to be redrawn
+    private SurfaceView view;												// View to be redrawn
     private final int MAX_FPS = 30;     								// We need to move objects a fixed percentage compared to a constant variable, e.g. pixels/second, not per frame, to accomodate players that can run in 60fps
     private boolean running;												// boolean in while loop
     private final int MAX_SKIPS = 5;	 								// Max amount of skipped draws, before drawing will be performed regardless of performance delay.
@@ -34,8 +37,6 @@ public class GameThread extends Thread {
     @Override
     public void run(){ 
 	    
-		
-		
         started = true;
         long beginTime; 			// Time when the cycle begins
         long dt = 0;  					// Time it took for the cycle to execute
@@ -50,7 +51,7 @@ public class GameThread extends Thread {
                     beginTime = System.currentTimeMillis();
                     framesSkipped = 0;
                     activity.update(dt);										// Update the activity
-                    view.redraw();											// Draw the view
+                    view.draw(canvas);											// Draw the view
 
                     sleepTime = (int)(PERIOD_LENGTH - dt);	// The time necessary to sleep to maintain the FPS selected
 
@@ -80,13 +81,13 @@ public class GameThread extends Thread {
 	public GameActivity getCurrentActivity() {
 		return activity;
 	}
-	public void setActivity(Activity activity) {
+	public void setActivity(GameActivity activity) {
 		this.activity = activity;
 	}
-	public GameView getCurrentView() {
+	public SurfaceView getCurrentView() {
 		return view;
 	}
-	public void setView(View view) {
+	public void setView(SurfaceView view) {
 		this.view = view;
 	}
 	
@@ -99,7 +100,7 @@ public class GameThread extends Thread {
     }
 
 	
-	public GameThread getInstance() {
+	public static GameThread getInstance() {
 		return gameThread;
 	}
 	
