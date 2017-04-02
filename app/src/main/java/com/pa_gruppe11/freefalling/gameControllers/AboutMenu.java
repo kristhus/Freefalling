@@ -1,6 +1,7 @@
 package com.pa_gruppe11.freefalling.gameControllers;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.pa_gruppe11.freefalling.R;
 
@@ -17,5 +18,6 @@ public class AboutMenu extends GameMenu {
         super.onCreate(savedInstance);
         setContentView(R.layout.aboutmenu);
     }
+
 
 }

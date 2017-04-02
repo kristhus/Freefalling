@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
 
@@ -86,6 +87,11 @@ public class GameMenu extends Activity {
 
         AlertDialog alert11 = builder1.create();
         alert11.show();
+    }
+
+    public void goToMainMenu(View view) {
+        if(getClass() != MainMenu.class)
+            goTo(MainMenu.class);
     }
 
 }
