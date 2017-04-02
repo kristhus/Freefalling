@@ -19,7 +19,7 @@ public class MainMenu extends GameMenu{
 
 
     public void goToAboutMenu(View view){
-        super.goTo(AboutMenu.class);
+        goTo(AboutMenu.class);
     }
 
     public void goToFriendsMenu(View view){
