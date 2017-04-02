@@ -2,10 +2,7 @@ package com.pa_gruppe11.freefalling.Singletons;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.widget.ImageView;
-
-import com.pa_gruppe11.freefalling.R;
+import com.pa_gruppe11.freefalling.gameControllers.GameMenu;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -24,7 +21,7 @@ public final class ResourceLoader {
 
     //private LoadingScreen view;
 
-    public static void loadDrawables(Class<?> clz){
+    public void loadDrawables(Class<?> clz){
         final Field[] fields = clz.getDeclaredFields();
         for (Field field : fields) {
             final int drawableId;
@@ -43,8 +40,8 @@ public final class ResourceLoader {
 
     }
 
-    public ImageView getImage() {
-
+    public Bitmap getImage(int id) {
+        return imageList.get(id);
     }
 
     public Bitmap loadImage(int id){
@@ -66,7 +63,7 @@ public final class ResourceLoader {
         return INSTANCE;
     }
 
-    public HashMap getImageList(){
+    public HashMap<Integer, Bitmap> getImageList(){
         return imageList;
     }
 

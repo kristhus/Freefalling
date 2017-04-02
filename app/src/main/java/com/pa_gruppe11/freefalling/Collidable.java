@@ -1,6 +1,7 @@
 package com.pa_gruppe11.freefalling;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
@@ -50,6 +51,6 @@ public class Collidable implements Drawable {
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), x, y);
+        canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), x, y, new Paint());
     }
 }
