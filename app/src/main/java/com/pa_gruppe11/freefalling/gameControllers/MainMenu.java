@@ -23,15 +23,15 @@ public class MainMenu extends GameMenu{
     }
 
     public void goToFriendsMenu(View view){
-
+        goTo(FriendsMenu.class);
     }
 
     public void goToSettings(View view){
-
+        goTo(Settings.class);
     }
 
     public void goToLobby(View view){
-
+        goTo(Lobby.class);
     }
 
 }
