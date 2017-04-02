@@ -3,6 +3,7 @@ package com.pa_gruppe11.freefalling.gameControllers;
 import com.pa_gruppe11.freefalling.Models.GameMap;
 import com.pa_gruppe11.freefalling.Models.Character;
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
+import com.pa_gruppe11.freefalling.implementations.models.SkyStage;
 
 /**
  * Created by Kristian on 31/03/2017.
@@ -17,6 +18,8 @@ public class GameActivity extends GameMenu {
     public GameActivity() {
         GameThread.getInstance().setActivity(this);
 
+        //TODO: TESTING ONLY, REMOVE
+        //notifyReady();
     }
 
     public void update(long dt) {

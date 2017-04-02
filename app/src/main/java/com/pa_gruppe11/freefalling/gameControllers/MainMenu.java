@@ -1,9 +1,11 @@
 package com.pa_gruppe11.freefalling.gameControllers;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.pa_gruppe11.freefalling.R;
+import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 
 /**
  * Created by skars on 31.03.2017.
@@ -15,6 +17,11 @@ public class MainMenu extends GameMenu{
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
         setContentView(R.layout.mainmenu);
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        DataHandler.getInstance().screenWidth = dm.widthPixels;
+        DataHandler.getInstance().screenWidth = dm.heightPixels;
     }
 
 
