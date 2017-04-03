@@ -49,7 +49,6 @@ public class GameThread extends Thread { //
             try {
                 canvas = view.getHolder().lockCanvas();			//
                 synchronized (view.getHolder()) {						// Make sure that only this thread gets the view, and no other classes interfers while drawing
-                    Log.w("GameThread", "dt: " + dt);
                     beginTime = System.currentTimeMillis();
                     framesSkipped = 0;
                     activity.update(sleepTime + dt);										// Update the activity
@@ -60,7 +59,6 @@ public class GameThread extends Thread { //
                     if(sleepTime > 0){										
                         try{
                             Thread.sleep(sleepTime);					        // Sleep for the calculated amount of time required
-                            Log.w("GameThread", "Slept for " + sleepTime + " ms");
                         }catch (InterruptedException e){}
                     }
                     while (sleepTime < 0 && framesSkipped < MAX_SKIPS) {        // If not possible to maintain FPS, update controller to catch up

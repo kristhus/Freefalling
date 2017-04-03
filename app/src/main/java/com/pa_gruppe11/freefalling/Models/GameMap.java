@@ -86,12 +86,14 @@ public class GameMap implements Drawable {
         drawY += pdy*delta;
         drawX += dx*delta;
 
+        /*
         if(drawY <= -scaledHeight) {    //if entire first image is off-screen, reset position (causes flicker???)
             drawY += scaledHeight;
             transformationMatrix.setTranslate(0, drawY);
         }else {                         // Condition fulfilled most of the time
-            transformationMatrix.setTranslate(dx * delta, drawY);
+            transformationMatrix.postTranslate(dx * delta, pdy * delta);
         }
+        */
 
     }
 
@@ -104,13 +106,12 @@ public class GameMap implements Drawable {
   //      transformationMatrix.getValues(values);
     //    float translatedY = values[5];
 
-        for(int i = 1; i <= numberOfTimesToDraw; i++) { // Very costly
-            canvas.drawBitmap(ResourceLoader.getInstance().getImage(id), transformationMatrix, paint);
-            transformationMatrix.setTranslate(0, drawY + scaledHeight*i); // Black stripes some times, drawY's fault
-            //transformationMatrix.preScale(scale, scale);
+        Matrix tmpMatrix = new Matrix(transformationMatrix);
 
+        for(int i = 1; i <= numberOfTimesToDraw; i++) { // Very costly
+            canvas.drawBitmap(ResourceLoader.getInstance().getImage(id), tmpMatrix, paint);
+            tmpMatrix.postTranslate(0, scaledHeight); // Black stripes some times, drawY's fault
         }
-        transformationMatrix.setTranslate(0, drawY); // reset to first bitmap
 
     }
 
