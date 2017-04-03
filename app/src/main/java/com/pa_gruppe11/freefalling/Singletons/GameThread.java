@@ -40,9 +40,9 @@ public class GameThread extends Thread { //
 	    
         started = true;
         long beginTime; 			// Time when the cycle begins
-        long dt = MAX_FPS/1000;  					// Time it took for the cycle to execute, init at perfect value
-        int sleepTime; 				// ms to sleep (<0 if behind)
-        int framesSkipped=0; 	// Number of frames being skipped
+        long dt = 0;  					// Time it took for the cycle to execute
+        int sleepTime = PERIOD_LENGTH; 				// ms to sleep (<0 if behind)
+        int framesSkipped = 0; 	// Number of frames being skipped
 
         while(running) {
             Canvas canvas = null;
@@ -52,14 +52,14 @@ public class GameThread extends Thread { //
                     Log.w("GameThread", "dt: " + dt);
                     beginTime = System.currentTimeMillis();
                     framesSkipped = 0;
-                    activity.update(dt);										// Update the activity
+                    activity.update(sleepTime + dt);										// Update the activity
                     if(canvas != null)                                          // Null before fully initialized, ignore untill creation
                         view.draw(canvas);										// Draw the view
+                    dt = System.currentTimeMillis() - beginTime;
                     sleepTime = (int)(PERIOD_LENGTH - dt);	// The time necessary to sleep to maintain the FPS selected
-
                     if(sleepTime > 0){										
                         try{
-                            Thread.sleep(sleepTime);					// Sleep for the calculated amount of time required
+                            Thread.sleep(sleepTime);					        // Sleep for the calculated amount of time required
                             Log.w("GameThread", "Slept for " + sleepTime + " ms");
                         }catch (InterruptedException e){}
                     }
@@ -70,7 +70,7 @@ public class GameThread extends Thread { //
                         framesSkipped++;
                         dt = System.currentTimeMillis() - beginTime;
                     }
-                    dt = System.currentTimeMillis() - beginTime;	// Time elapsed in current loop, to be used in controller's update
+                    //dt = System.currentTimeMillis() - beginTime;	// Time elapsed in current loop, to be used in controller's update
                 }
             }
             finally{
