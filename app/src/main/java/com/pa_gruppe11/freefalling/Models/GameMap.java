@@ -4,9 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.pa_gruppe11.freefalling.Drawable;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
@@ -112,11 +110,15 @@ public class GameMap implements Drawable {
             tmpMatrix.postTranslate(0, scaledHeight); // Black stripes some times, drawY's fault
         }
 
-        for(Obstacle o : obstacles) {
-            o.draw(canvas);
+        if(obstacles != null) {
+            for (Obstacle o : obstacles) {
+                o.draw(canvas);
+            }
         }
-        for(PowerUp p : powerups) {
-            p.draw(canvas);
+        if(powerups != null) {
+            for (PowerUp p : powerups) {
+                p.draw(canvas);
+            }
         }
 
     }
