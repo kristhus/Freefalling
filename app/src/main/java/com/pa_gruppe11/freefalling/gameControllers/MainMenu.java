@@ -49,7 +49,8 @@ public class MainMenu extends GameMenu{
 
     public void startGame(View view) {
         //TODO: remove load
-        ResourceLoader.getInstance().loadImage(R.drawable.bg_sky, this);
+        //ResourceLoader.getInstance().loadImage(R.drawable.bg_sky, this);
+        ResourceLoader.getInstance().manualLoad(this);
         goTo(GameActivity.class);
     }
 
