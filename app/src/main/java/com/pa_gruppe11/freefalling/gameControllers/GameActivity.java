@@ -1,11 +1,8 @@
 package com.pa_gruppe11.freefalling.gameControllers;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Models.GameMap;
-import com.pa_gruppe11.freefalling.Models.Character;
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
 import com.pa_gruppe11.freefalling.implementations.models.SkyStage;
 import com.pa_gruppe11.freefalling.tmp.TmpView;
@@ -49,14 +46,21 @@ public class GameActivity extends GameMenu {
 
 
     public void notifyReady() {
-        GameThread.getInstance().setRunning(true);
-        GameThread.getInstance().start();
+        if(!GameThread.getInstance().isStarted()) {
+            GameThread.getInstance().setRunning(true);
+            GameThread.getInstance().start();
+        }
+        else {  // First start after init app.
+            synchronized (GameThread.getInstance()) {
+                GameThread.getInstance().notify();
+            }
+        }
     }
 
 
     public void finishGame() {
         //Switch View to postMatchView
-        GameThread.getInstance().setRunning(false);
+        GameThread.getInstance().setSuspended(true);
     }
 
     public GameMap getGameMap() {

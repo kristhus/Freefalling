@@ -42,7 +42,7 @@ public class GameMenu extends Activity {
             startActivity(startMain);
         } else if(thisClass == GameActivity.class) {
             // set up prompt that you are leaving the game
-
+            alertPrompt();
         } else {
             goTo(MainMenu.class);
         }
@@ -74,6 +74,12 @@ public class GameMenu extends Activity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
+                        GameThread.getInstance().setSuspended(true);
+
+
+
+                        Log.w("GM", "Suspend: " + GameThread.getInstance().isSuspended());
+                        goTo(MainMenu.class);
                     }
                 });
 

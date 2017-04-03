@@ -26,6 +26,8 @@ public class GameThread extends Thread { //
 
     private boolean started;												// Thread has been initialized
 
+    private boolean suspended = false;
+
     private long elapsedTime = 0;										// Time in millis since execution of thread. Currently not in use
 
 	private static GameThread gameThread = new GameThread();
@@ -36,30 +38,57 @@ public class GameThread extends Thread { //
     }
 
     @Override
-    public void run(){ 
-	    
-        started = true;
-        long beginTime; 			// Time when the cycle begins
-        long dt = 0;  					// Time it took for the cycle to execute
-        int sleepTime = PERIOD_LENGTH; 				// ms to sleep (<0 if behind)
-        int framesSkipped = 0; 	// Number of frames being skipped
+    public void run(){
 
-        while(running) {
+        elapsedTime = 0;
+        started = true;
+        long beginTime;                   // Time when the cycle begins
+        long dt = 0;                      // Time it took for the cycle to execute
+        int sleepTime = PERIOD_LENGTH;    // ms to sleep (<0 if behind)
+        int framesSkipped = 0;            // Number of frames being skipped
+
+        while (running) {
+            while(suspended)              // suspend run-method, as advised by Oracle
+                try {
+                    synchronized (this) {
+                        Log.w("GT", "PINA.DE");
+                        wait();           // Must notify(), to resume
+                        Log.w("GT", "PINA.DE ferdig far");
+                        suspended = false;
+                    }
+                    // Reinitialize settings
+                    elapsedTime = 0;
+                    started = true;
+                    dt = 0;
+                    sleepTime = PERIOD_LENGTH;
+                    framesSkipped = 0;
+                    elapsedTime = 0;
+                    //
+                }catch (InterruptedException e) {
+                    e.printStackTrace();
+                    Log.w("GameThread", "Thread got interrupted, Fatal error, terminating GameThread. Restart application");
+                    running = false;
+                    break;
+                }
+
+
             Canvas canvas = null;
+            //Log.w("GT", "RUNNING");
             try {
-                canvas = view.getHolder().lockCanvas();			//
-                synchronized (view.getHolder()) {						// Make sure that only this thread gets the view, and no other classes interfers while drawing
+                canvas = view.getHolder().lockCanvas();            //
+                synchronized (view.getHolder()) {                        // Make sure that only this thread gets the view, and no other classes interfers while drawing
                     beginTime = System.currentTimeMillis();
                     framesSkipped = 0;
-                    activity.update(sleepTime + dt);										// Update the activity
-                    if(canvas != null)                                          // Null before fully initialized, ignore untill creation
-                        view.draw(canvas);										// Draw the view
+                    activity.update(sleepTime + dt);                                        // Update the activity
+                    if (canvas != null)                                          // Null before fully initialized, ignore untill creation
+                        view.draw(canvas);                                        // Draw the view
                     dt = System.currentTimeMillis() - beginTime;
-                    sleepTime = (int)(PERIOD_LENGTH - dt);	// The time necessary to sleep to maintain the FPS selected
-                    if(sleepTime > 0){										
-                        try{
-                            Thread.sleep(sleepTime);					        // Sleep for the calculated amount of time required
-                        }catch (InterruptedException e){}
+                    sleepTime = (int) (PERIOD_LENGTH - dt);    // The time necessary to sleep to maintain the FPS selected
+                    if (sleepTime > 0) {
+                        try {
+                            Thread.sleep(sleepTime);                            // Sleep for the calculated amount of time required
+                        } catch (InterruptedException e) {
+                        }
                     }
                     while (sleepTime < 0 && framesSkipped < MAX_SKIPS) {        // If not possible to maintain FPS, update controller to catch up
                         beginTime = System.currentTimeMillis();
@@ -70,10 +99,11 @@ public class GameThread extends Thread { //
                     }
                     //dt = System.currentTimeMillis() - beginTime;	// Time elapsed in current loop, to be used in controller's update
                 }
-            }
-            finally{
+            } catch(Exception e){
+                e.printStackTrace();
+            }finally {
                 if (canvas != null) {
-                    view.getHolder().unlockCanvasAndPost(canvas);	// Release the view, for others to use
+                    view.getHolder().unlockCanvasAndPost(canvas);    // Release the view, for others to use
                 }
             }
         }
@@ -93,11 +123,24 @@ public class GameThread extends Thread { //
 	public void setView(SurfaceView view) {
 		this.view = view;
 	}
-	
 
-    public void setRunning(boolean running) {	// 
+
+    /**
+     * Terminates the thread. Should not be called, unless quitting the application
+     * @param running
+     */
+    public void setRunning(boolean running) {	//
         this.running = running;
     }
+
+    public void setSuspended(boolean suspended) {
+        this.suspended = suspended;
+    }
+    public boolean isSuspended() {
+        return suspended;
+    }
+
+
     public boolean isStarted() {
         return started;
     }

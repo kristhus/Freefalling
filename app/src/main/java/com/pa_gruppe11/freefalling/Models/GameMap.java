@@ -42,7 +42,6 @@ public class GameMap implements Drawable {
         this.id = id;
         this.powerups = powerups;
         this.obstacles = obstacles;
-
         // Do shit with arrays then call GameMap(id)
 
     }
@@ -92,8 +91,6 @@ public class GameMap implements Drawable {
         }else {                         // Condition fulfilled most of the time
             transformationMatrix.postTranslate(dx * delta, pdy * delta);
         }
-
-
     }
 
     /**

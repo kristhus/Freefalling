@@ -52,4 +52,5 @@ public class Collidable implements Drawable {
     public void draw(Canvas canvas) {
         canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), x, y, new Paint());
     }
+
 }
