@@ -24,7 +24,7 @@ public class TmpView extends SurfaceView{
     public void draw(Canvas canvas) {
         super.draw(canvas);                     // remove previous artefacts
         gameContext.getGameMap().draw(canvas);  // draw current frame
-        gameContext.getTmpPlayer().getCharacter().draw(canvas);
+        gameContext.getPlayer().getCharacter().draw(canvas);
     }
 
 

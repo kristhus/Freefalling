@@ -11,6 +11,7 @@ import com.pa_gruppe11.freefalling.Singletons.GameThread;
 import com.pa_gruppe11.freefalling.implementations.models.SkyStage;
 import com.pa_gruppe11.freefalling.tmp.TmpPlayer;
 import com.pa_gruppe11.freefalling.tmp.TmpView;
+import com.pa_gruppe11.freefalling.Models.Player;
 
 /**
  * Created by Kristian on 31/03/2017.
@@ -19,7 +20,7 @@ public class GameActivity extends GameMenu {
 
     private Player[] players;
     private GameMap gameMap; //
-    private TmpPlayer tmpPlayer; // REMOVE AFTER TESTING
+    private Player player; // REMOVE AFTER TESTING
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -32,7 +33,8 @@ public class GameActivity extends GameMenu {
 
         //TODO: TESTING ONLY, REMOVE
         gameMap = new SkyStage();
-        tmpPlayer = new TmpPlayer();
+        //player = new Player(R.drawable.stickman);
+        player = new Player();
 
         TmpView tmpView = new TmpView(this);
         setContentView(tmpView);
@@ -67,7 +69,7 @@ public class GameActivity extends GameMenu {
         return gameMap;
     }
 
-    // REMOVE AFTER TESTING
-    public TmpPlayer getTmpPlayer(){return tmpPlayer;}
+    // TODO: Remove after testing.
+    public Player getPlayer(){return player;}
 
 }

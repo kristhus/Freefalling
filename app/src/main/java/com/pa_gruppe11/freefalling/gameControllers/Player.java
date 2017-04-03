@@ -16,13 +16,6 @@ public class Player {
     Rect rect = new Rect(0, 0, 0, 0);
     private Character character;
 
-    public Player(ImageView imageView) {
-        currentView = imageView;
-        x=currentView.getX();
-        y=currentView.getY();
-        currentView.setScaleX(-1);
-    }
-
 
     Rect getRect() {
         currentView.getHitRect(rect);
@@ -70,6 +63,7 @@ public class Player {
     public void setCharacter(Character character) {
         this.character = character;
     }
+
     public Character getCharacter() {
         return character;
     }

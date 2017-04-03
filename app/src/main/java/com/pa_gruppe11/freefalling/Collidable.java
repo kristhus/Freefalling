@@ -41,7 +41,8 @@ public class Collidable implements Drawable {
     }
 
     public void update(long dt){
-
+        x += dx;
+        y += dy;
     }
 
 
@@ -73,6 +74,8 @@ public class Collidable implements Drawable {
     public void setDy(int dy){
         this.dy = dy;
     }
+
+    public void setId(int id) {this.id = id;}
 
     public void setTransformationMatrix(Matrix matrix){
         this.transformationMatrix = matrix;
