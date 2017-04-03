@@ -6,8 +6,10 @@ import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Models.GameMap;
 import com.pa_gruppe11.freefalling.Models.Character;
+import com.pa_gruppe11.freefalling.R;
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
 import com.pa_gruppe11.freefalling.implementations.models.SkyStage;
+import com.pa_gruppe11.freefalling.tmp.TmpPlayer;
 import com.pa_gruppe11.freefalling.tmp.TmpView;
 
 /**
@@ -17,6 +19,7 @@ public class GameActivity extends GameMenu {
 
     private Player[] players;
     private GameMap gameMap; //
+    private TmpPlayer tmpPlayer; // REMOVE AFTER TESTING
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -29,6 +32,7 @@ public class GameActivity extends GameMenu {
 
         //TODO: TESTING ONLY, REMOVE
         gameMap = new SkyStage();
+        tmpPlayer = new TmpPlayer();
 
         TmpView tmpView = new TmpView(this);
         setContentView(tmpView);
@@ -62,5 +66,8 @@ public class GameActivity extends GameMenu {
     public GameMap getGameMap() {
         return gameMap;
     }
+
+    // REMOVE AFTER TESTING
+    public TmpPlayer getTmpPlayer(){return tmpPlayer;}
 
 }

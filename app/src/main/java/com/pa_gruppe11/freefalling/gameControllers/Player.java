@@ -1,5 +1,6 @@
 package com.pa_gruppe11.freefalling.gameControllers;
 
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.view.MotionEvent;
@@ -21,6 +22,7 @@ public class Player {
         y=currentView.getY();
         currentView.setScaleX(-1);
     }
+
 
     Rect getRect() {
         currentView.getHitRect(rect);
