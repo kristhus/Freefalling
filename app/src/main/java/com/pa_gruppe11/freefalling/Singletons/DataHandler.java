@@ -14,6 +14,9 @@ public final class DataHandler {
 	public static boolean sfxMuted = false;
 	public static boolean bgmMuted = false;
 
+	public static int screenWidth;
+	public static int screenHeight;
+
 	private static DataHandler dataHandler = new DataHandler();
 	
 	private DataHandler() {}	// No need to initiate this file by other classes.

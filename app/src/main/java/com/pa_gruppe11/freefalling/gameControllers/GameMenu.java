@@ -60,7 +60,7 @@ public class GameMenu extends Activity {
     public void onResume() {
         super.onResume();
         if(this.getClass() == GameActivity.class)
-            GameThread.getInstance().setRunning(false);
+            GameThread.getInstance().setRunning(true);
         Log.w("GameMenu", "Resumed");
     }
 

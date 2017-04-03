@@ -24,7 +24,6 @@ public class Character implements Drawable{
 
     }
 
-    @Override
     public void Drawable(int x, int y, int id) {
 
     }

@@ -29,6 +29,9 @@
         <activity android:name=".gameControllers.Lobby"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:screenOrientation="portrait"/>
+        <activity android:name=".gameControllers.GameActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:screenOrientation="portrait"/>
 
 
     </application>
