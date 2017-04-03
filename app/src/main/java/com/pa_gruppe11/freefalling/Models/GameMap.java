@@ -37,6 +37,8 @@ public class GameMap implements Drawable {
     private float scale;
     private float numberOfTimesToDraw;
 
+    private boolean tmp = true;
+
     public GameMap(int id, PowerUp[] powerups, Obstacle[] obstacles){
         this(id);
         this.id = id;
@@ -69,7 +71,7 @@ public class GameMap implements Drawable {
         numberOfTimesToDraw = screenHeight/scaledHeight + 2;
 
         transformationMatrix = new Matrix();
-        transformationMatrix.postTranslate(screenWidth, scaledHeight);
+        transformationMatrix.setTranslate(0, 0);
         transformationMatrix.postScale(scale, scale);
     }
 
@@ -83,17 +85,19 @@ public class GameMap implements Drawable {
     public void update(long dt){
         float delta = (float)dt/1000;  // If fps is really choppy, try using another method.
 
+
         drawY += pdy*delta;
         drawX += dx*delta;
 
-        /*
+
         if(drawY <= -scaledHeight) {    //if entire first image is off-screen, reset position (causes flicker???)
             drawY += scaledHeight;
             transformationMatrix.setTranslate(0, drawY);
+            transformationMatrix.postScale(scale, scale);
         }else {                         // Condition fulfilled most of the time
             transformationMatrix.postTranslate(dx * delta, pdy * delta);
         }
-        */
+
 
     }
 
@@ -107,6 +111,8 @@ public class GameMap implements Drawable {
     //    float translatedY = values[5];
 
         Matrix tmpMatrix = new Matrix(transformationMatrix);
+
+
 
         for(int i = 1; i <= numberOfTimesToDraw; i++) { // Very costly
             canvas.drawBitmap(ResourceLoader.getInstance().getImage(id), tmpMatrix, paint);
