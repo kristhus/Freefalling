@@ -21,8 +21,7 @@ public class GameMap implements Drawable {
     private int y;
 
 
-    public GameMap(int id, ImageView image, PowerUp[] powerups, Obstacle[] obstacles){
-        this.id = id;
+    public GameMap(ImageView image, PowerUp[] powerups, Obstacle[] obstacles){
         this.image = image;
         this.powerups = powerups;
         this.obstacles = obstacles;
