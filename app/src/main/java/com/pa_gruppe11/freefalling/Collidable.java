@@ -42,7 +42,6 @@ public class Collidable implements Drawable {
     }
 
 
-    @Override
     public void Drawable(int x, int y, int id) {
         this.x = x;
         this.y = y;

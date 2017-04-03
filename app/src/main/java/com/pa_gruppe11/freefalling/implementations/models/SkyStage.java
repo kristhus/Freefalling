@@ -13,16 +13,9 @@ import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 public class SkyStage extends GameMap {
 
     public SkyStage() {
-        //super(id, image, powerups, obstacles);
-        id = R.drawable.bg_sky;
-        image = ResourceLoader.getInstance().getImage(id);
+        super(R.drawable.bg_sky);
+        //image = ResourceLoader.getInstance().getImage(id);
     }
 
-
-
-    @Override
-    public void update(long dt) {
-
-    }
 
 }

@@ -2,6 +2,7 @@ package com.pa_gruppe11.freefalling.Singletons;
 
 import android.app.Activity;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 
@@ -18,10 +19,10 @@ public class GameThread extends Thread { //
 
     private GameActivity activity;										// Activity to be updated
     private SurfaceView view;												// View to be redrawn
-    private final int MAX_FPS = 30;     								// We need to move objects a fixed percentage compared to a constant variable, e.g. pixels/second, not per frame, to accomodate players that can run in 60fps
+    private final int MAX_FPS = 60;     								// We need to move objects a fixed percentage compared to a constant variable, e.g. pixels/second, not per frame, to accomodate players that can run in 60fps
     private boolean running;												// boolean in while loop
     private final int MAX_SKIPS = 5;	 								// Max amount of skipped draws, before drawing will be performed regardless of performance delay.
-    private final int PERIOD_LENGTH = 1000/MAX_FPS;	// milliseconds per frame
+    private final int PERIOD_LENGTH = 1000/MAX_FPS;	                    // milliseconds per frame
 
     private boolean started;												// Thread has been initialized
 
@@ -39,7 +40,7 @@ public class GameThread extends Thread { //
 	    
         started = true;
         long beginTime; 			// Time when the cycle begins
-        long dt = 0;  					// Time it took for the cycle to execute
+        long dt = MAX_FPS/1000;  					// Time it took for the cycle to execute, init at perfect value
         int sleepTime; 				// ms to sleep (<0 if behind)
         int framesSkipped=0; 	// Number of frames being skipped
 
@@ -48,22 +49,26 @@ public class GameThread extends Thread { //
             try {
                 canvas = view.getHolder().lockCanvas();			//
                 synchronized (view.getHolder()) {						// Make sure that only this thread gets the view, and no other classes interfers while drawing
+                    Log.w("GameThread", "dt: " + dt);
                     beginTime = System.currentTimeMillis();
                     framesSkipped = 0;
                     activity.update(dt);										// Update the activity
-                    view.draw(canvas);											// Draw the view
-
+                    if(canvas != null)                                          // Null before fully initialized, ignore untill creation
+                        view.draw(canvas);										// Draw the view
                     sleepTime = (int)(PERIOD_LENGTH - dt);	// The time necessary to sleep to maintain the FPS selected
 
                     if(sleepTime > 0){										
                         try{
                             Thread.sleep(sleepTime);					// Sleep for the calculated amount of time required
+                            Log.w("GameThread", "Slept for " + sleepTime + " ms");
                         }catch (InterruptedException e){}
                     }
-                    while (sleepTime < 0 && framesSkipped < MAX_SKIPS){		// If not possible to maintain FPS, update controller to catch up
+                    while (sleepTime < 0 && framesSkipped < MAX_SKIPS) {        // If not possible to maintain FPS, update controller to catch up
+                        beginTime = System.currentTimeMillis();
                         activity.update(dt);
                         sleepTime += PERIOD_LENGTH;
                         framesSkipped++;
+                        dt = System.currentTimeMillis() - beginTime;
                     }
                     dt = System.currentTimeMillis() - beginTime;	// Time elapsed in current loop, to be used in controller's update
                 }
