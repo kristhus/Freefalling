@@ -1,8 +1,6 @@
 package com.pa_gruppe11.freefalling.tmp;
 
 import android.graphics.Canvas;
-import android.util.Log;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.pa_gruppe11.freefalling.gameControllers.GameActivity;

@@ -84,11 +84,8 @@ public class GameMap implements Drawable {
 
     public void update(long dt){
         float delta = (float)dt/1000;  // If fps is really choppy, try using another method.
-
-
         drawY += pdy*delta;
         drawX += dx*delta;
-
 
         if(drawY <= -scaledHeight) {    //if entire first image is off-screen, reset position (causes flicker???)
             drawY += scaledHeight;
@@ -101,22 +98,25 @@ public class GameMap implements Drawable {
 
     }
 
+    /**
+     * Remember, draw order is important
+     * @param canvas The canvas to be painted on
+     */
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
         paint.setFilterBitmap(false);
-        //canvas.drawBitmap(ResourceLoader.getInstance().getImage(id), transformationMatrix, paint);
-
-//        float values[] = new float[9];
-  //      transformationMatrix.getValues(values);
-    //    float translatedY = values[5];
 
         Matrix tmpMatrix = new Matrix(transformationMatrix);
-
-
-
         for(int i = 1; i <= numberOfTimesToDraw; i++) { // Very costly
             canvas.drawBitmap(ResourceLoader.getInstance().getImage(id), tmpMatrix, paint);
             tmpMatrix.postTranslate(0, scaledHeight); // Black stripes some times, drawY's fault
+        }
+
+        for(Obstacle o : obstacles) {
+            o.draw(canvas);
+        }
+        for(PowerUp p : powerups) {
+            p.draw(canvas);
         }
 
     }
