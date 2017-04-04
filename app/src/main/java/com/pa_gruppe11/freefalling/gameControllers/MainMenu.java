@@ -26,6 +26,7 @@ public class MainMenu extends GameMenu{
         Point size = new Point();
         display.getSize(size);
 
+        // TODO: REMOVE AFTER TESTING
         DataHandler.getInstance().screenWidth = size.x;
         DataHandler.getInstance().screenHeight = size.y;
     }
@@ -50,6 +51,7 @@ public class MainMenu extends GameMenu{
     public void startGame(View view) {
         //TODO: remove load
         ResourceLoader.getInstance().loadImage(R.drawable.bg_sky, this);
+        ResourceLoader.getInstance().loadImage(R.drawable.stickman, this);
         goTo(GameActivity.class);
     }
 

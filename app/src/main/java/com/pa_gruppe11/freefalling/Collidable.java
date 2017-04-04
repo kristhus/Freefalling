@@ -1,8 +1,10 @@
 package com.pa_gruppe11.freefalling;
 
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
@@ -12,7 +14,9 @@ import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
 public class Collidable implements Drawable {
 
-    private int id;
+    protected int id;
+    protected Matrix transformationMatrix;
+
     private int x;
     private int y;
     private float dx;
@@ -27,9 +31,10 @@ public class Collidable implements Drawable {
     }
 
 
-    public boolean collides(){
+    public boolean collides(Collidable collider){
         //some condition
-        return true;
+
+        return getBounds().intersect(collider.getBounds());
     }
 
     public Rect getNextRect(){
@@ -38,6 +43,12 @@ public class Collidable implements Drawable {
     }
 
     public void update(long dt){
+
+       // Movement
+        x += dx*dt;
+        y += dy*dt;
+
+
 
     }
 
@@ -53,4 +64,51 @@ public class Collidable implements Drawable {
         canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), x, y, new Paint());
     }
 
+    // SETTERS
+
+    public void setX(int x){
+        this.x = x;
+    }
+
+    public void setY(int y){
+        this.y = y;
+    }
+
+    public void setDx(int dx){
+        this.dx = dx;
+    }
+
+    public void setDy(int dy){
+        this.dy = dy;
+    }
+
+    public void setId(int id) {this.id = id;}
+
+    public void setTransformationMatrix(Matrix matrix){
+        this.transformationMatrix = matrix;
+    }
+
+    // GETTERS
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public float getDx() {
+        return dx;
+    }
+
+    public float getDy() {
+        return dy;
+    }
+
+    public Matrix getTransformationMatrix() {
+        return transformationMatrix;
+    }
+
+    public Rect getBounds(){return new Rect(x, y, x + width, y + height);}
 }
