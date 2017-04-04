@@ -7,7 +7,12 @@ import android.util.Log;
 import com.pa_gruppe11.freefalling.R;
 import com.pa_gruppe11.freefalling.gameControllers.GameMenu;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -15,6 +20,12 @@ import java.util.HashMap;
  */
 
 public final class ResourceLoader {
+
+    private static final int[] resourceIdList = {
+            R.drawable.bg_sky};                     // Add new resources here, or load all images from drawable
+
+
+
 
     private static final ResourceLoader INSTANCE =  new ResourceLoader();
 
@@ -32,23 +43,45 @@ public final class ResourceLoader {
 //        imageList.put(R.drawable.bg_sky, BitmapFactory.decodeResource(context.getResources(), R.drawable.bg_sky));
     }
 
-
-    public void loadDrawables(Class<?> clz, GameMenu context){
-        Log.w("ResourceLoader", "loadDrawables");
-        final Field[] fields = clz.getDeclaredFields();
+    /**
+     * NOTE: This method correctly loads all drawables. But all drawables is A LOT of images.
+     * Use only if #PcMasterRace_64GBram
+     * @param context
+     */
+    public void loadGameResources(GameMenu context){
+        // android.content.res.Resources
+        final Class<R.drawable> c = R.drawable.class;
+        final Field[] fields = c.getFields();
         for (Field field : fields) {
             final int drawableId;
             try {
-                drawableId = field.getInt(clz);
-                Log.w("ResourceLoader", "field " + drawableId);
-                imageList.put(drawableId, BitmapFactory.decodeResource(context.getResources(), drawableId));
+                drawableId = field.getInt(c);
+                //Log.w("ResourceLoader", "field " + drawableId);
+                if(drawableId > 0)
+                    imageList.put(drawableId, BitmapFactory.decodeResource(context.getResources(), drawableId));
             } catch (Exception e) { //
-                continue;
+                e.printStackTrace();
             }
-        /* make use of drawableId for accessing Drawables here */
-
         }
+
+        for(int i : imageList.keySet()) {
+            //Log.w("ResourceLoader", "Name: " + context.getResources().getResourceEntryName(i));
+        }
+
     }
+
+
+    /**
+     * Add id's to resourceIdList in ResourceLoader for each new resource to be loaded.
+     * @param context
+     */
+    public void manualLoad(GameMenu context) {
+        for(int i : resourceIdList)
+            imageList.put(i, BitmapFactory.decodeResource(context.getResources(), i));
+    }
+
+
+
 
     public void setImageList(Class<?> clz){
 
