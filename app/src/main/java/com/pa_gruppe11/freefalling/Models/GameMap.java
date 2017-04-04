@@ -91,6 +91,18 @@ public class GameMap implements Drawable {
         }else {                         // Condition fulfilled most of the time
             transformationMatrix.postTranslate(dx * delta, pdy * delta);
         }
+
+        if(powerups != null) {
+            for(PowerUp p : powerups) {
+                p.update(dt);
+            }
+        }
+        if(obstacles != null) {
+            for(Obstacle o : obstacles) {
+                o.update(dt);
+            }
+        }
+
     }
 
     /**
@@ -130,6 +142,15 @@ public class GameMap implements Drawable {
 
     public void setDx(int dx) {
         this.dx = dx;
+    }
+
+
+    public Obstacle[] getObstacles() {
+        return obstacles;
+    }
+
+    public PowerUp[] getPowerups() {
+        return powerups;
     }
 
 }

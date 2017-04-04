@@ -22,6 +22,8 @@ public class Character extends Collidable{
 
     private int dt;
 
+    private Collidable collidesWith;
+
 
 
 /*
@@ -50,5 +52,9 @@ public class Character extends Collidable{
     @Override
     public void draw(Canvas canvas) {
         canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), getX(), getY(), new Paint());
+    }
+
+    public void setCollidesWith(Collidable c) {
+        collidesWith = c;
     }
 }
