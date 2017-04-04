@@ -43,8 +43,6 @@ public class Character extends Collidable{
 
     public void update(long dt){
 
-
-
     }
 
     @Override

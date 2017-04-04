@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
@@ -30,9 +31,10 @@ public class Collidable implements Drawable {
     }
 
 
-    public boolean collides(){
+    public boolean collides(Collidable collider){
         //some condition
-        return true;
+
+        return getBounds().intersect(collider.getBounds());
     }
 
     public Rect getNextRect(){
@@ -41,8 +43,13 @@ public class Collidable implements Drawable {
     }
 
     public void update(long dt){
-        x += dx;
-        y += dy;
+
+       // Movement
+        x += dx*dt;
+        y += dy*dt;
+
+
+
     }
 
 
@@ -102,4 +109,6 @@ public class Collidable implements Drawable {
     public Matrix getTransformationMatrix() {
         return transformationMatrix;
     }
+
+    public Rect getBounds(){return new Rect(x, y, x + width, y + height);}
 }

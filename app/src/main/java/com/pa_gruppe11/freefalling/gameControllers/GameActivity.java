@@ -34,7 +34,7 @@ public class GameActivity extends GameMenu {
         //TODO: TESTING ONLY, REMOVE
         gameMap = new SkyStage();
         //player = new Player(R.drawable.stickman);
-        player = new Player();
+        player = new Player(R.drawable.stickman);
 
         TmpView tmpView = new TmpView(this);
         setContentView(tmpView);
