@@ -16,38 +16,23 @@ import com.pa_gruppe11.freefalling.Models.Player;
  *
  */
 
-public class GameView extends SurfaceView implements Runnable {
-    private SurfaceHolder holder;
+public class GameView extends SurfaceView {
     private Drawable[] drawList;
-    private Boolean isRunning;
     Canvas c;
 
     public GameView(Context context, Drawable[] drawableList) {
         super(context);
         drawList=drawableList;
-        holder = getHolder();
-        resume();
     }
 
     @Override
-    public void run() {
-        while(isRunning) {
-            if (!holder.getSurface().isValid()) {
-                continue;
-            }
-            c = holder.lockCanvas();
-            for(int i=0; i<drawList.length; i++) {
-                drawList[i].draw(c);
-            }
-            holder.unlockCanvasAndPost(c);
+    public void draw(Canvas c) {
+        super.draw(c);
+        for(int i=0; i<drawList.length; i++) {
+            drawList[i].draw(c);
         }
     }
-    public void pause() {
-        isRunning=false;
-    }
-    public void resume() {
-        isRunning=true;
-    }
+
     public void drawPostMatchView(Player winner) {
         Rect background = new Rect(0, 0, getWidth(), getHeight());
         Paint myPaint = new Paint();
