@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
 /**
@@ -45,8 +46,23 @@ public class Collidable implements Drawable {
     public void update(long dt){
 
        // Movement
-        x += dx*dt;
-        y += dy*dt;
+
+        int rightBounds = DataHandler.getInstance().screenWidth;
+        int leftBounds = 0;
+        int topBounds = 0;
+        int bottomBounds = DataHandler.getInstance().screenHeight;
+
+        // Checking out of bounds before movement
+        if (x + dx*dt > rightBounds || x + dx*dt < leftBounds){
+
+            x += dx*dt;
+
+        }else if (y + dy*dt > bottomBounds || y + dy*dt < topBounds){
+
+            y += dy*dt;
+
+        }
+
 
 
 
