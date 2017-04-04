@@ -20,7 +20,7 @@ public class GameActivity extends GameMenu {
 
     private Player[] players;
     private GameMap gameMap; //
-    private Player player; // REMOVE AFTER TESTING
+    private Player thisPlayer; // REMOVE AFTER TESTING
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -34,7 +34,7 @@ public class GameActivity extends GameMenu {
         //TODO: TESTING ONLY, REMOVE
         gameMap = new SkyStage();
         //player = new Player(R.drawable.stickman);
-        player = new Player(R.drawable.stickman);
+        thisPlayer = new Player(R.drawable.stickman);
 
         TmpView tmpView = new TmpView(this);
         setContentView(tmpView);
@@ -77,6 +77,6 @@ public class GameActivity extends GameMenu {
     }
 
     // TODO: Remove after testing.
-    public Player getPlayer(){return player;}
+    public Player getPlayer(){return thisPlayer;}
 
 }
