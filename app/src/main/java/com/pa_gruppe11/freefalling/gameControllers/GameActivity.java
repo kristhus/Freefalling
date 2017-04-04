@@ -1,8 +1,10 @@
 package com.pa_gruppe11.freefalling.gameControllers;
 
 import android.os.Bundle;
+import android.view.ViewGroup;
 
 import com.pa_gruppe11.freefalling.Models.GameMap;
+import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
 import com.pa_gruppe11.freefalling.implementations.models.SkyStage;
 import com.pa_gruppe11.freefalling.tmp.TmpView;
@@ -14,6 +16,8 @@ public class GameActivity extends GameMenu {
 
     private Player[] players;
     private GameMap gameMap; //
+
+    private PlayerController controller;
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -30,6 +34,10 @@ public class GameActivity extends GameMenu {
         TmpView tmpView = new TmpView(this);
         setContentView(tmpView);
         GameThread.getInstance().setView(tmpView);
+
+        controller = new PlayerController(this);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(DataHandler.screenWidth, DataHandler.screenHeight);
+        addContentView(controller, params);
 
         notifyReady();
     }
@@ -65,6 +73,10 @@ public class GameActivity extends GameMenu {
 
     public GameMap getGameMap() {
         return gameMap;
+    }
+
+    public PlayerController getController() {
+        return controller;
     }
 
 }
