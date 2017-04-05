@@ -25,6 +25,8 @@ public class Collidable implements Drawable {
     private int height;
     private int width;
 
+    private boolean pinned; // Set to true if the collidable obeject does not move after collision.
+
 
     public Collidable(int height, int width){
         this.height = height;
