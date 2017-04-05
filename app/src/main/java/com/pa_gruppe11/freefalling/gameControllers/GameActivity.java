@@ -1,19 +1,16 @@
 package com.pa_gruppe11.freefalling.gameControllers;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Models.GameMap;
-import com.pa_gruppe11.freefalling.Models.Character;
+import com.pa_gruppe11.freefalling.Models.Obstacle;
+import com.pa_gruppe11.freefalling.Models.PowerUp;
 import com.pa_gruppe11.freefalling.R;
 import android.view.ViewGroup;
 
-import com.pa_gruppe11.freefalling.Models.GameMap;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
 import com.pa_gruppe11.freefalling.implementations.models.SkyStage;
-import com.pa_gruppe11.freefalling.tmp.TmpPlayer;
 import com.pa_gruppe11.freefalling.tmp.TmpView;
 import com.pa_gruppe11.freefalling.Models.Player;
 
@@ -22,7 +19,7 @@ import com.pa_gruppe11.freefalling.Models.Player;
  */
 public class GameActivity extends GameMenu {
 
-    private Player[] players;
+    private Player[] opponents;
     private GameMap gameMap; //
     private Player thisPlayer; // REMOVE AFTER TESTING
 
@@ -54,13 +51,35 @@ public class GameActivity extends GameMenu {
     }
 
     public void update(long dt) {
-        if(players != null) {
-            for (Player player : players) {
-                player.getCharacter().update(dt);
+        if(opponents != null) {
+            for (Player opponent : opponents) {
+                if(thisPlayer.getCharacter().collides(opponent.getCharacter())) {
+                    thisPlayer.getCharacter().setCollidesWith(opponent.getCharacter());
+                }
+                opponent.getCharacter().update(dt);
             }
         }
         if(gameMap != null)
-            gameMap.update(dt);
+            gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
+
+        // Update powerups and obstacles
+        Obstacle[] obstacles = gameMap.getObstacles();
+        if(obstacles != null) {
+            for(Obstacle o : obstacles) {
+                if(thisPlayer.getCharacter().collides(o))
+                    thisPlayer.getCharacter().setCollidesWith(o);
+            }
+        }
+
+        PowerUp[] powerUps = gameMap.getPowerups();
+        if(powerUps != null) {
+            for(PowerUp p : powerUps) {
+                if(thisPlayer.getCharacter().collides(p))
+                    thisPlayer.getCharacter().setCollidesWith(p);
+            }
+        }
+
+        thisPlayer.getCharacter().update(dt);           // Update this player
     }
 
 

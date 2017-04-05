@@ -18,8 +18,11 @@ public class PlayerController extends SurfaceView implements SurfaceHolder.Callb
 
     private ArrayList<ArrayList<Float>> touches;
 
-    public PlayerController(Context context) {
+    private GameActivity context;
+
+    public PlayerController(GameActivity context) {
         super(context);
+        this.context = context;
         getHolder().setFormat(PixelFormat.TRANSPARENT);
         touches = new ArrayList<ArrayList<Float>>();
         setZOrderOnTop(true);
@@ -37,6 +40,7 @@ public class PlayerController extends SurfaceView implements SurfaceHolder.Callb
             tmp.add(x);tmp.add(y);
             touches.add(tmp);
         }
+        context.getPlayer().getCharacter().setTouches(touches);
         return true; // Can continue touch-motion
     }
 

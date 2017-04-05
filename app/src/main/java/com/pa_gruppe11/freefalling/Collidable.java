@@ -18,12 +18,12 @@ public class Collidable implements Drawable {
     protected int id;
     protected Matrix transformationMatrix;
 
-    private int x;
-    private int y;
-    private float dx;
-    private float dy;
-    private int height;
-    private int width;
+    protected int x;
+    protected int y;
+    protected float dx;
+    protected float dy;
+    protected int height;
+    protected int width;
 
     private boolean pinned; // Set to true if the collidable obeject does not move after collision.
 
@@ -129,4 +129,6 @@ public class Collidable implements Drawable {
     }
 
     public Rect getBounds(){return new Rect(x, y, x + width, y + height);}
+
+
 }
