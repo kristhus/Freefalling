@@ -3,6 +3,7 @@ package com.pa_gruppe11.freefalling.gameControllers;
 import android.os.Bundle;
 
 import com.pa_gruppe11.freefalling.Models.GameMap;
+import com.pa_gruppe11.freefalling.Models.Hanz;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
 import com.pa_gruppe11.freefalling.Models.PowerUp;
 import com.pa_gruppe11.freefalling.R;
@@ -36,8 +37,8 @@ public class GameActivity extends GameMenu {
 
         //TODO: TESTING ONLY, REMOVE
         gameMap = new SkyStage();
-        //player = new Player(R.drawable.stickman);
-        thisPlayer = new Player(R.drawable.stickman);
+        thisPlayer = new Player();
+        thisPlayer.setCharacter(new Hanz(R.drawable.stickman));
 
         TmpView tmpView = new TmpView(this);
         setContentView(tmpView);

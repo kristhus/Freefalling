@@ -65,7 +65,9 @@ public class Collidable implements Drawable {
 
         }
 
-
+            // TODO: REMOVE AFTER TESTING
+            setX(x + 2);
+            setY(y + 2);
 
 
     }

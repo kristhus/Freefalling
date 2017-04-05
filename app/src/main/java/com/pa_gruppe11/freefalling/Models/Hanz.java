@@ -1,5 +1,7 @@
 package com.pa_gruppe11.freefalling.Models;
 
+import android.util.Log;
+
 import com.pa_gruppe11.freefalling.R;
 
 /**
@@ -13,7 +15,8 @@ public class Hanz extends Character {
         super(id);
         setDx(10);
         setDy(10);
-        setId(R.drawable.stickman);
+        setId(id);
+        Log.w("Hanz", "Constructed a new Hanz");
     }
 
 
