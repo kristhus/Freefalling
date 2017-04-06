@@ -1,7 +1,8 @@
-package com.pa_gruppe11.freefalling.Models;
+package com.pa_gruppe11.freefalling.implementations.models;
 
 import android.util.Log;
 
+import com.pa_gruppe11.freefalling.Models.Character;
 import com.pa_gruppe11.freefalling.R;
 
 /**

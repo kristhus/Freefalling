@@ -153,4 +153,6 @@ public class GameMap implements Drawable {
         return powerups;
     }
 
+   // public void addObstacle(Obstacle obstacle){for (Obstacle : obstacles)}
+
 }

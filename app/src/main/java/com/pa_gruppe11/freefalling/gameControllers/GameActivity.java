@@ -3,7 +3,7 @@ package com.pa_gruppe11.freefalling.gameControllers;
 import android.os.Bundle;
 
 import com.pa_gruppe11.freefalling.Models.GameMap;
-import com.pa_gruppe11.freefalling.Models.Hanz;
+import com.pa_gruppe11.freefalling.implementations.models.Hanz;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
 import com.pa_gruppe11.freefalling.Models.PowerUp;
 import com.pa_gruppe11.freefalling.R;

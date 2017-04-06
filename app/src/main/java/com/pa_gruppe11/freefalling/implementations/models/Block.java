@@ -18,9 +18,9 @@ public class Block extends Obstacle{
         Log.w("Block", "Constructed a new Block");
         setPinned(true);
         setX(500);
-        setY(500);
+        setY(1200);
         setDx(0);
-        setDy(80);
+        setDy(-20);
     }
 
     @Override

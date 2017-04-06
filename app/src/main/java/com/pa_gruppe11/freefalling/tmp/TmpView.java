@@ -20,12 +20,13 @@ public class TmpView extends SurfaceView{
         gameContext = context;
     }
 
-
+    // The order in which the different objects get drawn are critical for
+    // displaying which object is "on top" of the others.
     public void draw(Canvas canvas) {
         super.draw(canvas);                     // remove previous artefacts
         gameContext.getGameMap().draw(canvas);  // draw current frame
-        gameContext.getPlayer().getCharacter().draw(canvas);
         gameContext.getObstacle().draw(canvas);
+        gameContext.getPlayer().getCharacter().draw(canvas);
     }
 
 

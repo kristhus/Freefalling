@@ -19,12 +19,12 @@ public class Collidable implements Drawable {
     protected int id;
     protected Matrix transformationMatrix;
 
-    protected float x = 00.0f;
-    protected float y = 00.0f;
+    protected float x = 0.0f;
+    protected float y = 0.0f;
     protected float dx = 0.0f;
     protected float dy = 0.0f;
-    private float maxDx = 60.0f; // max velocity    - not necessarily final (powerup?)
-    private float maxDy = 60.0f; // 5 percent of screen changed per second
+    private float maxDx = 200.0f; // max velocity    - not necessarily final (powerup?)
+    private float maxDy = 200.0f; // 5 percent of screen changed per second
 
     protected int height;
     protected int width;
@@ -77,6 +77,9 @@ public class Collidable implements Drawable {
         else{
             setX(x + dx * (float) dt / 100);
             setY(y + dy * (float) dt / 100);
+
+            Log.w("Collidable", "x: "  + x + "      y: " + y);
+
         }
 
     }
