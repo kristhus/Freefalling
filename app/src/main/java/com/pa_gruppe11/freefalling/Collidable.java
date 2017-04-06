@@ -59,46 +59,25 @@ public class Collidable implements Drawable {
 
     public void update(long dt){
 
-        setDx((dx + accelerationX * (float)dt/1000));
-        setDy((dy + accelerationY * (float)dt/1000));
+        // Update of objects that can move in more than one axis
+        if (!pinned) {
+            // SETTING THE SPEED
+            setDx((dx + accelerationX * (float) dt / 1000));
+            setDy((dy + accelerationY * (float) dt / 1000));
 
-        // Log.w("CharacterPRE", "dt in seconds: " + accelerationY * (float)dt/1000);
-
-        setX(x + dx * (float)dt/1000);
-        setY(y + dy * (float)dt/1000);
-
-        // Out of bounds
-        // If OOB Invert dx
-
-
-        // Acceleration
-
-            // v = m/s,  a = m/s^2
-
-        setDx((dx + accelerationX * (float)dt/1000));
-        setDy((dy + accelerationY * (float)dt/1000));
+            // SETTING THE POSITION
+            setX(x + dx * (float) dt / 1000);
+            setY(y + dy * (float) dt / 1000);
 
 
-        Log.w("Collidable", "dx : " + dx + "       dy: " + dy);
+            Log.w("Collidable", "dx : " + dx + "       dy: " + dy);
 
-
-        // Conditions
-
-        // Velocity
-        // Conditions
-
-        // Position
-
-
-        setX(x + dx * (float)dt/1000);
-        setY(y + dy * (float)dt/1000);
-
-        // Conditions
-
-
-
-
-
+        }
+            // Update of object that can only move i one axis, primarily Obstales.
+        else{
+            setX(x + dx * (float) dt / 100);
+            setY(y + dy * (float) dt / 100);
+        }
 
     }
 
@@ -125,9 +104,9 @@ public class Collidable implements Drawable {
     public void setDx(float dx){
 
 
-        if (Math.abs(dx) <= maxDx){
+        if (Math.abs(dx) <= maxDx){     // The absolute value of dx is lower than the allowed max speed.
             this.dx = dx;
-        }else if (dx < 0){
+        }else if (dx < 0){              // The speed given is negative.
             this.dx = -maxDx;
         }
 
@@ -135,14 +114,16 @@ public class Collidable implements Drawable {
 
     public void setDy(float dy){
 
-        if (Math.abs(dy) <= maxDy){
+        if (Math.abs(dy) <= maxDy){     // The absolute value of dx is lower than the allowed max speed.
             this.dy = dy;
-        }else if (dy < 0){
+        }else if (dy < 0){              // The speed given is negative.
             this.dy = -maxDy;
         }
     }
 
     public void setId(int id) {this.id = id;}
+
+    public void setPinned(boolean pinned){this.pinned = pinned;}
 
     public void setTransformationMatrix(Matrix matrix){
         this.transformationMatrix = matrix;
@@ -165,6 +146,8 @@ public class Collidable implements Drawable {
     public float getDy() {
         return dy;
     }
+
+    public boolean getPinned(){return pinned;}
 
     public Matrix getTransformationMatrix() {
         return transformationMatrix;

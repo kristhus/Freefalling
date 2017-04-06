@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
+import com.pa_gruppe11.freefalling.implementations.models.Block;
 import com.pa_gruppe11.freefalling.implementations.models.SkyStage;
 import com.pa_gruppe11.freefalling.tmp.TmpView;
 import com.pa_gruppe11.freefalling.Models.Player;
@@ -22,7 +23,11 @@ public class GameActivity extends GameMenu {
 
     private Player[] opponents;
     private GameMap gameMap; //
-    private Player thisPlayer; // REMOVE AFTER TESTING
+    private Player thisPlayer;
+
+    // TODO: REMOVE AFTER TESTING
+
+    private Block testblock;
 
     private PlayerController controller;
 
@@ -39,6 +44,8 @@ public class GameActivity extends GameMenu {
         gameMap = new SkyStage();
         thisPlayer = new Player();
         thisPlayer.setCharacter(new Hanz(R.drawable.stickman));
+        testblock = new Block(R.drawable.block);
+
 
         TmpView tmpView = new TmpView(this);
         setContentView(tmpView);
@@ -81,6 +88,7 @@ public class GameActivity extends GameMenu {
         }
 
         thisPlayer.getCharacter().update(dt);           // Update this player
+        testblock.update(dt);                           // Update this obstacle
     }
 
 
@@ -109,6 +117,8 @@ public class GameActivity extends GameMenu {
 
     // TODO: Remove after testing.
     public Player getPlayer(){return thisPlayer;}
+
+    public Obstacle getObstacle(){return testblock;}
 
     public PlayerController getController() {
         return controller;

@@ -22,7 +22,7 @@ import java.util.HashMap;
 public final class ResourceLoader {
 
     private static final int[] resourceIdList = {
-            R.drawable.bg_sky};                     // Add new resources here, or load all images from drawable
+            R.drawable.bg_sky, R.drawable.stickman, R.drawable.block};                     // Add new resources here, or load all images from drawable
 
 
 
