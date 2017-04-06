@@ -47,7 +47,20 @@ public class Collidable implements Drawable {
 
     public void update(long dt){
 
-       // Movement
+        // Out of bounds
+            // If OOB Invert dx
+
+        // Acceleration
+            // Conditions
+
+        // Velocity
+            // Conditions
+
+        // Position
+            // Conditions
+
+
+
 
         int rightBounds = DataHandler.getInstance().screenWidth;
         int leftBounds = 0;
@@ -95,6 +108,7 @@ public class Collidable implements Drawable {
     }
 
     public void setDx(int dx){
+        assert(false);
         this.dx = dx;
     }
 
