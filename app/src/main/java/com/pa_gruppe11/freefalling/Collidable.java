@@ -5,10 +5,13 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.shapes.Shape;
 import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
+
+import static android.R.attr.shape;
 
 /**
  * Created by kjetilvaagen on 31/03/17.
@@ -24,7 +27,7 @@ public class Collidable implements Drawable {
     protected float dx = 0.0f;
     protected float dy = 0.0f;
     private float maxDx = 200.0f; // max velocity    - not necessarily final (powerup?)
-    private float maxDy = 200.0f; // 5 percent of screen changed per second
+    private float maxDy = 200.0f; // TODO: MAKE THIS 5% OF THE SCREEN HEIGHT
 
     protected int height;
     protected int width;
@@ -35,21 +38,28 @@ public class Collidable implements Drawable {
 
 
     private boolean pinned; // Set to true if the collidable obeject does not move after collision.
+    private boolean collision;
     private int rightBounds = DataHandler.getInstance().screenWidth;
     private int leftBounds = 0;
-    private int topBounds = 0;
 
 
     public Collidable(int height, int width){
         this.height = height;
         this.width = width;
+
     }
 
-
+/*
     public boolean collides(Collidable collider){
         //some condition
-
         return getBounds().intersect(collider.getBounds());
+    }
+  */
+    public void collides(Collidable collider){
+        if (getBounds().intersect(collider.getBounds()))
+            collision = true;
+        else
+            collision = false;
     }
 
     public RectF getNextRect(){
@@ -61,24 +71,41 @@ public class Collidable implements Drawable {
 
         // Update of objects that can move in more than one axis
         if (!pinned) {
-            // SETTING THE SPEED
-            setDx((dx + accelerationX * (float) dt / 1000));
-            setDy((dy + accelerationY * (float) dt / 1000));
 
-            // SETTING THE POSITION
-            setX(x + dx * (float) dt / 1000);
-            setY(y + dy * (float) dt / 1000);
+            if (!collision){
+                // SETTING THE SPEED
+                setDx((dx + accelerationX * (float) dt / 1000));
+                setDy((dy + accelerationY * (float) dt / 1000));
+
+                // SETTING THE POSITION
+                setX(x + dx * (float) dt / 1000);
+                setY(y + dy * (float) dt / 1000);
 
 
-            Log.w("Collidable", "dx : " + dx + "       dy: " + dy);
+                Log.w("Collidable", "dx : " + dx + "       dy: " + dy);
+
+            }
+
+
 
         }
             // Update of object that can only move i one axis, primarily Obstales.
         else{
+
+            // Collision detection
+                if (collision){
+
+                }
+
+
+            // Movement
             setX(x + dx * (float) dt / 100);
             setY(y + dy * (float) dt / 100);
 
+
+
             Log.w("Collidable", "x: "  + x + "      y: " + y);
+
 
         }
 
