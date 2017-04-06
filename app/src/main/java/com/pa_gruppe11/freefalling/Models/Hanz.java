@@ -13,8 +13,10 @@ public class Hanz extends Character {
 
     public Hanz(int id) {
         super(id);
-        setDx(10);
-        setDy(10);
+
+
+     //   setDx(10);
+     //   setDy(10);
         setId(id);
         Log.w("Hanz", "Constructed a new Hanz");
     }

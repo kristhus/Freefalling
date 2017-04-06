@@ -30,7 +30,6 @@ public class PlayerController extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        Log.w("PlayerController", "OOOH, you touched my talala");
         touches = new ArrayList<ArrayList<Float>>();
         Point p = new Point();
         for(int i = 0; i < e.getPointerCount(); i++) { // multi touch
@@ -38,6 +37,7 @@ public class PlayerController extends SurfaceView implements SurfaceHolder.Callb
             float y = e.getY(i);
             ArrayList<Float> tmp = new ArrayList<Float>();
             tmp.add(x);tmp.add(y);
+            Log.w("PlayerController", "OOOH, you touched my talala    x: " + x + "   y: " + y);
             touches.add(tmp);
         }
         context.getPlayer().getCharacter().setTouches(touches);

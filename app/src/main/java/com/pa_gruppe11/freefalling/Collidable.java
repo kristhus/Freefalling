@@ -5,6 +5,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
@@ -18,14 +19,25 @@ public class Collidable implements Drawable {
     protected int id;
     protected Matrix transformationMatrix;
 
-    protected int x;
-    protected int y;
-    protected float dx;
-    protected float dy;
+    protected float x = 00.0f;
+    protected float y = 00.0f;
+    protected float dx = 0.0f;
+    protected float dy = 0.0f;
+    private float maxDx = 60.0f; // max velocity    - not necessarily final (powerup?)
+    private float maxDy = 60.0f; // 5 percent of screen changed per second
+
     protected int height;
     protected int width;
+    protected float accelerationX = 0.0f;
+    protected float accelerationY = 0.0f;
+    protected float maxAccelerationX = 30; // max acceleration
+    protected float maxAccelerationY = 30; // would take 5 seconds to fully change 180degrees with 10 acc, and 25 vel.
+
 
     private boolean pinned; // Set to true if the collidable obeject does not move after collision.
+    private int rightBounds = DataHandler.getInstance().screenWidth;
+    private int leftBounds = 0;
+    private int topBounds = 0;
 
 
     public Collidable(int height, int width){
@@ -40,57 +52,56 @@ public class Collidable implements Drawable {
         return getBounds().intersect(collider.getBounds());
     }
 
-    public Rect getNextRect(){
-        Rect rect = new Rect(x, y, x + width, y + height);
+    public RectF getNextRect(){
+        RectF rect = new RectF(x, y, x + width, y + height);
         return rect;
     }
 
     public void update(long dt){
 
+        setDx((dx + accelerationX * (float)dt/1000));
+        setDy((dy + accelerationY * (float)dt/1000));
+
+        // Log.w("CharacterPRE", "dt in seconds: " + accelerationY * (float)dt/1000);
+
+        setX(x + dx * (float)dt/1000);
+        setY(y + dy * (float)dt/1000);
+
         // Out of bounds
-            // If OOB Invert dx
+        // If OOB Invert dx
+
 
         // Acceleration
-            // Conditions
+
+            // v = m/s,  a = m/s^2
+
+        setDx((dx + accelerationX * (float)dt/1000));
+        setDy((dy + accelerationY * (float)dt/1000));
+
+
+        Log.w("Collidable", "dx : " + dx + "       dy: " + dy);
+
+
+        // Conditions
 
         // Velocity
-            // Conditions
+        // Conditions
 
         // Position
-            // Conditions
+
+
+        setX(x + dx * (float)dt/1000);
+        setY(y + dy * (float)dt/1000);
+
+        // Conditions
 
 
 
 
-        int rightBounds = DataHandler.getInstance().screenWidth;
-        int leftBounds = 0;
-        int topBounds = 0;
-        int bottomBounds = DataHandler.getInstance().screenHeight;
-
-        // Checking out of bounds before movement
-        if (x + dx*dt > rightBounds || x + dx*dt < leftBounds){
-
-            x += dx*dt;
-
-        }else if (y + dy*dt > bottomBounds || y + dy*dt < topBounds){
-
-            y += dy*dt;
-
-        }
-
-            // TODO: REMOVE AFTER TESTING
-            setX(x + 2);
-            setY(y + 2);
 
 
     }
 
-
-    public void Drawable(int x, int y, int id) {
-        this.x = x;
-        this.y = y;
-        this.id = id;
-    }
 
     @Override
     public void draw(Canvas canvas) {
@@ -99,21 +110,36 @@ public class Collidable implements Drawable {
 
     // SETTERS
 
-    public void setX(int x){
-        this.x = x;
+    public void setX(float x){
+        if (x + width < rightBounds && x > leftBounds)
+            this.x = x;
+        else
+            Log.w("Collidable", "The object cannot go out of bounds in x-direction");
     }
 
-    public void setY(int y){
-        this.y = y;
+    public void setY(float y)
+    {
+            this.y = y;
     }
 
-    public void setDx(int dx){
-        assert(false);
-        this.dx = dx;
+    public void setDx(float dx){
+
+
+        if (Math.abs(dx) <= maxDx){
+            this.dx = dx;
+        }else if (dx < 0){
+            this.dx = -maxDx;
+        }
+
     }
 
-    public void setDy(int dy){
-        this.dy = dy;
+    public void setDy(float dy){
+
+        if (Math.abs(dy) <= maxDy){
+            this.dy = dy;
+        }else if (dy < 0){
+            this.dy = -maxDy;
+        }
     }
 
     public void setId(int id) {this.id = id;}
@@ -124,11 +150,11 @@ public class Collidable implements Drawable {
 
     // GETTERS
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 
@@ -144,7 +170,7 @@ public class Collidable implements Drawable {
         return transformationMatrix;
     }
 
-    public Rect getBounds(){return new Rect(x, y, x + width, y + height);}
+    public RectF getBounds(){return new RectF(x, y, x + width, y + height);}
 
 
 }

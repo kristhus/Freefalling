@@ -27,26 +27,15 @@ public class Character extends Collidable{
     private final float pMaxTouch = 10.0f;
 
     private float maxTouchRadius;
-    private float maxDx = 25; // max velocity    - not necessarily final (powerup?)
-    private float maxDy = 25; // 5 percent of screen changed per second
 
-    private float maxAccelerationX = 10; // max acceleration
-    private float maxAccelerationY = 10; // would take 5 seconds to fully change 180degrees with 10 acc, and 25 vel.
 
-    private int dt;
+    private float accModifier = 40;
 
     private ArrayList<ArrayList<Float>> touches;
 
     private Collidable collidesWith;
 
 
-
-/*
-    public Character(int dt, ImageView image){
-        super();
-        this.dt = dt;
-    }
-*/
 
     public Character(int id){
 
@@ -56,14 +45,26 @@ public class Character extends Collidable{
         transformationMatrix = new Matrix();
         transformationMatrix.setTranslate(0, 0);
 
-        maxTouchRadius = DataHandler.getInstance().screenHeight*(100/pMaxTouch);
+        maxTouchRadius = DataHandler.getInstance().screenHeight*(pMaxTouch/100);
+        Log.w("Character", "maxTouchRadius: " + maxTouchRadius);
 
     }
 
+    @Override
     public void update(long dt){
         respondToTouch(); // we do this here, to assure the order is done correctly
         super.update(dt);
 
+        /*
+        setDx((dx + accelerationX * (float)dt/1000));
+        setDy((dy + accelerationY * (float)dt/1000));
+
+       // Log.w("CharacterPRE", "dt in seconds: " + accelerationY * (float)dt/1000);
+
+        setX(x + dx * (float)dt/1000);
+        setY(y + dy * (float)dt/1000);
+        */
+     //   Log.w("CharacterPOST", "X: " + x  +   "    Y: " + y);
 
 
 
@@ -79,25 +80,33 @@ public class Character extends Collidable{
             float touchedX = touches.get(i).get(0);
             float touchedY = touches.get(i).get(1);
 
-            float distX = Math.abs(centreX - touchedX);
-            float distY = Math.abs(centreY - touchedY);
+            float distX = touchedX - centreX;
+            float distY = touchedY - centreY;
+
+            Log.w("Character", "distX: " + distX + "  distY: " + distY);
 
             float distance = (float) Math.sqrt(Math.pow(centreX-touchedX,2) + Math.pow(centreY - touchedY,2));
 
+            Log.w("Character", "distance: " + distance);
+
             if(distance > maxTouchRadius) { // Correction for touches outside the allowed max radius
-                float scale = (maxTouchRadius/Math.max(distX, distY));
+                //float scale = (maxTouchRadius/Math.max(distX, distY));
+                float scale = Math.abs(distX) > Math.abs(distY) ? Math.abs(maxTouchRadius/distX) : Math.abs(maxTouchRadius/distY);
+
                 distX*=scale;
                 distY*=scale;
+                Log.w("Character", "scale: " + scale);
             }
             // TODO: This may not be correct, but need to run with valid implementationg to check first
-            float accelerationX = maxAccelerationX * distX/maxTouchRadius;
-            float accelerationY = maxAccelerationY * distY/maxTouchRadius;
+            accelerationX = accModifier * maxAccelerationX * distX/maxTouchRadius;
+            accelerationY = accModifier * maxAccelerationY * distY/maxTouchRadius;
 
-
+            Log.w("Character", "accelerationX: " + accelerationX);
+            Log.w("Character", "accelerationY: " + accelerationY);
 
         }
 
-        touches = null; // Remove when consumed ( synchronize?)
+         touches = null; // Remove when consumed ( synchronize?)
     }
 
     @Override
