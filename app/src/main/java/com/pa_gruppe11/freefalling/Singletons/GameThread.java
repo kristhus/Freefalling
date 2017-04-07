@@ -19,7 +19,7 @@ public class GameThread extends Thread { //
 
     private GameActivity activity;										// Activity to be updated
     private SurfaceView view;												// View to be redrawn
-    private final int MAX_FPS = 60;     								// We need to move objects a fixed percentage compared to a constant variable, e.g. pixels/second, not per frame, to accomodate players that can run in 60fps
+    private int MAX_FPS = DataHandler.getInstance().getFPS();     // We need to move objects a fixed percentage compared to a constant variable, e.g. pixels/second, not per frame, to accomodate players that can run in 60fps
     private boolean running;												// boolean in while loop
     private final int MAX_SKIPS = 5;	 								// Max amount of skipped draws, before drawing will be performed regardless of performance delay.
     private final int PERIOD_LENGTH = 1000/MAX_FPS;	                    // milliseconds per frame
@@ -149,5 +149,9 @@ public class GameThread extends Thread { //
 	public static GameThread getInstance() {
 		return gameThread;
 	}
-	
+
+	public void reloadValues() {
+        MAX_FPS = DataHandler.getInstance().getFPS();
+    }
+
 }

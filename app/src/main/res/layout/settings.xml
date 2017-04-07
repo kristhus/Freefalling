@@ -1,21 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:id="@+id/centreReference"
+        android:layout_width="0dp"
+        android:layout_centerInParent="true"
+        android:layout_height="0dp"></RelativeLayout>
+
+    <TextView
+        android:id="@+id/settingsText"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
+        android:layout_centerHorizontal="true"
         android:text="Settings" />
+
+    <TextView
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="60 FPS"
+        android:layout_marginTop="139dp"
+        android:padding="5dp"
+        android:layout_above="@+id/bgmTextLevel"/>
+
+    <TextView
+        android:id="@+id/bgmTextMute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/sfxTextMute"
+        android:layout_alignParentLeft="true"
+        android:padding="5dp"
+        android:text="Mute BGM"
+        android:layout_toLeftOf="@+id/sfxCheckBox"
+        android:layout_toStartOf="@+id/sfxCheckBox" />
+
+    <TextView
+        android:id="@+id/sfxTextMute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fpsCheckBox"
+        android:padding="5dp"
+        android:layout_alignParentLeft="true"
+        android:text="Mute SFX"
+        android:layout_toLeftOf="@+id/sfxCheckBox"
+        android:layout_toStartOf="@+id/sfxCheckBox" />
+
+    <TextView
+        android:id="@+id/bgmTextLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="BGM-level"
+        android:layout_above="@+id/sfxTextLevel" />
+
+    <TextView
+        android:id="@+id/sfxTextLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="SFX-level"
+
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="goToMainMenu"
-        android:text="Back" />
+        android:text="Back"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-</LinearLayout>
+    <CheckBox
+        android:id="@+id/fpsCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:onClick="onChange"
+        android:layout_above="@+id/bgmTextLevel"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <CheckBox
+        android:id="@+id/sfxCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onChange"
+        android:layout_alignBaseline="@id/bgmTextMute"
+        android:layout_alignLeft="@+id/fpsCheckBox"
+        android:layout_alignStart="@+id/fpsCheckBox" />
+
+    <CheckBox
+        android:id="@+id/bgmCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onChange"
+        android:layout_alignBaseline="@id/sfxTextMute"
+        android:layout_alignLeft="@+id/fpsCheckBox"
+        android:layout_alignStart="@+id/fpsCheckBox" />
+
+    <SeekBar
+        android:id="@+id/bgmLevelSeekbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/bgmTextLevel"
+        android:layout_alignRight="@+id/fpsCheckBox"
+        android:layout_alignLeft="@id/centreReference"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="onChange"/>
+
+    <SeekBar
+        android:id="@+id/sfxLevelSeekbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/sfxTextLevel"
+        android:layout_alignRight="@+id/fpsCheckBox"
+        android:layout_alignLeft="@id/centreReference"
+        android:onClick="onChange" />
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button"
+        android:layout_centerHorizontal="true"
+        android:padding="25dp"
+        android:layout_margin="20dp"
+        android:onClick="save"
+        android:text="Save Changes"
+        android:visibility="gone"/>
+
+
+</RelativeLayout>

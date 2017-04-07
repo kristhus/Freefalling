@@ -48,9 +48,9 @@ public class GameMap implements Drawable {
 
     public GameMap(int id) {
         this.id = id;
-        float screenWidth = DataHandler.getInstance().screenWidth;
+        float screenWidth = DataHandler.getInstance().getScreenWidth();
         //float screenWidth = 1077;
-        float screenHeight = DataHandler.getInstance().screenHeight;
+        float screenHeight = DataHandler.getInstance().getScreenHeight();
 
         Log.w("GameMap", "screenWidth: " + screenWidth);
 

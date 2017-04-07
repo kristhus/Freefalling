@@ -47,7 +47,9 @@ public class GameActivity extends GameMenu {
         GameThread.getInstance().setView(tmpView);
 
         controller = new PlayerController(this);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(DataHandler.screenWidth, DataHandler.screenHeight);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                DataHandler.getInstance().getScreenWidth(),
+                DataHandler.getInstance().getScreenHeight());
         addContentView(controller, params);
 
         notifyReady();
