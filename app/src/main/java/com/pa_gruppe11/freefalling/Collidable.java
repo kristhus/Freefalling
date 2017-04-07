@@ -56,40 +56,43 @@ public class Collidable implements Drawable {
 
     }
 
-/*
-    public boolean collides(Collidable collider){
-        //some condition
-        return getBounds().intersect(collider.getBounds());
-    }
-  */
-    /*
-    public boolean collides(Collidable collider){
-        if (boundingBox.intersect(collider.getBoundingBox())) {
-            setCollider(collider);
-            return collision = true;
-        }
-        else {
-            Log.w("Collidable", "Kjem du hit??");
-            return collision = false;
-        }
-    }
-    */
-
+    /**
+     * Creates a new RectF according to the x and y given.
+     * @param x
+     * @param y
+     * @return
+     */
     public RectF getNextRect(float x, float y){
         RectF rect = new RectF(x, y, x + width, y + height);
         return rect;
     }
 
+    /**
+     * Calculate the next x position by multiplying the speed with the time and adding it with the
+     * current x position.
+     * @param dx
+     * @param dt
+     * @return
+     */
     public float calculateNextX(float dx, long dt){
         return x + dx*dt;
     }
 
-
+    /**
+     * Calculate the next y position by multiplying the speed with the time and adding it with the
+     * current y position.
+     * @param dy
+     * @param dt
+     * @return
+     */
     public float calculateNextY(float dy, long dt){
         return y + dy*dt;
     }
 
-
+    /**
+     * Updates everything that has to do with the Collidable object.
+     * @param dt
+     */
     public void update(long dt){
 
         setDt(dt);
@@ -139,7 +142,11 @@ public class Collidable implements Drawable {
 
     }
 
-
+    /**
+     * Draws the collidable object onto a canvas. The BitMap is loaded through the Singleton
+     * Resourceloader.
+     * @param canvas
+     */
     @Override
     public void draw(Canvas canvas) {
         canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), x, y, new Paint());
@@ -147,6 +154,10 @@ public class Collidable implements Drawable {
 
     // SETTERS
 
+    /**
+     * Sets the x. Checks out of bounds and collision conditions first.
+     * @param x
+     */
     public void setX(float x){
 
         if (x + width < rightBounds && x > leftBounds && !collision)
@@ -155,6 +166,10 @@ public class Collidable implements Drawable {
             Log.w("Collidable", "The object cannot go out of bounds in x-direction");
     }
 
+    /**
+     * Sets the y. Checks collision conditions first.
+     * @param y
+     */
     public void setY(float y)
     {
         if (!collision)
@@ -163,6 +178,11 @@ public class Collidable implements Drawable {
             Log.w("Collidable", "The object collides with something in y-direction.");
     }
 
+    /**
+     * Sets the dx (speed in x-direction). Checks if the speed if the speed is higher than the
+     * allowed max speed.
+     * @param dx
+     */
     public void setDx(float dx){
 
 
@@ -174,6 +194,12 @@ public class Collidable implements Drawable {
 
     }
 
+    /**
+     *
+     * Sets the dy (speed in y-direction). Checks if the speed if the speed is higher than the
+     * allowed max speed.
+     * @param dy
+     */
     public void setDy(float dy){
 
         if (Math.abs(dy) <= maxDy){     // The absolute value of dx is lower than the allowed max speed.
@@ -223,7 +249,7 @@ public class Collidable implements Drawable {
         return transformationMatrix;
     }
 
-    public RectF getBoundingBox(){return new RectF(x, y, x + width, y + height);}
+    public RectF getBoundingBox(){return boundingBox;}
 
     public void setBoundingBox(RectF boundingBox){this.boundingBox = boundingBox;}
 
