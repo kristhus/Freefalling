@@ -3,15 +3,12 @@ package com.pa_gruppe11.freefalling;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.PointF;
 import android.graphics.RectF;
-import android.graphics.drawable.shapes.Shape;
 import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
-
-import static android.R.attr.shape;
 
 /**
  * Created by kjetilvaagen on 31/03/17.
@@ -36,11 +33,21 @@ public class Collidable implements Drawable {
     protected float maxAccelerationX = 30; // max acceleration
     protected float maxAccelerationY = 30; // would take 5 seconds to fully change 180degrees with 10 acc, and 25 vel.
 
+    protected long dt = 0;
 
-    private boolean pinned; // Set to true if the collidable obeject does not move after collision.
-    private boolean collision;
+    private boolean pinned = false; // Set to true if the collidable obeject does not move after handleCollision.
+    private boolean collision = false;
     private int rightBounds = DataHandler.getInstance().screenWidth;
     private int leftBounds = 0;
+
+    private RectF boundingBox;
+    private Collidable collider;
+
+    private boolean topCollision = false;
+    private boolean bottomCollision = false;
+    private boolean leftCollision = false;
+    private boolean rightCollision = false;
+
 
 
     public Collidable(int height, int width){
@@ -55,23 +62,41 @@ public class Collidable implements Drawable {
         return getBounds().intersect(collider.getBounds());
     }
   */
-    public void collides(Collidable collider){
-        if (getBounds().intersect(collider.getBounds()))
-            collision = true;
-        else
-            collision = false;
+    /*
+    public boolean collides(Collidable collider){
+        if (boundingBox.intersect(collider.getBoundingBox())) {
+            setCollider(collider);
+            return collision = true;
+        }
+        else {
+            Log.w("Collidable", "Kjem du hit??");
+            return collision = false;
+        }
     }
+    */
 
-    public RectF getNextRect(){
+    public RectF getNextRect(float x, float y){
         RectF rect = new RectF(x, y, x + width, y + height);
         return rect;
     }
 
+    public float calculateNextX(float dx, long dt){
+        return x + dx*dt;
+    }
+
+
+    public float calculateNextY(float dy, long dt){
+        return y + dy*dt;
+    }
+
+
     public void update(long dt){
 
-        // Update of objects that can move in more than one axis
-        if (!pinned) {
+        setDt(dt);
 
+        // Controllable objects
+        if (!pinned) {
+            Log.w("Collidable", "The Player is not pinned!");
             if (!collision){
                 // SETTING THE SPEED
                 setDx((dx + accelerationX * (float) dt / 1000));
@@ -82,30 +107,33 @@ public class Collidable implements Drawable {
                 setY(y + dy * (float) dt / 1000);
 
 
-                Log.w("Collidable", "dx : " + dx + "       dy: " + dy);
+               // Log.w("Collidable", "dx : " + dx + "       dy: " + dy);
+
+                Log.w("Collidable", "Player does not collide with anything!");
+
+            }else{
+
+                Log.w("Collidable", "Player collides with something!");
+
+
+//                handleCollision(collider);
 
             }
-
-
-
         }
             // Update of object that can only move i one axis, primarily Obstales.
         else{
 
             // Collision detection
-                if (collision){
-
-                }
 
 
-            // Movement
-            setX(x + dx * (float) dt / 100);
-            setY(y + dy * (float) dt / 100);
+                // Movement
+
+         //       setX(x + dx * (float) dt / 100);
+         //       setY(y + dy * (float) dt / 100);
 
 
 
-            Log.w("Collidable", "x: "  + x + "      y: " + y);
-
+            // Log.w("Collidable", "x: "  + x + "      y: " + y);
 
         }
 
@@ -120,7 +148,8 @@ public class Collidable implements Drawable {
     // SETTERS
 
     public void setX(float x){
-        if (x + width < rightBounds && x > leftBounds)
+
+        if (x + width < rightBounds && x > leftBounds && !collision)
             this.x = x;
         else
             Log.w("Collidable", "The object cannot go out of bounds in x-direction");
@@ -128,7 +157,10 @@ public class Collidable implements Drawable {
 
     public void setY(float y)
     {
+        if (!collision)
             this.y = y;
+        else
+            Log.w("Collidable", "The object collides with something in y-direction.");
     }
 
     public void setDx(float dx){
@@ -155,6 +187,12 @@ public class Collidable implements Drawable {
 
     public void setPinned(boolean pinned){this.pinned = pinned;}
 
+    public void setCollider(Collidable collider){this.collider = collider;}
+
+    public void setCollision(boolean collision){this.collision = collision;}
+
+    public void setDt(long dt){this.dt = dt;}
+
     public void setTransformationMatrix(Matrix matrix){
         this.transformationMatrix = matrix;
     }
@@ -177,13 +215,16 @@ public class Collidable implements Drawable {
         return dy;
     }
 
-    public boolean getPinned(){return pinned;}
+    public long getDt(){return dt;}
+
+    public boolean isPinned(){return pinned;}
 
     public Matrix getTransformationMatrix() {
         return transformationMatrix;
     }
 
-    public RectF getBounds(){return new RectF(x, y, x + width, y + height);}
+    public RectF getBoundingBox(){return new RectF(x, y, x + width, y + height);}
 
+    public void setBoundingBox(RectF boundingBox){this.boundingBox = boundingBox;}
 
 }

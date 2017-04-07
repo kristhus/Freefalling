@@ -2,7 +2,6 @@ package com.pa_gruppe11.freefalling.implementations.models;
 
 import android.util.Log;
 
-import com.pa_gruppe11.freefalling.Collidable;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
 
 /**
@@ -28,7 +27,7 @@ public class Block extends Obstacle{
         super.update(dt);
 
         // TODO: Possibly implement some Block specifics here.
-        if (getPinned()){
+        if (isPinned()){
 
         }
 

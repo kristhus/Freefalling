@@ -3,6 +3,7 @@ package com.pa_gruppe11.freefalling.gameControllers;
 import android.os.Bundle;
 
 import com.pa_gruppe11.freefalling.Models.GameMap;
+import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.implementations.models.Hanz;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
 import com.pa_gruppe11.freefalling.Models.PowerUp;
@@ -16,11 +17,14 @@ import com.pa_gruppe11.freefalling.implementations.models.SkyStage;
 import com.pa_gruppe11.freefalling.tmp.TmpView;
 import com.pa_gruppe11.freefalling.Models.Player;
 
+import java.util.ArrayList;
+
 /**
  * Created by Kristian on 31/03/2017.
  */
 public class GameActivity extends GameMenu {
 
+    // MODELS
     private Player[] opponents;
     private GameMap gameMap; //
     private Player thisPlayer;
@@ -29,7 +33,9 @@ public class GameActivity extends GameMenu {
 
     private Block testblock;
 
+    // Controllers
     private PlayerController controller;
+
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -46,6 +52,7 @@ public class GameActivity extends GameMenu {
         thisPlayer.setCharacter(new Hanz(R.drawable.stickman));
         testblock = new Block(R.drawable.block);
 
+        gameMap.addObstacle(testblock);
 
         TmpView tmpView = new TmpView(this);
         setContentView(tmpView);
@@ -59,38 +66,47 @@ public class GameActivity extends GameMenu {
     }
 
     public void update(long dt) {
-        if(opponents != null) {
+        if (opponents != null) {
             for (Player opponent : opponents) {
-                if(thisPlayer.getCharacter().collides(opponent.getCharacter())) {
+                //if(thisPlayer.getCharacter().collides(opponent.getCharacter())) {
+                if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), opponent.getCharacter())) {
                     thisPlayer.getCharacter().setCollidesWith(opponent.getCharacter());
+                    CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), opponent.getCharacter());
                 }
                 opponent.getCharacter().update(dt);
             }
         }
-        if(gameMap != null)
+        if (gameMap != null)
             gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
 
         // Update powerups and obstacles
-        Obstacle[] obstacles = gameMap.getObstacles();
-        if(obstacles != null) {
-            for(Obstacle o : obstacles) {
-                if(thisPlayer.getCharacter().collides(o))
+        ArrayList<Obstacle> obstacles = gameMap.getObstacles();
+        if (obstacles != null) {
+            for (Obstacle o : obstacles) {
+                // if(thisPlayer.getCharacter().collides(o))
+                //  thisPlayer.getCharacter().setCollidesWith(o);
+                if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), o)) {
                     thisPlayer.getCharacter().setCollidesWith(o);
+                    CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), o);
+                }
             }
         }
 
-        PowerUp[] powerUps = gameMap.getPowerups();
-        if(powerUps != null) {
-            for(PowerUp p : powerUps) {
-                if(thisPlayer.getCharacter().collides(p))
+        ArrayList<PowerUp> powerUps = gameMap.getPowerups();
+        if (powerUps != null) {
+            for (PowerUp p : powerUps) {
+                //if(thisPlayer.getCharacter().collides(p))
+                //  thisPlayer.getCharacter().setCollidesWith(p);
+                if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), p)) {
                     thisPlayer.getCharacter().setCollidesWith(p);
+                    CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), p);
+                }
             }
         }
 
         thisPlayer.getCharacter().update(dt);           // Update this player
         testblock.update(dt);                           // Update this obstacle
     }
-
 
     public void notifyReady() {
         if(!GameThread.getInstance().isStarted()) {
