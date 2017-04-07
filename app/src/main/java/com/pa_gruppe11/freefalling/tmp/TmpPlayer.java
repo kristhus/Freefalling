@@ -12,7 +12,6 @@ public class TmpPlayer {
     Character character;
 
     public TmpPlayer(){
-        character = new Character(R.drawable.stickman);
     }
 
     public Character getCharacter(){

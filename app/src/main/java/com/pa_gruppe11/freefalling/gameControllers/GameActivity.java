@@ -8,6 +8,8 @@ import com.pa_gruppe11.freefalling.implementations.models.Hanz;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
 import com.pa_gruppe11.freefalling.Models.PowerUp;
 import com.pa_gruppe11.freefalling.R;
+
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
@@ -49,8 +51,8 @@ public class GameActivity extends GameMenu {
         //TODO: TESTING ONLY, REMOVE
         gameMap = new SkyStage();
         thisPlayer = new Player();
-        thisPlayer.setCharacter(new Hanz(R.drawable.stickman));
-        testblock = new Block(R.drawable.block);
+        thisPlayer.setCharacter(new Hanz(R.drawable.stickman, 65, 112));
+        testblock = new Block(R.drawable.block, 106, 61);
 
         gameMap.addObstacle(testblock);
 
@@ -83,8 +85,6 @@ public class GameActivity extends GameMenu {
         ArrayList<Obstacle> obstacles = gameMap.getObstacles();
         if (obstacles != null) {
             for (Obstacle o : obstacles) {
-                // if(thisPlayer.getCharacter().collides(o))
-                //  thisPlayer.getCharacter().setCollidesWith(o);
                 if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), o)) {
                     thisPlayer.getCharacter().setCollidesWith(o);
                     CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), o);

@@ -37,10 +37,10 @@ public class Character extends Collidable{
 
 
 
-    public Character(int id){
+    public Character(int id, int width, int height){
 
-        super(ResourceLoader.getInstance().getImage(id).getWidth(), ResourceLoader.getInstance().getImage(id).getHeight());
-        this.id = id;
+        super(id, width, height);
+
 
         transformationMatrix = new Matrix();
         transformationMatrix.setTranslate(0, 0);
@@ -111,7 +111,8 @@ public class Character extends Collidable{
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), getX(), getY(), new Paint());
+//        canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), getX(), getY(), new Paint());
+        super.draw(canvas);
     }
 
     public void setCollidesWith(Collidable c) {

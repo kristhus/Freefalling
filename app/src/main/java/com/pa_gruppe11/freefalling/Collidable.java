@@ -1,5 +1,6 @@
 package com.pa_gruppe11.freefalling;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -35,6 +36,13 @@ public class Collidable implements Drawable {
 
     protected long dt = 0;
 
+    private float scale;
+    private float scaledHeight;
+    private float scaledWidth;
+
+    private float importedWidth;
+    private float importedtHeigt;
+
     private boolean pinned = false; // Set to true if the collidable obeject does not move after handleCollision.
     private boolean collision = false;
     private int rightBounds = DataHandler.getInstance().screenWidth;
@@ -48,12 +56,32 @@ public class Collidable implements Drawable {
     private boolean leftCollision = false;
     private boolean rightCollision = false;
 
+    private Bitmap bitmap;
 
 
-    public Collidable(int height, int width){
-        this.height = height;
+    public Collidable(int id, int width, int height){
+
+        float screenWidth = DataHandler.getInstance().screenWidth;
+        float screenHeight = DataHandler.getInstance().screenHeight;
+
+        this.id = id;
+
         this.width = width;
+        this.height = height;
 
+        bitmap = ResourceLoader.getInstance().getImageList().get(id);
+
+        Log.w("Collidable", "Width: " + width + "   height: " + height);
+
+        bitmap = ResourceLoader.getInstance().getResizedBitmap(bitmap, width, height);
+
+        scale = width / ResourceLoader.getInstance().getImage(id).getWidth();
+        scaledHeight = ResourceLoader.getInstance().getImage(id).getHeight()*scale;
+        scaledWidth = ResourceLoader.getInstance().getImage(id).getWidth()*scale;
+
+        transformationMatrix = new Matrix();
+        transformationMatrix.setTranslate(0.0f, 0.0f);
+        transformationMatrix.postScale(scale, scale);
     }
 
     /**
@@ -75,7 +103,7 @@ public class Collidable implements Drawable {
      * @return
      */
     public float calculateNextX(float dx, long dt){
-        return x + dx*dt;
+        return x + dx * (float) dt / 1000;
     }
 
     /**
@@ -86,7 +114,7 @@ public class Collidable implements Drawable {
      * @return
      */
     public float calculateNextY(float dy, long dt){
-        return y + dy*dt;
+        return y + dy * (float) dt / 1000;
     }
 
     /**
@@ -99,7 +127,7 @@ public class Collidable implements Drawable {
 
         // Controllable objects
         if (!pinned) {
-            Log.w("Collidable", "The Player is not pinned!");
+           // Log.w("Collidable", "The Player is not pinned!");
             if (!collision){
                 // SETTING THE SPEED
                 setDx((dx + accelerationX * (float) dt / 1000));
@@ -109,17 +137,13 @@ public class Collidable implements Drawable {
                 setX(x + dx * (float) dt / 1000);
                 setY(y + dy * (float) dt / 1000);
 
+         //       Log.w("Collidable", "Player x: " + x + "   y: " + y);
 
-               // Log.w("Collidable", "dx : " + dx + "       dy: " + dy);
-
-                Log.w("Collidable", "Player does not collide with anything!");
 
             }else{
 
-                Log.w("Collidable", "Player collides with something!");
+                // Update what is supposed to happen when collision
 
-
-//                handleCollision(collider);
 
             }
         }
@@ -149,7 +173,14 @@ public class Collidable implements Drawable {
      */
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), x, y, new Paint());
+
+        canvas.drawBitmap(bitmap, x, y, new Paint());
+
+        //canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), x, y, new Paint());
+
+        //Paint paint = new Paint();
+        //canvas.drawBitmap(ResourceLoader.getInstance().getImage(id), transformationMatrix, paint);
+
     }
 
     // SETTERS
@@ -160,8 +191,11 @@ public class Collidable implements Drawable {
      */
     public void setX(float x){
 
-        if (x + width < rightBounds && x > leftBounds && !collision)
+
+        if ((x + width) < rightBounds && x > leftBounds && !collision) {
+            Log.w("Collidable", "Width when OOB collision: " + width);
             this.x = x;
+        }
         else
             Log.w("Collidable", "The object cannot go out of bounds in x-direction");
     }
@@ -209,6 +243,11 @@ public class Collidable implements Drawable {
         }
     }
 
+    public void setWidth(int width){this.width = width;}
+
+    public void setHeight(int height){this.height = height;}
+
+
     public void setId(int id) {this.id = id;}
 
     public void setPinned(boolean pinned){this.pinned = pinned;}
@@ -242,6 +281,10 @@ public class Collidable implements Drawable {
     }
 
     public long getDt(){return dt;}
+
+    public int getWidth(){return width;}
+
+    public int getHeight(){return height;}
 
     public boolean isPinned(){return pinned;}
 

@@ -1,9 +1,12 @@
 package com.pa_gruppe11.freefalling.Singletons;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.util.Log;
 
+import com.pa_gruppe11.freefalling.Drawable;
 import com.pa_gruppe11.freefalling.R;
 import com.pa_gruppe11.freefalling.gameControllers.GameMenu;
 
@@ -31,6 +34,8 @@ public final class ResourceLoader {
 
     private HashMap<Integer, Bitmap> imageList = new HashMap<Integer, Bitmap>();
 
+    private HashMap<Integer, Drawable> drawableList = new HashMap<>();
+
     private GameMenu context;
 
     //private LoadingScreen view;
@@ -42,6 +47,24 @@ public final class ResourceLoader {
         //TODO: test, remove
 //        imageList.put(R.drawable.bg_sky, BitmapFactory.decodeResource(context.getResources(), R.drawable.bg_sky));
     }
+
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
+    }
+
 
     /**
      * NOTE: This method correctly loads all drawables. But all drawables is A LOT of images.

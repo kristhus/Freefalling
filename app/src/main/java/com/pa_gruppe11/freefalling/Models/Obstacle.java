@@ -12,9 +12,8 @@ import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 public class Obstacle extends Collidable{
 
 
-    public Obstacle(int id){
-        super(ResourceLoader.getInstance().getImage(id).getHeight(), ResourceLoader.getInstance().getImage(id).getWidth());
-        this.id = id;
+    public Obstacle(int id, int width, int height){
+        super(id, width, height);
     }
 
     @Override

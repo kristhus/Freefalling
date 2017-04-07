@@ -2,6 +2,7 @@ package com.pa_gruppe11.freefalling.Singletons;
 
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Collidable;
 
@@ -53,13 +54,20 @@ public final class CollisionHandler {
         if (nextRect1.intersect(nextRect2)){
             collider1.setCollision(true);
             collider2.setCollision(true);
+
+            Log.w("CollisionHandler", "Collision detected!");
+
             return true;
         }
 
+        collider1.setCollision(false);
+        collider2.setCollision(false);
         return false;
     }
 
     public void handleCollision(Collidable collider1, Collidable collider2){
+
+        Log.w("CollisionHandler", "Handles some collision");
 
         // Case when player collides with an obstacle
         if (!collider1.isPinned() && collider2.isPinned()){

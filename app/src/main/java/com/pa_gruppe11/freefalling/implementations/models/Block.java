@@ -10,16 +10,16 @@ import com.pa_gruppe11.freefalling.Models.Obstacle;
 
 public class Block extends Obstacle{
 
-
-
-    public Block(int id) {
-        super(id);
+    public Block(int id, int width, int height) {
+        super(id, width, height);
         Log.w("Block", "Constructed a new Block");
         setPinned(true);
+  //      setWidth(106);
+//        setHeight(61);
         setX(500);
         setY(1200);
         setDx(0);
-        setDy(-20);
+        setDy(0);
     }
 
     @Override
