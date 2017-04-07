@@ -100,4 +100,11 @@ public class GameMenu extends Activity {
             goTo(MainMenu.class);
     }
 
+    /**
+     * Possible for views' onclick  to override drawable components under.
+     * Examples of usage: loader-layout.
+     * @param view
+     */
+    public void dummyMethod(View view) {}
+
 }

@@ -2,8 +2,15 @@ package com.pa_gruppe11.freefalling.gameControllers;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.multiplayer.Invitation;
+import com.google.android.gms.games.multiplayer.OnInvitationReceivedListener;
 import com.pa_gruppe11.freefalling.Models.GameMap;
 import com.pa_gruppe11.freefalling.Models.Character;
 import com.pa_gruppe11.freefalling.R;
@@ -17,10 +24,16 @@ import com.pa_gruppe11.freefalling.tmp.TmpPlayer;
 import com.pa_gruppe11.freefalling.tmp.TmpView;
 import com.pa_gruppe11.freefalling.Models.Player;
 
+
+
+
 /**
  * Created by Kristian on 31/03/2017.
  */
-public class GameActivity extends GameMenu {
+public class GameActivity extends GameMenu
+        implements GoogleApiClient.ConnectionCallbacks,
+                GoogleApiClient.OnConnectionFailedListener,
+                OnInvitationReceivedListener {
 
     private Player[] players;
     private GameMap gameMap; //
@@ -28,15 +41,23 @@ public class GameActivity extends GameMenu {
 
     private PlayerController controller;
 
+    private GoogleApiClient mGoogleApiClient;
+
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Games.API)
+                .addScope(Games.SCOPE_GAMES)
+                .build();
+        mGoogleApiClient.connect();
         initiate();
     }
 
     public void initiate() {
         GameThread.getInstance().setActivity(this);
-
         //TODO: TESTING ONLY, REMOVE
         gameMap = new SkyStage();
         //player = new Player(R.drawable.stickman);
@@ -94,4 +115,30 @@ public class GameActivity extends GameMenu {
         return controller;
     }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.w("GameActivity", "Connected!");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.w("GameActivity", "Connection suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.w("GameActivity", "Failed to connect");
+        Log.w("GameActivity", "" + connectionResult.getErrorCode());
+        Log.w("GameActivity", connectionResult.getErrorMessage() + "");
+    }
+
+    @Override
+    public void onInvitationReceived(Invitation invitation) {
+        Log.w("GameActivity", "Received an invitation");
+    }
+
+    @Override
+    public void onInvitationRemoved(String s) {
+
+    }
 }
