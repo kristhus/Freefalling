@@ -8,6 +8,7 @@ import android.view.Display;
 import android.view.View;
 
 import com.pa_gruppe11.freefalling.R;
+import com.pa_gruppe11.freefalling.Singletons.Config;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
@@ -20,6 +21,7 @@ public class MainMenu extends GameMenu{
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
+        Config.getInstance().readFile(this);
         setContentView(R.layout.mainmenu);
 
         Display display = getWindowManager().getDefaultDisplay();
@@ -27,8 +29,8 @@ public class MainMenu extends GameMenu{
         display.getSize(size);
 
         // TODO: REMOVE AFTER TESTING
-        DataHandler.getInstance().screenWidth = size.x;
-        DataHandler.getInstance().screenHeight = size.y;
+        DataHandler.getInstance().setScreenWidth(size.x);
+        DataHandler.getInstance().setScreenHeight(size.y);
     }
 
 
