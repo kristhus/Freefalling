@@ -3,4 +3,16 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+
+    <string-array name="in_game_ids">
+        <item>@drawable/bg_sky</item>
+    </string-array>
+
+
+    <string-array name="menu_resource_ids">
+        <item>@drawable/hanz</item>
+        <item>@drawable/gruber</item>
+    </string-array>
+
 </resources>

@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="black_transparrent" type="color">#00000080</item>
+
+    <!-- Main colours of the application -->
+    <!-- http://paletton.com/#uid=33i1o0kleqtbzEKgVuIpcmGtdhZ -->
+    <item name ="primary" type="color">#2B7E7E</item>
+    <item name ="secondary" type="color">#70348C</item>
+    <item name ="tertiary" type="color">#D3D147</item>
+
+    <item name ="primaryL1" type="color">#459393</item>
+    <item name ="secondaryL1" type="color">#8951A3</item>
+    <item name ="tertiaryL1" type="color">#F5F373</item>
+
+    <item name ="primaryL2" type="color">#76B8B8</item>
+    <item name ="secondaryL2" type="color">#AE80C4</item>
+    <item name ="tertiaryL2" type="color">#FFFEA3</item>
+
+    <item name ="primaryD1" type="color">#176C6C</item>
+    <item name ="secondaryD1" type="color">#5B1E78</item>
+    <item name ="tertiaryD1" type="color">#B5B326</item>
+
+    <item name ="primaryD2" type="color">#085656</item>
+    <item name ="secondaryD2" type="color">#450D5F</item>
+    <item name ="tertiaryD2" type="color">#8F8E0D</item>
+
+
+
+    <item name="black_transparrent" type="color">#80000000</item>
     <item name="black" type="color">#000000</item>
     <item name="white" type="color">#FFFFFF</item>
+    <item name="gray" type="color">#F0F0F0</item>
 </resources>

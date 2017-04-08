@@ -16,6 +16,15 @@
         android:text="Lobby" />
 
     <Button
+        android:id="@+id/selectCharacterButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="openCharacterSelection"
+        android:text="Select character"
+        android:layout_marginBottom="20dp"
+        android:layout_above="@+id/button7" />
+
+    <Button
         android:id="@+id/button7"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

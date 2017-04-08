@@ -12,6 +12,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.GridView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
 import com.pa_gruppe11.freefalling.R;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
+import com.pa_gruppe11.freefalling.framework.GridViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +64,10 @@ public class MainMenu extends GameMenu
 
     private int roomId = -1;
 
-    private View loader;
+    private View selector;
+    private GridView characterGridView;
+    private GridViewAdapter characterAdapter;
+
 
     @Override
     public void onCreate(Bundle savedInstance){
@@ -76,6 +81,8 @@ public class MainMenu extends GameMenu
         // TODO: REMOVE AFTER TESTING
         DataHandler.getInstance().screenWidth = size.x;
         DataHandler.getInstance().screenHeight = size.y;
+
+        ResourceLoader.getInstance().setContext(this);
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -98,6 +105,7 @@ public class MainMenu extends GameMenu
     }
 
     public void startQuickGame(View view) {
+        ResourceLoader.getInstance().getCharacters();
         setContentView(R.layout.lobby);
 
         /*
@@ -379,6 +387,35 @@ public class MainMenu extends GameMenu
             loader.setVisibility(View.GONE);
         }
         */
+    }
+
+    public void openCharacterSelection(View view) {
+
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(DataHandler.screenWidth, DataHandler.screenHeight);
+        RelativeLayout layout = (RelativeLayout) findViewById(R.id.lobbyLayout);
+        selector = getLayoutInflater().inflate(R.layout.character_selection, null);
+
+        //addContentView(selector, params);
+
+        characterGridView = (GridView) selector.findViewById(R.id.gridView);
+        if(characterGridView == null)
+            Log.w("MainMenu", "characterGridView == null");
+        characterAdapter = new GridViewAdapter(this, R.layout.grid_item_layout, ResourceLoader.getInstance().getCharacters());
+        characterGridView.setAdapter(characterAdapter);
+
+
+        addContentView(selector, params);
+
+        //layout.addView(selector);
+    }
+
+    public void selectedCharacter(View view) {
+        Log.w("MainMenu", "Selected some character");
+        // Close, then recycle
+    }
+
+    public void closeSelector(View view) {
+        ((ViewGroup) selector.getParent()).removeView(selector);
     }
 
 }

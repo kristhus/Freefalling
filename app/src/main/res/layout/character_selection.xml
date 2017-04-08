@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:background="@color/black_transparrent"
+    android:id="@+id/selectionLayout"
+    android:onClick="closeSelector"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:onClick="closeSelector"
+        android:layout_weight="0.1"></LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/gradient"
+        android:layout_weight="0.05"></LinearLayout>
+    <GridView
+        android:id="@+id/gridView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/gray"
+        android:layout_weight="0.70"
+        android:drawSelectorOnTop="true"
+        android:gravity="center"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        android:clickable="true">
+
+        </GridView>
+
+</LinearLayout>
