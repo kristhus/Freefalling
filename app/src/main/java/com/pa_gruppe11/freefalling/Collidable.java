@@ -4,11 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.Log;
 
-import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
@@ -45,12 +43,14 @@ public class Collidable implements Drawable {
     private float importedtHeigt;
 
     private boolean pinned = false; // Set to true if the collidable obeject does not move after handleCollision.
-    private boolean collision = false;
+    private boolean collided = false;
     private int rightBounds = DataHandler.getInstance().screenWidth;
     private int leftBounds = 0;
 
     private RectF boundingBox;
     private Collidable collider;
+    private Collidable collidesWith;
+
 
     private boolean topCollision = false;
     private boolean bottomCollision = false;
@@ -62,8 +62,8 @@ public class Collidable implements Drawable {
 
     public Collidable(int id, int width, int height){
 
-        float screenWidth = DataHandler.getInstance().screenWidth;
-        float screenHeight = DataHandler.getInstance().screenHeight;
+//        float screenWidth = DataHandler.getInstance().screenWidth;
+  ///      float screenHeight = DataHandler.getInstance().screenHeight;
 
         this.id = id;
 
@@ -76,13 +76,13 @@ public class Collidable implements Drawable {
 
         bitmap = ResourceLoader.getInstance().getResizedBitmap(bitmap, width, height);
 
-        scale = width / ResourceLoader.getInstance().getImage(id).getWidth();
-        scaledHeight = ResourceLoader.getInstance().getImage(id).getHeight()*scale;
-        scaledWidth = ResourceLoader.getInstance().getImage(id).getWidth()*scale;
+        //scale = width / ResourceLoader.getInstance().getImage(id).getWidth();
+      //  scaledHeight = ResourceLoader.getInstance().getImage(id).getHeight()*scale;
+    //    scaledWidth = ResourceLoader.getInstance().getImage(id).getWidth()*scale;
 
         transformationMatrix = new Matrix();
-        transformationMatrix.setTranslate(0.0f, 0.0f);
-        transformationMatrix.postScale(scale, scale);
+//        transformationMatrix.setTranslate(0.0f, 0.0f);
+  //      transformationMatrix.postScale(scale, scale);
     }
 
     /**
@@ -169,30 +169,35 @@ public class Collidable implements Drawable {
 
     // SETTERS
 
+
+    public String toString(){
+        return "";
+    }
+
     /**
-     * Sets the x. Checks out of bounds and collision conditions first.
+     * Sets the x. Checks out of bounds and collided conditions first.
      * @param x
      */
     public void setX(float x){
 
         // || isPinned() because objects like obstacles should move anyway
 
-        if ((x + width) < rightBounds && x > leftBounds && !collision || isPinned()) {
+        if ((x + width) < rightBounds && x > leftBounds && !collided || isPinned()) {
             this.x = x;
         }
         else {
-            Log.w("Collidable", "Width when OOB collision: " + width);
+            Log.w("Collidable", "Width when OOB collided: " + width);
             Log.w("Collidable", "The object cannot go out of bounds in x-direction");
         }
     }
 
     /**
-     * Sets the y. Checks collision conditions first.
+     * Sets the y. Checks collided conditions first.
      * @param y
      */
     public void setY(float y)
     {
-        if (!collision || isPinned())       // || isPinned() because objects like obstacles should move anyway
+        if (!collided || isPinned())       // || isPinned() because objects like obstacles should move anyway
             this.y = y;
         else
             Log.w("Collidable", "The object collides with something in y-direction.");
@@ -245,9 +250,11 @@ public class Collidable implements Drawable {
 
     public void setCollider(Collidable collider){this.collider = collider;}
 
-    public void setCollision(boolean collision){this.collision = collision;}
+    public void setCollided(boolean collided){this.collided = collided;}
 
     public void setDt(long dt){this.dt = dt;}
+
+    public void setCollidesWith(Collidable collidesWith){this.collidesWith = collidesWith;}
 
     public void setTransformationMatrix(Matrix matrix){
         this.transformationMatrix = matrix;
@@ -285,6 +292,5 @@ public class Collidable implements Drawable {
 
     public RectF getBoundingBox(){return boundingBox;}
 
-    public void setBoundingBox(RectF boundingBox){this.boundingBox = boundingBox;}
-
+    public boolean isCollided(){return collided;}
 }

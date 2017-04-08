@@ -2,7 +2,6 @@ package com.pa_gruppe11.freefalling.Singletons;
 
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Collidable;
 
@@ -52,16 +51,16 @@ public final class CollisionHandler {
 
 
         if (nextRect1.intersect(nextRect2)){
-            collider1.setCollision(true);
-            collider2.setCollision(true);
+            collider1.setCollided(true);
+            collider2.setCollided(true);
 
           //  Log.w("CollisionHandler", "Collision detected!");
 
             return true;
         }
 
-        collider1.setCollision(false);
-        collider2.setCollision(false);
+        collider1.setCollided(false);
+        collider2.setCollided(false);
         return false;
     }
 
@@ -71,17 +70,26 @@ public final class CollisionHandler {
        // Log.w("CollisionHandler", "Handles some collision");
 
         // Case when player collides with an obstacle
-       /* if (!collider1.isPinned() && collider2.isPinned() && detectCollision(collider1, collider2)){
+      /*  if (!collider1.isPinned() && collider2.isPinned() && detectCollision(collider1, collider2)){
             collider1.setDx(collider2.getDx());
             collider1.setDy(collider2.getDy());
+
+            collider1.setX(collider1.getDx() * collider1.getDt() / 1000);
+            collider1.setY(collider1.getDy() * collider1.getDt() / 1000);
+
+
         }else if (!collider1.isPinned() && collider2.isPinned() && detectCollision(collider1, collider2)){
             collider2.setDx(collider1.getDx());
             collider2.setDy(collider1.getDy());
+
+
+            collider2.setX(collider2.getDx() * collider2.getDt() / 1000);
+            collider2.setY(collider2.getDy() * collider2.getDt() / 1000);
+
         }
 */
 
 
-        //collider1.setY(100);
 
     }
 

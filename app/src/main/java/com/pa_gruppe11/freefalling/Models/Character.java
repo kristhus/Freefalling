@@ -56,9 +56,12 @@ public class Character extends Collidable{
         respondToTouch(); // we do this here, to assure the order is done correctly
         super.update(dt);
 
-        if (collidesWith != null && collidesWith.getClass() == Obstacle.class){
-            setDx(collidesWith.getDx());
-            setDy(collidesWith.getDy());
+        if ( isCollided()){
+            //setDx(collidesWith.getDx());
+            //setDy(collidesWith.getDy());
+
+            Log.w("Character", "Collideswith according to character is: " + collidesWith.toString());
+            Log.w("Character", "Character collides with something! This happens in Character.update()");
         }
 
 
@@ -123,8 +126,14 @@ public class Character extends Collidable{
         super.draw(canvas);
     }
 
-    public void setCollidesWith(Collidable c) {
-        collidesWith = c;
+    @Override
+    public void setCollidesWith(Collidable collidesWith) {
+        this.collidesWith = collidesWith;
+    }
+
+    @Override
+    public String toString(){
+        return "Character";
     }
 
     public void setTouches(ArrayList<ArrayList<Float>> touches) {

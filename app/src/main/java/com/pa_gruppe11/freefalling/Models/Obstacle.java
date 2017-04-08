@@ -21,4 +21,10 @@ public class Obstacle extends Collidable{
         super.update(dt);
     }
 
+
+
+    @Override
+    public String toString(){
+        return "Obstacle";
+    }
 }
