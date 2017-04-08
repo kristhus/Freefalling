@@ -20,9 +20,6 @@ public class Player {
         this.character = character;
     }
 
-    public Player(int characterId){
-        character = new Character(characterId);
-    }
 
     public Player(){
 

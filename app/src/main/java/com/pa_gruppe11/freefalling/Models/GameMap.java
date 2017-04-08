@@ -12,6 +12,8 @@ import com.pa_gruppe11.freefalling.Drawable;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
+import java.util.ArrayList;
+
 /**
  * Created by kjetilvaagen on 31/03/17.
  */
@@ -25,8 +27,8 @@ public class GameMap implements Drawable {
     protected float scaledWidth;
 
     protected Matrix transformationMatrix;
-    protected PowerUp[] powerups;
-    protected Obstacle[] obstacles;
+    protected ArrayList<PowerUp> powerups;
+    protected ArrayList<Obstacle> obstacles;
 
     protected float x = 0.0f;      // Model x, to indicate where the x is on the entire stage (500 / 15700 f.ex.)
     protected float y = 0.0f;      //
@@ -56,7 +58,7 @@ public class GameMap implements Drawable {
     private boolean initFinale = false;
     private String done = "";
 
-    public GameMap(int id, PowerUp[] powerups, Obstacle[] obstacles){
+    public GameMap(int id, ArrayList<PowerUp> powerups, ArrayList<Obstacle> obstacles){
         this(id);
         this.id = id;
         this.powerups = powerups;
@@ -69,6 +71,9 @@ public class GameMap implements Drawable {
         float screenWidth = DataHandler.getInstance().getScreenWidth();
         //float screenWidth = 1077;
         float screenHeight = DataHandler.getInstance().getScreenHeight();
+
+        powerups = new ArrayList<PowerUp>();
+        obstacles = new ArrayList<Obstacle>();
 
         Log.w("GameMap", "screenWidth: " + screenWidth);
 
@@ -202,12 +207,22 @@ public class GameMap implements Drawable {
     }
 
 
-    public Obstacle[] getObstacles() {
+
+    public ArrayList<Obstacle> getObstacles() {
         return obstacles;
     }
 
-    public PowerUp[] getPowerups() {
+    public ArrayList<PowerUp> getPowerups() {
         return powerups;
     }
+
+    public void addPowerup(PowerUp powerUp){
+        powerups.add(powerUp);
+    }
+
+    public void addObstacle(Obstacle obstacle){
+        obstacles.add(obstacle);
+    }
+
 
 }

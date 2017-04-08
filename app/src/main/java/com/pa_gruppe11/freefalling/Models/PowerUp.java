@@ -14,10 +14,8 @@ public class PowerUp extends Collidable{
     private int type;
     ImageView image;
 
-    public PowerUp(int type, ImageView image, int width, int height){
-        super(height, width);
-        this.type = type;
-        this.image = image;
+    public PowerUp(int id, ImageView image, int width, int height) {
+        super(id, width, height);
     }
 
     public void update(long dt){

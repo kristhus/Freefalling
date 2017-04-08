@@ -2,7 +2,6 @@ package com.pa_gruppe11.freefalling.implementations.models;
 
 import android.util.Log;
 
-import com.pa_gruppe11.freefalling.Collidable;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
 
 /**
@@ -11,16 +10,16 @@ import com.pa_gruppe11.freefalling.Models.Obstacle;
 
 public class Block extends Obstacle{
 
-
-
-    public Block(int id) {
-        super(id);
+    public Block(int id, int width, int height) {
+        super(id, width, height);
         Log.w("Block", "Constructed a new Block");
         setPinned(true);
+  //      setWidth(106);
+//        setHeight(61);
         setX(500);
-        setY(500);
+        setY(1200);
         setDx(0);
-        setDy(80);
+        setDy(-20);
     }
 
     @Override
@@ -28,7 +27,7 @@ public class Block extends Obstacle{
         super.update(dt);
 
         // TODO: Possibly implement some Block specifics here.
-        if (getPinned()){
+        if (isPinned()){
 
         }
 

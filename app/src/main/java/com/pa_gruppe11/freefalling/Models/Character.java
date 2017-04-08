@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.pa_gruppe11.freefalling.Collidable;
 import com.pa_gruppe11.freefalling.Drawable;
+import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
@@ -37,10 +38,10 @@ public class Character extends Collidable{
 
 
 
-    public Character(int id){
+    public Character(int id, int width, int height){
 
-        super(ResourceLoader.getInstance().getImage(id).getWidth(), ResourceLoader.getInstance().getImage(id).getHeight());
-        this.id = id;
+        super(id, width, height);
+
 
         transformationMatrix = new Matrix();
         transformationMatrix.setTranslate(0, 0);
@@ -54,6 +55,16 @@ public class Character extends Collidable{
     public void update(long dt){
         respondToTouch(); // we do this here, to assure the order is done correctly
         super.update(dt);
+
+        if ( isCollided()){
+            //setDx(collidesWith.getDx());
+            //setDy(collidesWith.getDy());
+
+            Log.w("Character", "Collideswith according to character is: " + collidesWith.toString());
+            Log.w("Character", "Character collides with something! This happens in Character.update()");
+        }
+
+
 
         /*
         setDx((dx + accelerationX * (float)dt/1000));
@@ -111,11 +122,18 @@ public class Character extends Collidable{
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), getX(), getY(), new Paint());
+//        canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), getX(), getY(), new Paint());
+        super.draw(canvas);
     }
 
-    public void setCollidesWith(Collidable c) {
-        collidesWith = c;
+    @Override
+    public void setCollidesWith(Collidable collidesWith) {
+        this.collidesWith = collidesWith;
+    }
+
+    @Override
+    public String toString(){
+        return "Character";
     }
 
     public void setTouches(ArrayList<ArrayList<Float>> touches) {
