@@ -1,0 +1,60 @@
+apply plugin: 'com.android.application'
+
+
+
+android {
+
+    compileSdkVersion 23
+
+    buildToolsVersion '25.0.0'
+
+
+
+    defaultConfig {
+
+        applicationId "com.pa_gruppe11.freefalling"
+
+        minSdkVersion 15
+
+        targetSdkVersion 23
+
+        versionCode 1
+
+        versionName "1.0"
+
+    }
+
+    signingConfigs {
+        debug {
+            storeFile rootProject.file('freefalling.jks')
+            println(project.properties.DEBUG_STORE_PASSWORD)
+            storePassword project.properties.DEBUG_STORE_PASSWORD
+            keyAlias project.properties.DEBUG_KEY_ALIAS
+            keyPassword project.properties.DEBUG_KEY_PASSWORD
+        }
+    }
+
+    buildTypes {
+
+        debug {
+
+       //     minifyEnabled false
+
+       //     proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+
+    }
+
+}
+
+
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    //compile 'com.google.android.gms:play-services:10.2.1'
+    compile 'com.google.android.gms:play-services-games:10.2.1'
+    compile 'com.google.android.gms:play-services-plus:10.2.1'
+    compile 'com.google.android.gms:play-services-auth:10.2.1'
+}
