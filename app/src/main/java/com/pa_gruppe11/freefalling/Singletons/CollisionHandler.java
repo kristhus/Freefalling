@@ -55,7 +55,7 @@ public final class CollisionHandler {
             collider1.setCollision(true);
             collider2.setCollision(true);
 
-            Log.w("CollisionHandler", "Collision detected!");
+          //  Log.w("CollisionHandler", "Collision detected!");
 
             return true;
         }
@@ -67,16 +67,22 @@ public final class CollisionHandler {
 
     public void handleCollision(Collidable collider1, Collidable collider2){
 
-        Log.w("CollisionHandler", "Handles some collision");
+
+       // Log.w("CollisionHandler", "Handles some collision");
 
         // Case when player collides with an obstacle
-        if (!collider1.isPinned() && collider2.isPinned()){
+       /* if (!collider1.isPinned() && collider2.isPinned() && detectCollision(collider1, collider2)){
             collider1.setDx(collider2.getDx());
             collider1.setDy(collider2.getDy());
-        }else if (!collider1.isPinned() && collider2.isPinned()){
+        }else if (!collider1.isPinned() && collider2.isPinned() && detectCollision(collider1, collider2)){
             collider2.setDx(collider1.getDx());
             collider2.setDy(collider1.getDy());
         }
+*/
+
+
+        //collider1.setY(100);
+
     }
 
 

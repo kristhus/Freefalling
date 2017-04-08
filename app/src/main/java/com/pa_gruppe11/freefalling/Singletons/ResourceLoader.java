@@ -61,7 +61,7 @@ public final class ResourceLoader {
         // "RECREATE" THE NEW BITMAP
         Bitmap resizedBitmap = Bitmap.createBitmap(
                 bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
+        bm.recycle();   // This should possibly done somewhere else or in some other way. Gives Warning undefined behavior when call getWidth.
         return resizedBitmap;
     }
 

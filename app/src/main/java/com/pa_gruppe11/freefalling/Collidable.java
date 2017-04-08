@@ -8,6 +8,7 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.Log;
 
+import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
@@ -127,40 +128,23 @@ public class Collidable implements Drawable {
 
         // Controllable objects
         if (!pinned) {
-           // Log.w("Collidable", "The Player is not pinned!");
-            if (!collision){
-                // SETTING THE SPEED
-                setDx((dx + accelerationX * (float) dt / 1000));
-                setDy((dy + accelerationY * (float) dt / 1000));
 
-                // SETTING THE POSITION
-                setX(x + dx * (float) dt / 1000);
-                setY(y + dy * (float) dt / 1000);
+            // SETTING THE SPEED
+            setDx((dx + accelerationX * (float) dt / 1000));
+            setDy((dy + accelerationY * (float) dt / 1000));
 
-         //       Log.w("Collidable", "Player x: " + x + "   y: " + y);
+            // SETTING THE POSITION
+            setX(x + dx * (float) dt / 1000);
+            setY(y + dy * (float) dt / 1000);
 
-
-            }else{
-
-                // Update what is supposed to happen when collision
-
-
-            }
         }
-            // Update of object that can only move i one axis, primarily Obstales.
-        else{
 
-            // Collision detection
+        else{ // Update of object that can only move i one axis, primarily Obstales.
 
-
-                // Movement
-
-         //       setX(x + dx * (float) dt / 100);
-         //       setY(y + dy * (float) dt / 100);
+            setX(x + dx * (float) dt / 1000);
+            setY(y + dy * (float) dt / 1000);
 
 
-
-            // Log.w("Collidable", "x: "  + x + "      y: " + y);
 
         }
 
@@ -191,13 +175,15 @@ public class Collidable implements Drawable {
      */
     public void setX(float x){
 
+        // || isPinned() because objects like obstacles should move anyway
 
-        if ((x + width) < rightBounds && x > leftBounds && !collision) {
-            Log.w("Collidable", "Width when OOB collision: " + width);
+        if ((x + width) < rightBounds && x > leftBounds && !collision || isPinned()) {
             this.x = x;
         }
-        else
+        else {
+            Log.w("Collidable", "Width when OOB collision: " + width);
             Log.w("Collidable", "The object cannot go out of bounds in x-direction");
+        }
     }
 
     /**
@@ -206,7 +192,7 @@ public class Collidable implements Drawable {
      */
     public void setY(float y)
     {
-        if (!collision)
+        if (!collision || isPinned())       // || isPinned() because objects like obstacles should move anyway
             this.y = y;
         else
             Log.w("Collidable", "The object collides with something in y-direction.");
@@ -226,6 +212,9 @@ public class Collidable implements Drawable {
             this.dx = -maxDx;
         }
 
+
+        Log.w("Collidable", "dx = " + this.dx);
+
     }
 
     /**
@@ -241,6 +230,8 @@ public class Collidable implements Drawable {
         }else if (dy < 0){              // The speed given is negative.
             this.dy = -maxDy;
         }
+
+        Log.w("Collidable", "dy = " + this.dy);
     }
 
     public void setWidth(int width){this.width = width;}

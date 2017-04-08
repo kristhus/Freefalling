@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.pa_gruppe11.freefalling.Collidable;
 import com.pa_gruppe11.freefalling.Drawable;
+import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
@@ -54,6 +55,13 @@ public class Character extends Collidable{
     public void update(long dt){
         respondToTouch(); // we do this here, to assure the order is done correctly
         super.update(dt);
+
+        if (collidesWith != null && collidesWith.getClass() == Obstacle.class){
+            setDx(collidesWith.getDx());
+            setDy(collidesWith.getDy());
+        }
+
+
 
         /*
         setDx((dx + accelerationX * (float)dt/1000));
