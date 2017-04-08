@@ -1,6 +1,7 @@
 package com.pa_gruppe11.freefalling.Singletons;
 
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -8,6 +9,7 @@ import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Drawable;
 import com.pa_gruppe11.freefalling.R;
+import com.pa_gruppe11.freefalling.framework.ImageItem;
 import com.pa_gruppe11.freefalling.gameControllers.GameMenu;
 
 import java.io.FileInputStream;
@@ -25,14 +27,22 @@ import java.util.HashMap;
 public final class ResourceLoader {
 
     private static final int[] resourceIdList = {
-            R.drawable.bg_sky, R.drawable.stickman, R.drawable.block};                     // Add new resources here, or load all images from drawable
+            R.drawable.bg_sky,
+            R.drawable.stickman,
+            R.drawable.block
+    };                     // Add new resources here, or load all images from drawable
 
 
+    private static final int[] preGameResources = {
+            R.drawable.hanz,
+            R.drawable.gruber
+    };
 
 
     private static final ResourceLoader INSTANCE =  new ResourceLoader();
 
     private HashMap<Integer, Bitmap> imageList = new HashMap<Integer, Bitmap>();
+    private ArrayList<ImageItem> data;
 
     private HashMap<Integer, Drawable> drawableList = new HashMap<>();
 
@@ -127,12 +137,22 @@ public final class ResourceLoader {
     }
 
     public void recycleAll(){
+        recycleGameResources();
+        recycleMenuResources();
+    }
 
+    public void recycleGameResources() {
         for (int i : imageList.keySet()){
             imageList.get(i).recycle();
- //           ((BitmapDrawable)imageList.get(i).getDrawable()).getBitmap().recycle();     // Removes element for element in the hashmap.
+            //           ((BitmapDrawable)imageList.get(i).getDrawable()).getBitmap().recycle();     // Removes element for element in the hashmap.
         }
+    }
 
+    public void recycleMenuResources() {
+        for(int i = 0; i < data.size(); i++) {
+            data.get(i).recycle();  // baade
+            data.remove(i);         // i pose
+        }
     }
 
     public static ResourceLoader getInstance(){
@@ -149,6 +169,25 @@ public final class ResourceLoader {
     }
 
 
+    public ArrayList<ImageItem> getCharacters() {
+        data = new ArrayList<ImageItem>();
+        TypedArray imageIds = context.getResources().obtainTypedArray(R.array.menu_resource_ids);
+
+        for(int i = 0; i < imageIds.length(); i++) {
+           // String resourceName = imageIds.getString(i);
+            int id = imageIds.getResourceId(i, -1);
+            String resourceName = context.getResources().getResourceEntryName(id);
+            Log.w("ResourceLoader", "resourceName: " + resourceName);
+            data.add(
+                    new ImageItem(BitmapFactory.decodeResource(
+                            context.getResources(), imageIds.getResourceId(i, -1)
+                    )
+                    , resourceName));
+        }
+
+        return data;
+
+    }
 
 
 }

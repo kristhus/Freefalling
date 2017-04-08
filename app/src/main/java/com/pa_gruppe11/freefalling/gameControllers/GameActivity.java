@@ -2,6 +2,11 @@ package com.pa_gruppe11.freefalling.gameControllers;
 
 import android.os.Bundle;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.multiplayer.Invitation;
+import com.google.android.gms.games.multiplayer.OnInvitationReceivedListener;
 import com.pa_gruppe11.freefalling.Models.GameMap;
 import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.implementations.models.Hanz;
@@ -24,7 +29,10 @@ import java.util.ArrayList;
 /**
  * Created by Kristian on 31/03/2017.
  */
-public class GameActivity extends GameMenu {
+public class GameActivity extends GameMenu
+        implements GoogleApiClient.ConnectionCallbacks,
+                GoogleApiClient.OnConnectionFailedListener,
+                OnInvitationReceivedListener {
 
     // MODELS
     private Player[] opponents;
@@ -38,10 +46,18 @@ public class GameActivity extends GameMenu {
     // Controllers
     private PlayerController controller;
 
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Games.API)
+                .addScope(Games.SCOPE_GAMES)
+                .build();
+        mGoogleApiClient.connect();
         initiate();
     }
 
@@ -142,4 +158,30 @@ public class GameActivity extends GameMenu {
         return controller;
     }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.w("GameActivity", "Connected!");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.w("GameActivity", "Connection suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.w("GameActivity", "Failed to connect");
+        Log.w("GameActivity", "" + connectionResult.getErrorCode());
+        Log.w("GameActivity", connectionResult.getErrorMessage() + "");
+    }
+
+    @Override
+    public void onInvitationReceived(Invitation invitation) {
+        Log.w("GameActivity", "Received an invitation");
+    }
+
+    @Override
+    public void onInvitationRemoved(String s) {
+
+    }
 }

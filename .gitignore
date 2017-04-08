@@ -16,4 +16,6 @@ local.properties
 /gradle/wrapper/gradle-wrapper.properties
 /.idea/.name
 /.idea/*.xml
+*.jks
+gradle.properties
 
