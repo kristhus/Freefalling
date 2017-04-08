@@ -81,8 +81,8 @@ public class MainMenu extends GameMenu
         display.getSize(size);
 
         // TODO: REMOVE AFTER TESTING
-        DataHandler.getInstance().screenWidth = size.x;
-        DataHandler.getInstance().screenHeight = size.y;
+        DataHandler.getInstance().setScreenWidth(size.x);
+        DataHandler.getInstance().setScreenHeight(size.y);
 
         ResourceLoader.getInstance().setContext(this);
 
@@ -393,7 +393,7 @@ public class MainMenu extends GameMenu
 
     public void openCharacterSelection(View view) {
 
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(DataHandler.screenWidth, DataHandler.screenHeight);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(DataHandler.getInstance().getScreenWidth(), DataHandler.getInstance().getScreenHeight());
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.lobbyLayout);
         selector = getLayoutInflater().inflate(R.layout.character_selection, null);
 

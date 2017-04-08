@@ -10,7 +10,7 @@ public class Gruber extends Character {
 
 
     public Gruber(int id) {
-        super(id);
+        super(id, 196, 196);
         setDx(11);
         setDy(11);
         setId(R.drawable.stickman);
