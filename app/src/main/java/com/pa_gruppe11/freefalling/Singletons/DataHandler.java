@@ -23,10 +23,13 @@ public final class DataHandler implements Serializable{
 	private boolean sfxMuted = false;
 	private boolean bgmMuted = false;
 
+	private boolean hideMinimap = false;
+
 	private int screenWidth;
 	private int screenHeight;
 
 	private static DataHandler INSTANCE ;
+
 	
 	private DataHandler() {}	// No need to initiate this file by other classes.
 
@@ -105,5 +108,12 @@ public final class DataHandler implements Serializable{
 
 	public void setScreenHeight(int screenHeight) {
 		this.screenHeight = screenHeight;
+	}
+
+	public boolean isHideMinimap() {
+		return hideMinimap;
+	}
+	public void setHideMinimap(boolean hideMinimap) {
+		this.hideMinimap = hideMinimap;
 	}
 }

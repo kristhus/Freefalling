@@ -2,9 +2,11 @@ package com.pa_gruppe11.freefalling.Models;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.pa_gruppe11.freefalling.Drawable;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
@@ -26,6 +28,10 @@ public class GameMap implements Drawable {
     protected PowerUp[] powerups;
     protected Obstacle[] obstacles;
 
+    protected float x = 0.0f;      // Model x, to indicate where the x is on the entire stage (500 / 15700 f.ex.)
+    protected float y = 0.0f;      //
+    protected float endY = 15000.0f; // Semi arbitrary number. when y == endY, init finish-line
+
     private float dy = -0.15f;  // Percentage of height moved per second (negative= upwards)
     private float pdy;
     private float drawY = 0.0f;    // Keeps track of where in the stage first image is drawn
@@ -37,13 +43,25 @@ public class GameMap implements Drawable {
 
     private boolean tmp = true;
 
+    // Minimap settings
+    protected int minimapLineColor = 0x80000000;
+    protected int minimapIndicator = 0x80CC0000;
+
+    protected float minimapStartX = 0.95f;  // 95% of screenwidth
+    protected float minimapStartY = 0.05f;
+    protected float minimapEndX = minimapStartX;
+    protected float minimapEndY = 0.20f;    // 20 % of height
+    protected float lineThickness = 0.01f;
+
+    private boolean initFinale = false;
+    private String done = "";
+
     public GameMap(int id, PowerUp[] powerups, Obstacle[] obstacles){
         this(id);
         this.id = id;
         this.powerups = powerups;
         this.obstacles = obstacles;
-        // Do shit with arrays then call GameMap(id)
-
+        // TODO: Do shit with arrays
     }
 
     public GameMap(int id) {
@@ -84,6 +102,18 @@ public class GameMap implements Drawable {
         drawY += pdy*delta;
         drawX += dx*delta;
 
+        if(y < endY) {
+            y += Math.abs(pdy*delta); //TODO: Swap this with a modification of character y-progress
+        }else {
+            //TODO: init finishline
+            initFinale = true;
+        }
+
+        if(initFinale) {
+            //DONEZO
+            done = "FERDIG NO";
+        }
+
         if(drawY <= -scaledHeight) {    //if entire first image is off-screen, reset position (causes flicker???)
             drawY += scaledHeight;
             transformationMatrix.setTranslate(0, drawY);
@@ -110,7 +140,7 @@ public class GameMap implements Drawable {
      * @param canvas The canvas to be painted on
      */
     public void draw(Canvas canvas) {
-        Paint paint = new Paint();
+        Paint paint = new Paint();      // Do not set antialiasflag, as the smoothing makes lines appear between bitmaps
         paint.setFilterBitmap(false);
 
         Matrix tmpMatrix = new Matrix(transformationMatrix);
@@ -130,6 +160,33 @@ public class GameMap implements Drawable {
             }
         }
 
+        // Draw stage_progress
+        if(!DataHandler.getInstance().isHideMinimap()) {
+            // map-line
+            float screenWidth = DataHandler.getInstance().getScreenWidth();
+            float screenHeight = DataHandler.getInstance().getScreenHeight();
+            paint.setColor(minimapLineColor);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(lineThickness * screenWidth);
+            canvas.drawLine(minimapStartX * screenWidth,    // startX
+                    minimapStartY * screenHeight,           // startY
+                    minimapEndX * screenWidth,              // endX
+                    minimapEndY * screenHeight,             // endY
+                    paint);
+
+            // progress indicator
+            paint.setColor(minimapIndicator);
+            //paint.setStrokeWidth(lineThickness/2);
+            canvas.drawLine(minimapStartX * screenWidth - (0.02f*screenWidth),  // startX
+                    minimapStartY*screenHeight + (y/endY)*(minimapEndY * screenHeight - minimapStartY*screenHeight),          // startY
+                    minimapEndX * screenWidth + (0.02f*screenWidth),            // endX
+                    minimapStartY*screenHeight + (y/endY)*(minimapEndY * screenHeight - minimapStartY*screenHeight),          // endY
+                    paint
+                    );
+            if(done != "") {
+                canvas.drawText(done, screenWidth/2, screenHeight/2, new Paint());
+            }
+        }
     }
 
     /**

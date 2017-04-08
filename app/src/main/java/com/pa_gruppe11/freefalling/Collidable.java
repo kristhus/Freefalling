@@ -35,7 +35,7 @@ public class Collidable implements Drawable {
 
 
     private boolean pinned; // Set to true if the collidable obeject does not move after collision.
-    private int rightBounds = DataHandler.getInstance().screenWidth;
+    private int rightBounds = DataHandler.getInstance().getScreenWidth();
     private int leftBounds = 0;
     private int topBounds = 0;
 

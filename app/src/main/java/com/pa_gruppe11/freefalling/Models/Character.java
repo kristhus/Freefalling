@@ -45,7 +45,7 @@ public class Character extends Collidable{
         transformationMatrix = new Matrix();
         transformationMatrix.setTranslate(0, 0);
 
-        maxTouchRadius = DataHandler.getInstance().screenHeight*(pMaxTouch/100);
+        maxTouchRadius = DataHandler.getInstance().getScreenHeight()*(pMaxTouch/100);
         Log.w("Character", "maxTouchRadius: " + maxTouchRadius);
 
     }

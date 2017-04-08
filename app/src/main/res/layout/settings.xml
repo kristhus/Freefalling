@@ -17,11 +17,21 @@
         android:text="Settings" />
 
     <TextView
-        android:id="@+id/editText"
+        android:id="@+id/fpsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="60 FPS"
-        android:layout_marginTop="139dp"
+        android:padding="5dp"
+        android:layout_above="@+id/minimapCheckbox"
+        android:layout_toLeftOf="@+id/fpsCheckBox"
+        android:layout_alignParentLeft="true"/>
+
+    <TextView
+        android:id="@+id/minimapText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show minimap"
+
         android:padding="5dp"
         android:layout_above="@+id/bgmTextLevel"/>
 
@@ -82,12 +92,22 @@
         android:layout_height="wrap_content"
         android:checked="true"
         android:onClick="onChange"
-        android:layout_above="@+id/bgmTextLevel"
+        android:layout_above="@+id/minimapCheckbox"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
     <CheckBox
-        android:id="@+id/sfxCheckBox"
+        android:id="@+id/minimapCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:onClick="onChange"
+        android:layout_alignBaseline="@id/minimapText"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <CheckBox
+        android:id="@+id/bgmCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onChange"
@@ -96,7 +116,7 @@
         android:layout_alignStart="@+id/fpsCheckBox" />
 
     <CheckBox
-        android:id="@+id/bgmCheckBox"
+        android:id="@+id/sfxCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onChange"

@@ -27,29 +27,38 @@ public class Settings extends GameMenu implements SeekBar.OnSeekBarChangeListene
         setContentView(R.layout.settings);
         loadValuesToView();
 
+        findViewById(R.id.saveButton).setVisibility(View.GONE); //loading values performs changes: set to gone
     }
 
 
     public void save(View view){
         String msg = "Error saving changes";
+        DataHandler data = DataHandler.getInstance();
+        Log.w("Settings", "show minimap set to: " + ((CheckBox) findViewById(R.id.minimapCheckbox)).isChecked() + " expected: " + false);
         if(Config.getInstance().saveFile(this)) {
             findViewById(R.id.saveButton).setVisibility(View.GONE);
             msg = "Changes saved";
         }
-            Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Log.w("Settings", "data set to " + data.isHideMinimap());
     }
 
     public void loadValuesToView(){
         Config.getInstance().readFile(this);
         DataHandler data = DataHandler.getInstance();
+
+        Log.w("Settings", "hide minimap was: " + data.isHideMinimap());
+
         ((CheckBox) findViewById(R.id.fpsCheckBox)).setChecked(data.getFPS() == 60 ? true : false);
         ((CheckBox) findViewById(R.id.bgmCheckBox)).setChecked(data.isBgmMuted());
         ((CheckBox) findViewById(R.id.sfxCheckBox)).setChecked(data.isSfxMuted());
-        Log.w("Settings", "SFX-level: " + data.getSfxLevel());
+        ((CheckBox) findViewById(R.id.minimapCheckbox)).setChecked(!data.isHideMinimap());
         ((SeekBar) findViewById(R.id.sfxLevelSeekbar)).setOnSeekBarChangeListener(this);
         ((SeekBar) findViewById(R.id.sfxLevelSeekbar)).setProgress(data.getSfxLevel());
         ((SeekBar) findViewById(R.id.bgmLevelSeekbar)).setOnSeekBarChangeListener(this);
         ((SeekBar) findViewById(R.id.bgmLevelSeekbar)).setProgress(data.getBgmLevel());
+
+        Log.w("Settings", "show minimap set to: " + ((CheckBox) findViewById(R.id.minimapCheckbox)).isChecked() + " expected: " + !data.isHideMinimap());
     }
 
     public void onChange(View view) {
@@ -57,6 +66,7 @@ public class Settings extends GameMenu implements SeekBar.OnSeekBarChangeListene
         DataHandler data = DataHandler.getInstance();
         switch(id) {
             case R.id.fpsCheckBox:
+                Log.w("Settings", "pressed fpsCB");
                 boolean fpsCB = ((CheckBox) findViewById(id)).isChecked();
                 if(fpsCB)
                     data.setFPS(60);
@@ -64,12 +74,19 @@ public class Settings extends GameMenu implements SeekBar.OnSeekBarChangeListene
                     data.setFPS(30);
                 break;
             case R.id.bgmCheckBox:
+                Log.w("Settings", "pressed bgmCB");
                 boolean bgmCB = ((CheckBox) findViewById(id)).isChecked();
                 data.setBgmMuted(bgmCB);
                 break;
             case R.id.sfxCheckBox:
+                Log.w("Settings", "pressed sfxCB");
                 boolean sfxCB = ((CheckBox) findViewById(id)).isChecked();
                 data.setSfxMuted(sfxCB);
+                break;
+            case R.id.minimapCheckbox:
+                Log.w("Settings", "pressed minimapCB");
+                boolean miniCB = !((CheckBox) findViewById(id)).isChecked();
+                data.setHideMinimap(miniCB);
                 break;
             case R.id.bgmLevelSeekbar:
                 int bgmValue = ((SeekBar) findViewById(id)).getProgress();
