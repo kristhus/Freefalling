@@ -24,7 +24,7 @@ public class Collidable implements Drawable {
     protected float dx = 0.0f;
     protected float dy = 0.0f;
     private float maxDx = 200.0f; // max velocity    - not necessarily final (powerup?)
-    private float maxDy = 200.0f; // TODO: MAKE THIS 5% OF THE SCREEN HEIGHT
+    private float maxDy = 200.0f; // TODO: MAKE THIS 5% OF THE SCREEN HEIGHTh
 
     protected int height;
     protected int width;
