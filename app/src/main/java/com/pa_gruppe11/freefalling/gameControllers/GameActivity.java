@@ -72,7 +72,8 @@ public class GameActivity extends GameMenu
         mGoogleApiClient.connect();
 
         room = (Room) getIntent().getExtras().get(Multiplayer.EXTRA_ROOM);
-        participants = room.getParticipants();
+        if(room != null)
+            participants = room.getParticipants();
         initiate();
     }
 
@@ -139,11 +140,13 @@ public class GameActivity extends GameMenu
 
         // SEND SHIT
 
-        byte[] message = ("Other person = (" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY()).getBytes();
-        for (Participant p : participants) {
-            if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
-                Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, message,  "pina");
-}
+        if(mGoogleApiClient.isConnected()) {
+            byte[] message = ("Other person = (" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY()).getBytes();
+            for (Participant p : participants) {
+                if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
+                    Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, message, "pina");
+                }
+            }
         }
 
         //
