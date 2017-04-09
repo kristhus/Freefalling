@@ -21,6 +21,9 @@ public class Collidable implements Drawable {
 
     protected float x = 0.0f;
     protected float y = 0.0f;
+    protected float nextX = 0.0f;
+    protected float nextY = 0.0f;
+
     protected float dx = 0.0f;
     protected float dy = 0.0f;
     private float maxDx = 100.0f; // max velocity    - not necessarily final (powerup?)
@@ -148,17 +151,23 @@ public class Collidable implements Drawable {
 
         }
         */
+        // SETTING THE SPEED
+        setDx((dx + accelerationX * (float) dt / 1000));
+        setDy((dy + accelerationY * (float) dt / 1000));
+
         if (!collided || isPinned()) {
-            // SETTING THE SPEED
-            setDx((dx + accelerationX * (float) dt / 1000));
-            setDy((dy + accelerationY * (float) dt / 1000));
 
             // SETTING THE POSITION
             setX(x + dx * (float) dt / 1000);
             setY(y + dy * (float) dt / 1000);
+        }else if (isBottomCollision()){
+            setY(collidesWith.getNextY() + 2);
         }
 
         boundingBox = new RectF(x, y, x + width, y + height);
+
+        nextX = calculateNextX(dx, dt);
+        nextY = calculateNextY(dy, dt);
 
     }
 
@@ -198,8 +207,8 @@ public class Collidable implements Drawable {
             this.x = x;
         }
         else {
-            Log.w("Collidable", "Width when OOB collided: " + width);
-            Log.w("Collidable", "The object cannot go out of bounds in x-direction");
+           // Log.w("Collidable", "Width when OOB collided: " + width);
+           // Log.w("Collidable", "The object cannot go out of bounds in x-direction");
         }
     }
 
@@ -211,8 +220,8 @@ public class Collidable implements Drawable {
     {
         if (true)       // true is placeholder for something in the future
             this.y = y;
-        else
-            Log.w("Collidable", "The object collides with something in y-direction.");
+        //else
+           // Log.w("Collidable", "The object collides with something in y-direction.");
     }
 
     /**
@@ -295,6 +304,14 @@ public class Collidable implements Drawable {
 
     public float getY() {
         return y;
+    }
+
+    public float getNextX() {
+        return nextX;
+    }
+
+    public float getNextY() {
+        return nextY;
     }
 
     public float getDx() {

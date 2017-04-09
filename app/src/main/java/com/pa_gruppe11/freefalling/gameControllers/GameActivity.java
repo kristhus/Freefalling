@@ -112,6 +112,7 @@ public class GameActivity extends GameMenu
                 opponent.getCharacter().update(dt);
             }
         }
+
         if (gameMap != null)
             gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
 
@@ -140,7 +141,7 @@ public class GameActivity extends GameMenu
 
         // SEND SHIT
 
-        if(mGoogleApiClient.isConnected()) {
+        if(mGoogleApiClient.isConnected() && participants != null) {
             byte[] message = ("Other person = (" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY()).getBytes();
             for (Participant p : participants) {
                 if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
@@ -153,7 +154,7 @@ public class GameActivity extends GameMenu
 
 
         thisPlayer.getCharacter().update(dt);           // Update this player
-        testblock.update(dt);                           // Update this obstacle
+        //testblock.update(dt);                           // Update this obstacle
     }
 
     public void notifyReady() {
