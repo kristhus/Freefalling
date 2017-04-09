@@ -1,12 +1,18 @@
 package com.pa_gruppe11.freefalling.gameControllers;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.multiplayer.Invitation;
+import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.OnInvitationReceivedListener;
+import com.google.android.gms.games.multiplayer.Participant;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
+import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.pa_gruppe11.freefalling.Models.GameMap;
 import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.implementations.models.Hanz;
@@ -34,12 +40,15 @@ import java.util.ArrayList;
 public class GameActivity extends GameMenu
         implements GoogleApiClient.ConnectionCallbacks,
                 GoogleApiClient.OnConnectionFailedListener,
+                RealTimeMessageReceivedListener,
                 OnInvitationReceivedListener {
 
     // MODELS
     private Player[] opponents;
     private GameMap gameMap; //
     private Player thisPlayer;
+
+    private ArrayList<Participant> participants;
 
     // TODO: REMOVE AFTER TESTING
 
@@ -49,6 +58,7 @@ public class GameActivity extends GameMenu
     private PlayerController controller;
 
     private GoogleApiClient mGoogleApiClient;
+    private Room room;
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -60,6 +70,9 @@ public class GameActivity extends GameMenu
                 .addScope(Games.SCOPE_GAMES)
                 .build();
         mGoogleApiClient.connect();
+
+        room = (Room) getIntent().getExtras().get(Multiplayer.EXTRA_ROOM);
+        participants = room.getParticipants();
         initiate();
     }
 
@@ -124,6 +137,18 @@ public class GameActivity extends GameMenu
             }
         }
 
+        // SEND SHIT
+
+        byte[] message = ("Other person = (" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY()).getBytes();
+        for (Participant p : participants) {
+            if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
+                Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, message,  "pina");
+}
+        }
+
+        //
+
+
         thisPlayer.getCharacter().update(dt);           // Update this player
         testblock.update(dt);                           // Update this obstacle
     }
@@ -160,6 +185,19 @@ public class GameActivity extends GameMenu
         return controller;
     }
 
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.w("MainMenu", "onActivityResult");
+        switch(requestCode) {
+
+        }
+    }
+
+
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.w("GameActivity", "Connected!");
@@ -185,5 +223,12 @@ public class GameActivity extends GameMenu
     @Override
     public void onInvitationRemoved(String s) {
 
+    }
+
+    @Override
+    public void onRealTimeMessageReceived(RealTimeMessage realTimeMessage) {
+        byte[] b = realTimeMessage.getMessageData();
+        String message = new String(b);
+        Log.w("GameActivity", "Got a message: " + message);
     }
 }

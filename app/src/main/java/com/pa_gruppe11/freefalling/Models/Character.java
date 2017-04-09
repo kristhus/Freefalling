@@ -58,14 +58,17 @@ public class Character extends Collidable{
 /*
         if ( isBottomCollision() && collidesWith.isPinned()){
 
+
            // Log.w("Character", "Her skal det kolliderast!");
 
             setDy(collidesWith.getDy());
 
 
 
+
            // Log.w("Character", "Collideswith according to character is: " + collidesWith.toString());
            // Log.w("Character", "Character collides with something! This happens in Character.update()");
+
         }
 */
 

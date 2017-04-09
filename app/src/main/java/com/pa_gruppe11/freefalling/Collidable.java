@@ -249,7 +249,7 @@ public class Collidable implements Drawable {
         }
 
 //        Log.w("Collidable", "dy = " + this.dy);
-    }
+     }
 
     public void setWidth(int width){this.width = width;}
 
