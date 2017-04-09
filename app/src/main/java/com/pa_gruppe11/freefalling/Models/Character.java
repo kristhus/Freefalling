@@ -55,19 +55,19 @@ public class Character extends Collidable{
     public void update(long dt){
         respondToTouch(); // we do this here, to assure the order is done correctly
         super.update(dt);
-
+/*
         if ( isBottomCollision() && collidesWith.isPinned()){
 
-            Log.w("Character", "Her skal det kolliderast!");
+           // Log.w("Character", "Her skal det kolliderast!");
 
             setDy(collidesWith.getDy());
 
 
 
-            Log.w("Character", "Collideswith according to character is: " + collidesWith.toString());
-            Log.w("Character", "Character collides with something! This happens in Character.update()");
+           // Log.w("Character", "Collideswith according to character is: " + collidesWith.toString());
+           // Log.w("Character", "Character collides with something! This happens in Character.update()");
         }
-
+*/
 
 
         /*

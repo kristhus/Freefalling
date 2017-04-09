@@ -2,6 +2,7 @@ package com.pa_gruppe11.freefalling.Singletons;
 
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Collidable;
 
@@ -57,7 +58,19 @@ public final class CollisionHandler {
             if (nextRect1.bottom > nextRect2.top){
                 collider1.setBottomCollision(true);
                 collider2.setTopCollision(true);
-            }else if (nextRect1.top < nextRect2.bottom){
+
+             //   Log.w("Character", collider1.toString() + " bottom: " + collider1.getBoundingBox().bottom + collider2 + " top: " +
+             //   collider2.getBoundingBox().top);
+
+                if (nextRect1.left > nextRect2.right){
+                    collider1.setLeftCollision(true);
+                    collider2.setRightCollision(true);
+                }else if (nextRect1.left < nextRect2.right){
+                    collider1.setRightCollision(true);
+                    collider2.setLeftCollision(true);
+                }
+
+            }/*else if (nextRect1.top < nextRect2.bottom){
                 collider1.setTopCollision(true);
                 collider2.setBottomCollision(true);
             }else if (nextRect1.right < nextRect2.left){
@@ -67,15 +80,30 @@ public final class CollisionHandler {
                 collider1.setLeftCollision(true);
                 collider2.setRightCollision(true);
             }
-
+        */
 
           //  Log.w("CollisionHandler", "Collision detected!");
 
             return true;
         }
 
+        // SETS COLLIDED
         collider1.setCollided(false);
         collider2.setCollided(false);
+
+        // SETS TOP/BOTTOM/LEFT/RIGHT COLLISION
+        collider1.setTopCollision(false);
+        collider1.setBottomCollision(false);
+        collider1.setLeftCollision(false);
+        collider1.setRightCollision(false);
+
+        collider2.setTopCollision(false);
+        collider2.setBottomCollision(false);
+        collider2.setLeftCollision(false);
+        collider2.setRightCollision(false);
+
+
+
         return false;
     }
 
@@ -104,7 +132,59 @@ public final class CollisionHandler {
         }
 */
 
+      if (collider1.isBottomCollision() && collider2.isPinned()){
+          collider1.setDy(collider2.getDy());
+          collider1.setY(collider1.getDy() * collider1.getDt() / 1000);
 
+
+          Log.w("CollisionHandler", collider1.toString() + " dy: " + collider1.getDy() + "      " + collider2.toString()
+          + " dy: " + collider2.getDy());
+
+          if (collider1.isLeftCollision() || collider1.isRightCollision()){
+              collider1.setDx(collider2.getDx());
+              collider1.setX(collider1.getDx() * collider1.getDt() / 1000);
+
+
+              Log.w("CollisionHandler", collider1.toString() + " dx: " + collider1.getDx() + "      " + collider2.toString()
+                      + " dx: " + collider2.getDx());
+
+          }
+      }
+
+/*
+      if (collider1.isBottomCollision() && collider2.isPinned()){
+
+          Log.w("CollisionHandler", collider1.toString() + " has Bottom-collision");
+
+          collider1.setDy(collider2.getDy());
+
+      }
+  */
+      /*else if (collider1.isTopCollision() && collider2.isPinned()){
+          collider1.setDy(collider2.getDy());
+
+          Log.w("CollisionHandler", collider1.toString() + " has Top-collision");
+
+
+      }else if (collider1.isLeftCollision() && collider2.isPinned()) {
+
+          if (collider1.getDx() > collider2.getDx())
+              collider1.setDx(collider2.getDx());
+
+          Log.w("CollisionHandler", collider1.toString() + " has Left-collision");
+
+      }else if (collider1.isRightCollision() && collider2.isPinned()){
+
+          if (collider1.getDx() > collider2.getDx())
+            collider1.setDx(collider2.getDx());
+
+          Log.w("CollisionHandler", collider1.toString() + " has Right-collision");
+
+
+      }
+
+
+        */
 
     }
 

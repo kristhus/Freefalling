@@ -23,8 +23,8 @@ public class Collidable implements Drawable {
     protected float y = 0.0f;
     protected float dx = 0.0f;
     protected float dy = 0.0f;
-    private float maxDx = 200.0f; // max velocity    - not necessarily final (powerup?)
-    private float maxDy = 200.0f; // TODO: MAKE THIS 5% OF THE SCREEN HEIGHT
+    private float maxDx = 100.0f; // max velocity    - not necessarily final (powerup?)
+    private float maxDy = 100.0f; // TODO: MAKE THIS 5% OF THE SCREEN HEIGHT
 
     protected int height;
     protected int width;
@@ -148,15 +148,17 @@ public class Collidable implements Drawable {
 
         }
         */
+        if (!collided || isPinned()) {
+            // SETTING THE SPEED
+            setDx((dx + accelerationX * (float) dt / 1000));
+            setDy((dy + accelerationY * (float) dt / 1000));
 
-        // SETTING THE SPEED
-        setDx((dx + accelerationX * (float) dt / 1000));
-        setDy((dy + accelerationY * (float) dt / 1000));
+            // SETTING THE POSITION
+            setX(x + dx * (float) dt / 1000);
+            setY(y + dy * (float) dt / 1000);
+        }
 
-        // SETTING THE POSITION
-        setX(x + dx * (float) dt / 1000);
-        setY(y + dy * (float) dt / 1000);
-
+        boundingBox = new RectF(x, y, x + width, y + height);
 
     }
 
@@ -192,7 +194,7 @@ public class Collidable implements Drawable {
 
         // || isPinned() because objects like obstacles should move anyway
 
-        if ((x + width) < rightBounds && x > leftBounds && !collided || isPinned()) {
+        if ((x + width) < rightBounds && x > leftBounds ) {
             this.x = x;
         }
         else {
@@ -207,7 +209,7 @@ public class Collidable implements Drawable {
      */
     public void setY(float y)
     {
-        if (!collided || isPinned())       // || isPinned() because objects like obstacles should move anyway
+        if (true)       // true is placeholder for something in the future
             this.y = y;
         else
             Log.w("Collidable", "The object collides with something in y-direction.");
@@ -228,7 +230,7 @@ public class Collidable implements Drawable {
         }
 
 
-        Log.w("Collidable", "dx = " + this.dx);
+        //Log.w("Collidable", "dx = " + this.dx);
 
     }
 
@@ -246,7 +248,7 @@ public class Collidable implements Drawable {
             this.dy = -maxDy;
         }
 
-        Log.w("Collidable", "dy = " + this.dy);
+//        Log.w("Collidable", "dy = " + this.dy);
     }
 
     public void setWidth(int width){this.width = width;}
