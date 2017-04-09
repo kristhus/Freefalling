@@ -127,7 +127,8 @@ public class Collidable implements Drawable {
         setDt(dt);
 
         // Controllable objects
-        if (!pinned) {
+
+        /*if (!pinned) {
 
             // SETTING THE SPEED
             setDx((dx + accelerationX * (float) dt / 1000));
@@ -145,8 +146,17 @@ public class Collidable implements Drawable {
             setY(y + dy * (float) dt / 1000);
 
 
-
         }
+        */
+
+        // SETTING THE SPEED
+        setDx((dx + accelerationX * (float) dt / 1000));
+        setDy((dy + accelerationY * (float) dt / 1000));
+
+        // SETTING THE POSITION
+        setX(x + dx * (float) dt / 1000);
+        setY(y + dy * (float) dt / 1000);
+
 
     }
 
@@ -243,7 +253,6 @@ public class Collidable implements Drawable {
 
     public void setHeight(int height){this.height = height;}
 
-
     public void setId(int id) {this.id = id;}
 
     public void setPinned(boolean pinned){this.pinned = pinned;}
@@ -258,6 +267,22 @@ public class Collidable implements Drawable {
 
     public void setTransformationMatrix(Matrix matrix){
         this.transformationMatrix = matrix;
+    }
+
+    public void setTopCollision(boolean topCollision) {
+        this.topCollision = topCollision;
+    }
+
+    public void setBottomCollision(boolean bottomCollision) {
+        this.bottomCollision = bottomCollision;
+    }
+
+    public void setLeftCollision(boolean leftCollision) {
+        this.leftCollision = leftCollision;
+    }
+
+    public void setRightCollision(boolean rightCollision) {
+        this.rightCollision = rightCollision;
     }
 
     // GETTERS
@@ -291,6 +316,22 @@ public class Collidable implements Drawable {
     }
 
     public RectF getBoundingBox(){return boundingBox;}
+
+    public boolean isTopCollision() {
+        return topCollision;
+    }
+
+    public boolean isBottomCollision() {
+        return bottomCollision;
+    }
+
+    public boolean isLeftCollision() {
+        return leftCollision;
+    }
+
+    public boolean isRightCollision() {
+        return rightCollision;
+    }
 
     public boolean isCollided(){return collided;}
 }

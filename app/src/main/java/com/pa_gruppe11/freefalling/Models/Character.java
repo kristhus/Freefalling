@@ -56,9 +56,13 @@ public class Character extends Collidable{
         respondToTouch(); // we do this here, to assure the order is done correctly
         super.update(dt);
 
-        if ( isCollided()){
-            //setDx(collidesWith.getDx());
-            //setDy(collidesWith.getDy());
+        if ( isBottomCollision() && collidesWith.isPinned()){
+
+            Log.w("Character", "Her skal det kolliderast!");
+
+            setDy(collidesWith.getDy());
+
+
 
             Log.w("Character", "Collideswith according to character is: " + collidesWith.toString());
             Log.w("Character", "Character collides with something! This happens in Character.update()");
@@ -139,4 +143,5 @@ public class Character extends Collidable{
     public void setTouches(ArrayList<ArrayList<Float>> touches) {
         this.touches = touches;
     }
+
 }

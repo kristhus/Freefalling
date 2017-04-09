@@ -54,6 +54,21 @@ public final class CollisionHandler {
             collider1.setCollided(true);
             collider2.setCollided(true);
 
+            if (nextRect1.bottom > nextRect2.top){
+                collider1.setBottomCollision(true);
+                collider2.setTopCollision(true);
+            }else if (nextRect1.top < nextRect2.bottom){
+                collider1.setTopCollision(true);
+                collider2.setBottomCollision(true);
+            }else if (nextRect1.right < nextRect2.left){
+                collider1.setRightCollision(true);
+                collider2.setLeftCollision(true);
+            }else if (nextRect1.left > nextRect2.right){
+                collider1.setLeftCollision(true);
+                collider2.setRightCollision(true);
+            }
+
+
           //  Log.w("CollisionHandler", "Collision detected!");
 
             return true;
