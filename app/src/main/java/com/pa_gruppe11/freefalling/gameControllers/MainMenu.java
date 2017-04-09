@@ -106,11 +106,13 @@ public class MainMenu extends GameMenu
 
     }
 
-    public void startQuickGame(View view) {
+    public void inflateLobby(View view) {
         ResourceLoader.getInstance().getCharacters();
         setContentView(R.layout.lobby);
+    }
 
-        /*
+    public void startQuickGame(View view) {
+        Log.w("MainMenu", "StartQuickGame");
         Bundle am = RoomConfig.createAutoMatchCriteria(1, 1, 0);
         RoomConfig.Builder roomConfigBuilder = createDefaultRoom();
         roomConfigBuilder.setAutoMatchCriteria(am);
@@ -118,13 +120,16 @@ public class MainMenu extends GameMenu
 
         Games.RealTimeMultiplayer.create(mGoogleApiClient, roomConfig);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        */
+
+
         //go to game screen
     }
 
     public void onInvitePlayersClicked(View view) {
         Log.w("MainMenu", "invite players");
         Intent intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient, 1, 3);
+        Log.w("MainMenu", "Intent serial: " + intent);
+        Log.w("MainMenu", "Before activity: " + intent.getIntExtra(Multiplayer.EXTRA_MIN_AUTOMATCH_PLAYERS, -1));
         startActivityForResult(intent, RC_SELECT_PLAYERS);
     }
 
@@ -213,18 +218,18 @@ public class MainMenu extends GameMenu
                     Log.w("MainMenu", "Canceled by user");
                     return;
                 }
-                Bundle extras = data.getExtras();
+
                 final ArrayList<String> invitees = data.getStringArrayListExtra(Games.EXTRA_PLAYER_IDS);
                 for(String s : invitees)
                     Log.w("MainMenu", "Invite " + s);
                 //get the criterias for the match
                 Bundle criteria = null;
-                int minPlayers = data.getIntExtra(Multiplayer.EXTRA_MIN_AUTOMATCH_PLAYERS, 0);
-                int maxPlayers = data.getIntExtra(Multiplayer.EXTRA_MAX_AUTOMATCH_PLAYERS, 0);
+                int minPlayers = data.getIntExtra(Multiplayer.EXTRA_MIN_AUTOMATCH_PLAYERS, -1);
+                int maxPlayers = data.getIntExtra(Multiplayer.EXTRA_MAX_AUTOMATCH_PLAYERS, -1);
 
                 Log.w("MainMenu", "minPlayers: " + minPlayers);
                 if(minPlayers > 0) {
-                    criteria = RoomConfig.createAutoMatchCriteria(minPlayers, maxPlayers, 0);
+                    criteria = RoomConfig.createAutoMatchCriteria(1, 3, 0);
                 }
                 RoomConfig.Builder roomConfigBuilder = createDefaultRoom();
                 roomConfigBuilder.addPlayersToInvite(invitees);
