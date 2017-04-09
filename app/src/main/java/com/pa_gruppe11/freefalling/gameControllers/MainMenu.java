@@ -64,6 +64,7 @@ public class MainMenu extends GameMenu
     private static final int RC_WAITING_ROOM = 10002;
 
     private int roomId = -1;
+    private Room room;
 
     private View selector;
     private GridView characterGridView;
@@ -163,7 +164,14 @@ public class MainMenu extends GameMenu
         //ResourceLoader.getInstance().loadImage(R.drawable.stickman, this);
         //ResourceLoader.getInstance().loadImage(R.drawable.bg_sky, this);
         ResourceLoader.getInstance().manualLoad(this);
-        goTo(GameActivity.class);
+
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.putExtra(Multiplayer.EXTRA_ROOM, room);
+        startActivity(intent);
+        finish();
+
+      //  goTo(GameActivity.class);
     }
 
     @Override
@@ -286,6 +294,7 @@ public class MainMenu extends GameMenu
 
     @Override
     public void onRoomCreated(int i, Room room) {
+        this.room = room;
         Log.w("MainMenu", "Room created");
         Intent intent = Games.RealTimeMultiplayer.getWaitingRoomIntent(mGoogleApiClient, room, Integer.MAX_VALUE);
         startActivityForResult(intent, RC_WAITING_ROOM);
@@ -296,6 +305,7 @@ public class MainMenu extends GameMenu
 
     @Override
     public void onJoinedRoom(int statusCode, Room room) {
+        this.room = room;
         Log.w("MainMenu", "Joined room");
         if(statusCode != GamesStatusCodes.STATUS_OK) {
             Log.w("MainMenu", "Error");
@@ -307,6 +317,7 @@ public class MainMenu extends GameMenu
 
     @Override
     public void onLeftRoom(int i, String s) {
+        room = null;
         Log.w("MainMenu", "Left room");
     }
 

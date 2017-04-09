@@ -228,7 +228,7 @@ public class Collidable implements Drawable {
         }
 
 
-        Log.w("Collidable", "dx = " + this.dx);
+       // Log.w("Collidable", "dx = " + this.dx);
 
     }
 
@@ -246,7 +246,7 @@ public class Collidable implements Drawable {
             this.dy = -maxDy;
         }
 
-        Log.w("Collidable", "dy = " + this.dy);
+       // Log.w("Collidable", "dy = " + this.dy);
     }
 
     public void setWidth(int width){this.width = width;}
