@@ -10,10 +10,12 @@ import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
 import com.google.android.gms.games.multiplayer.realtime.Room;
+import com.pa_gruppe11.freefalling.Collidable;
 import com.pa_gruppe11.freefalling.Models.GameMap;
 import com.pa_gruppe11.freefalling.Models.GameMessage;
 import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.framework.GameServiceListener;
+import com.pa_gruppe11.freefalling.framework.VectorSAT;
 import com.pa_gruppe11.freefalling.implementations.models.Hanz;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
 import com.pa_gruppe11.freefalling.Models.PowerUp;
@@ -31,6 +33,7 @@ import com.pa_gruppe11.freefalling.tmp.TmpView;
 import com.pa_gruppe11.freefalling.Models.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Kristian on 31/03/2017.
@@ -139,7 +142,7 @@ public class GameActivity extends GameMenu {
                     CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), opponent.getCharacter());
                 }
            */
-                if(!updateBasedCommunication)
+                if(!updateBasedCommunication)   // refreshes on each message retreived, which is each frame when true
                     opponent.getCharacter().update(dt);
             }
         }
@@ -149,22 +152,30 @@ public class GameActivity extends GameMenu {
         ArrayList<Obstacle> obstacles = gameMap.getObstacles();
         if (obstacles != null) {
             for (Obstacle o : obstacles) {
-                if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), o)) {
-                    thisPlayer.getCharacter().setCollidesWith(o);
-                    CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), o);
+                HashMap<String, Object> mtvList = Collidable.collidesMTV(thisPlayer.getCharacter().getBounds(), o.getBounds());
+                if((boolean) mtvList.get("boolean")){
+                    VectorSAT mtv = (VectorSAT) mtvList.get("VectorSAT");
+                    thisPlayer.getCharacter().setDebugString("Kållesjcøn");
+                    thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
+                    thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
                 }
             }
         }
-
+/*
+local f2 = script.Parent:WaitForChild("Frame2");
+ 
+game:GetService("RunService").RenderStepped:connect(function()
+	local doesCollide, mtv = collidesMTV(f2, f1);
+	if doesCollide then
+		f1.Position = f1.Position + UDim2.new(0, mtv.x, 0, mtv.y);
+	end;
+end);
+ */
         ArrayList<PowerUp> powerUps = gameMap.getPowerups();
         if (powerUps != null) {
             for (PowerUp p : powerUps) {
                 //if(thisPlayer.getCharacter().collides(p))
                 //  thisPlayer.getCharacter().setCollidesWith(p);
-                if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), p)) {
-                    thisPlayer.getCharacter().setCollidesWith(p);
-                    CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), p);
-                }
             }
         }
 

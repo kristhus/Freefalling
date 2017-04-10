@@ -19,7 +19,7 @@ public class Block extends Obstacle{
         setX(500);
         setY(1200);
         setDx(0);
-        setDy(-20);
+        setDy(0);
     }
 
     @Override

@@ -2,13 +2,22 @@ package com.pa_gruppe11.freefalling;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
+import com.pa_gruppe11.freefalling.framework.RectSAT;
+import com.pa_gruppe11.freefalling.framework.VectorSAT;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by kjetilvaagen on 31/03/17.
@@ -63,6 +72,8 @@ public class Collidable implements Drawable {
     private Bitmap bitmap;
 
 
+    private String debugString = "collission";
+
     public Collidable(int id, int width, int height){
 
 //        float screenWidth = DataHandler.getInstance().screenWidth;
@@ -74,7 +85,7 @@ public class Collidable implements Drawable {
         this.height = height;
 
         boundingBox = new RectF(x, y, x + width, y + height);
-        nextRect = new RectF(nextX, nextY, nextX + width, nextY + height);
+      //  nextRect = new RectF(nextX, nextY, nextX + width, nextY + height);
 
         bitmap = ResourceLoader.getInstance().getImageList().get(id);
 
@@ -130,44 +141,99 @@ public class Collidable implements Drawable {
      */
     public void update(long dt){
 
-
-/*
-        boundingBox = new RectF(x, y, x + width, y + height);
-
-        nextX = calculateNextX(dx, dt);
-        nextY = calculateNextY(dy, dt);
-*/
-
-
         // SETTING THE SPEED
 
+        setDx((dx + accelerationX * (float) dt / 1000));
+        setDy((dy + accelerationY * (float) dt / 1000));
 
-        if (!collided || isPinned()) {
-
-            setDx((dx + accelerationX * (float) dt / 1000));
-            setDy((dy + accelerationY * (float) dt / 1000));
-
-            // SETTING THE POSITION
-            setX(x + dx * (float) dt / 1000);
-            setY(y + dy * (float) dt / 1000);
-        }
+        // SETTING THE POSITION
+        setX(x + dx * (float) dt / 1000);
+        setY(y + dy * (float) dt / 1000);
 
 
 
-
-       /* if (bottomCollision){
-            Log.w("Collidable", "Updates what should happen when bottomCollision");
-            setY(collidesWith.calculateNextY(collidesWith.getY() + 2, dt));
-        }
-*/
-        boundingBox = new RectF(x, y, x + width, y + height);
-
-        nextX = calculateNextX(dx, dt);
-        nextY = calculateNextY(dy, dt);
-
-        nextRect = new RectF(nextX, nextY, nextX + width, nextY + height);
 
     }
+
+
+    public RectSAT getScreenBounds() {
+        RectSAT bounds = new RectSAT();
+        bounds.topLeft = new PointF(0,0);
+        bounds.topRight = new PointF(DataHandler.getInstance().getScreenWidth(), 0);
+        bounds.bottomLeft = new PointF(0, DataHandler.getInstance().getScreenHeight());
+        bounds.bottomRight = new PointF(DataHandler.getInstance().getScreenWidth()
+                , DataHandler.getInstance().getScreenHeight());
+        return bounds;
+    }
+
+    public RectSAT getBounds() {
+        RectSAT bounds = new RectSAT();
+        bounds.topLeft = new PointF(x, y);
+        bounds.topRight = new PointF(x + width, y);
+        bounds.bottomLeft = new PointF(x, y + height);
+        bounds.bottomRight = new PointF(x + width, y + height);
+
+        bounds.left = x;
+        bounds.top = y;
+        bounds.right = x + width;
+        bounds.bottom = y + height;
+
+        return bounds;
+    }
+
+
+    public ArrayList<PointF> getEdges(RectF rect) {
+        ArrayList<PointF> edges = new ArrayList<PointF>();
+        edges.add(0, new PointF(rect.left, rect.top));
+        edges.add(1, new PointF(rect.right, rect.top));
+        edges.add(2, new PointF(rect.left, rect.bottom));
+        edges.add(3, new PointF(rect.right, rect.bottom));
+
+        return edges;
+    }
+
+    public static boolean collides(RectSAT b1, RectSAT b2) {
+        return (b1.left < b2.right && b1.right > b2.left) &&
+                (b1.top < b2.bottom && b1.bottom > b2.top);
+    }
+
+    /**
+     * Minimum translation vector
+     * Updates positions and notifies of a collision
+     */
+    public static HashMap<String, Object> collidesMTV(RectSAT b1, RectSAT b2) {
+        boolean collides = collides(b1, b2);
+        HashMap retVal = new HashMap<>();
+        retVal.put("boolean", collides);
+        VectorSAT mtv = new VectorSAT(0,0);
+        if(collides) {
+            ArrayList<VectorSAT> mtvList = new ArrayList<>();
+            mtvList.add(new VectorSAT(b1.left - (b2.right),0));
+            mtvList.add(new VectorSAT(b1.right-b2.left, 0));
+            mtvList.add(new VectorSAT(0, b1.top - b2.bottom));
+            mtvList.add(new VectorSAT(0, b1.bottom - b2.top));
+
+
+            Log.w("Collidable", "0: " + mtvList.get(0).getLength() + "   1: " + mtvList.get(1).getLength() +
+                    "    2: " + mtvList.get(2).getLength() + "    3: " + mtvList.get(3).getLength());
+            Collections.sort(mtvList);
+            Log.w("Collidable", "0: " + mtvList.get(0).getLength() + "   1: " + mtvList.get(1).getLength() +
+                    "    2: " + mtvList.get(2).getLength() + "    3: " + mtvList.get(3).getLength());
+
+
+            mtv = mtvList.get(0);
+        }
+        retVal.put("VectorSAT", mtv);
+        return retVal;
+    }
+
+
+/*
+
+		-- get the smallest difference
+		table.sort(edgeDifferences, function(a, b) return a.magnitude < b.magnitude; end);
+		mtv = edgeDifferences[1];
+ */
 
     /**
      * Draws the collidable object onto a canvas. The BitMap is loaded through the Singleton
@@ -177,7 +243,14 @@ public class Collidable implements Drawable {
     @Override
     public void draw(Canvas canvas) {
 
-        canvas.drawBitmap(bitmap, x, y, new Paint());
+        Paint paint = new Paint();
+
+        canvas.drawBitmap(bitmap, x, y, paint);
+        if(!debugString.equals("")) {
+            paint.setTextSize(64);
+            paint.setColor(Color.BLACK);
+            canvas.drawText(debugString, 50, 100, paint);
+        }
 
         //canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), x, y, new Paint());
 
@@ -345,4 +418,8 @@ public class Collidable implements Drawable {
     public boolean isCollided(){return collided;}
 
     public boolean isCollisionNext() {return collisionNext;}
+
+    public void setDebugString(String debugString) {
+        this.debugString = debugString;
+    }
 }

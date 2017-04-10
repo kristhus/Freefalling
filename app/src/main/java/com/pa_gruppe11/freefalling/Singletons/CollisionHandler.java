@@ -239,7 +239,7 @@ public final class CollisionHandler {
       }
 
     */
-
+/*
         if ((collider1.isBottomCollision() || collider1.isTopCollision()) && collider2.isPinned()){
             collider1.setY(collider2.getNextY() - collider1.getHeight());
             collider1.setDy( collider1.getDy()*-1);
@@ -247,7 +247,18 @@ public final class CollisionHandler {
         }else if (collider1.isLeftCollision() || collider1.isRightCollision() && collider2.isPinned()){
             collider1.setDx(collider2.getDx());
         }
+*/
 
+        if(collider1.isBottomCollision() && collider2.isPinned()) {
+            collider1.setY(collider2.getNextY() - collider1.getHeight());
+            collider1.setDy( collider1.getDy()*-1);
+            collider1.setCollided(false);
+            collider2.setCollided(false);
+        }
+        else if(collider1.isTopCollision() && collider2.isPinned()) {
+            collider1.setY(collider2.getNextY()+collider2.getHeight());
+            collider1.setDy(collider2.getDy());
+        }
 
 
     }

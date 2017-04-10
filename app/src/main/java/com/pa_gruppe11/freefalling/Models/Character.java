@@ -138,11 +138,7 @@ public class Character extends Collidable{
         paint.setTextSize(32);
         paint.setColor(Color.RED);
         canvas.drawText(displayName, x-30 + (width/2), y-30, paint);
-    }
 
-    @Override
-    public void setCollidesWith(Collidable collidesWith) {
-        this.collidesWith = collidesWith;
     }
 
     @Override

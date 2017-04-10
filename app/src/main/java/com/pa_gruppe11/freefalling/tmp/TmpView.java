@@ -26,8 +26,10 @@ public class TmpView extends SurfaceView{
         gameContext.getGameMap().draw(canvas);  // draw current frame
         gameContext.getObstacle().draw(canvas);
         gameContext.getPlayer().getCharacter().draw(canvas);
-        for(Player p : gameContext.getOpponents())
-            p.getCharacter().draw(canvas);
+        if(gameContext.getOpponents() != null) {
+            for (Player p : gameContext.getOpponents())
+                p.getCharacter().draw(canvas);
+        }
     }
 
 

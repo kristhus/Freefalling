@@ -88,7 +88,8 @@ public class GameMenu extends Activity {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                         GameThread.getInstance().stop_gameThread();
-                        Games.RealTimeMultiplayer.leave(mGoogleApiClient, DataHandler.getMessageListener(), room.getRoomId());
+                        if(room != null)    // debug, as room != null at intended gamephase
+                            Games.RealTimeMultiplayer.leave(mGoogleApiClient, DataHandler.getMessageListener(), room.getRoomId());
                         //Log.w("GM", "Suspend: " + GameThread.getInstance().isSuspended());
                         goTo(MainMenu.class);
                     }
