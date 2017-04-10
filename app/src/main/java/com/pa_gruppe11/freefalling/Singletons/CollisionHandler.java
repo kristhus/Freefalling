@@ -134,7 +134,6 @@ public final class CollisionHandler {
 
       if (collider1.isBottomCollision() && collider2.isPinned()){
           collider1.setDy(collider2.getDy());
-          collider1.setY(collider1.getDy() * collider1.getDt() / 1000);
 
 
           Log.w("CollisionHandler", collider1.toString() + " dy: " + collider1.getDy() + "      " + collider2.toString()
@@ -142,7 +141,6 @@ public final class CollisionHandler {
 
           if (collider1.isLeftCollision() || collider1.isRightCollision()){
               collider1.setDx(collider2.getDx());
-              collider1.setX(collider1.getDx() * collider1.getDt() / 1000);
 
 
               Log.w("CollisionHandler", collider1.toString() + " dx: " + collider1.getDx() + "      " + collider2.toString()

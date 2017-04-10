@@ -140,7 +140,7 @@ public class GameActivity extends GameMenu
 
         // SEND SHIT
 
-        if(mGoogleApiClient.isConnected()) {
+        if(mGoogleApiClient.isConnected() && participants != null) {
             byte[] message = ("Other person = (" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY()).getBytes();
             for (Participant p : participants) {
                 if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
