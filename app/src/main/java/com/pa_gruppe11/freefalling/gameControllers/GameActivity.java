@@ -76,16 +76,14 @@ public class GameActivity extends GameMenu {
     }
 
     public void initiate() {
-        Log.w("GameActivity", "Init");
         thisPlayer = new Player();
         thisPlayer.setCharacter(new Hanz(R.drawable.stickman, 65, 112));
         if(room != null) {
             participants = room.getParticipants();
             int i = 0;
             if(participants != null) {
-                opponents = new Player[participants.size()];
+                opponents = new Player[participants.size()-1];  //-1 is thisPlayer
                 int index = 0;
-                Log.w("GameActivity", "This id: " + Games.Players.getCurrentPlayer(mGoogleApiClient).getPlayerId());
                 for(Participant p : participants) {
                     //TODO: replace - debug purposes
                     if(p.getPlayer() == null || !p.getPlayer().getPlayerId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
@@ -104,7 +102,6 @@ public class GameActivity extends GameMenu {
                         thisPlayer.setDisplayName(p.getDisplayName());
                     }
                 }
-                Log.w("GameActivity", "Ready to init game with " + opponents.length + " opponents");
             }
         }
 
