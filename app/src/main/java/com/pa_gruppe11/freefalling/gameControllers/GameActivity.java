@@ -8,13 +8,13 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
-import com.google.android.gms.games.multiplayer.OnInvitationReceivedListener;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
-import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.pa_gruppe11.freefalling.Models.GameMap;
+import com.pa_gruppe11.freefalling.Models.GameMessage;
 import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
+import com.pa_gruppe11.freefalling.framework.GameServiceListener;
 import com.pa_gruppe11.freefalling.implementations.models.Hanz;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
 import com.pa_gruppe11.freefalling.Models.PowerUp;
@@ -37,11 +37,7 @@ import java.util.ArrayList;
 /**
  * Created by Kristian on 31/03/2017.
  */
-public class GameActivity extends GameMenu
-        implements GoogleApiClient.ConnectionCallbacks,
-                GoogleApiClient.OnConnectionFailedListener,
-                RealTimeMessageReceivedListener,
-                OnInvitationReceivedListener {
+public class GameActivity extends GameMenu {
 
     // MODELS
     private Player[] opponents;
@@ -57,28 +53,37 @@ public class GameActivity extends GameMenu
     // Controllers
     private PlayerController controller;
 
-    private GoogleApiClient mGoogleApiClient;
     private Room room;
+    private GameServiceListener serviceListener;
+
+    private GameMessage gameMessage; // GameMessage sent to communicate character actions and movement
+    private long messageTiming = 0;
+    private long messageInterval = 1000;
 
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
+        serviceListener = DataHandler.getInstance().getMessageListener();
+        serviceListener.addListener(this);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
+                .addConnectionCallbacks(serviceListener)
+                .addOnConnectionFailedListener(serviceListener)
                 .addApi(Games.API)
                 .addScope(Games.SCOPE_GAMES)
                 .build();
         mGoogleApiClient.connect();
 
         room = (Room) getIntent().getExtras().get(Multiplayer.EXTRA_ROOM);
-        if(room != null)
+        if(room != null) {
             participants = room.getParticipants();
+        }
         initiate();
     }
 
     public void initiate() {
         GameThread.getInstance().setActivity(this);
+
+        gameMessage = new GameMessage(GameMessage.GAME_POSITION);
 
         //TODO: TESTING ONLY, REMOVE
         gameMap = new SkyStage();
@@ -112,7 +117,6 @@ public class GameActivity extends GameMenu
                 opponent.getCharacter().update(dt);
             }
         }
-
         if (gameMap != null)
             gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
 
@@ -139,13 +143,17 @@ public class GameActivity extends GameMenu
             }
         }
 
-        // SEND SHIT
-
-        if(mGoogleApiClient.isConnected() && participants != null) {
-            byte[] message = ("Other person = (" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY()).getBytes();
-            for (Participant p : participants) {
-                if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
-                    Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, message, "pina");
+        // SEND GameMessage
+        messageTiming+=dt;
+        if(messageTiming > messageInterval) {   // TODO: remove, sending only once a second to not overflow monitor
+            messageTiming -= messageInterval;
+            if(mGoogleApiClient.isConnected() && participants != null) {
+                gameMessage.setCharacterValues(thisPlayer.getCharacter());  // Prepare new values
+//                byte[] message = ("Other person = (" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY() + ")").getBytes();
+                for (Participant p : participants) {
+                        if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
+                        Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, gameMessage.toBytes(), room.getRoomId());
+                    }
                 }
             }
         }
@@ -194,7 +202,7 @@ public class GameActivity extends GameMenu
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.w("MainMenu", "onActivityResult");
+        Log.w("GameActivity", "onActivityResult");
         switch(requestCode) {
 
         }
@@ -203,36 +211,30 @@ public class GameActivity extends GameMenu
 
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
+    public void connected() {
         Log.w("GameActivity", "Connected!");
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
+    public void connectionSuspended(int i) {
         Log.w("GameActivity", "Connection suspended");
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    public void connectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.w("GameActivity", "Failed to connect");
         Log.w("GameActivity", "" + connectionResult.getErrorCode());
         Log.w("GameActivity", connectionResult.getErrorMessage() + "");
     }
 
     @Override
-    public void onInvitationReceived(Invitation invitation) {
-        Log.w("GameActivity", "Received an invitation");
+    public void messageReceived(RealTimeMessage realTimeMessage) {
+        byte[] bytes = realTimeMessage.getMessageData();
+        GameMessage messageReceived = GameMessage.fromBytes(bytes);
+        if(messageReceived != null)
+            Log.w("GameActivity", "Got a message: " + messageReceived);
+        else
+            Log.w("GameActivity","Got a message, but data corrupted");
     }
 
-    @Override
-    public void onInvitationRemoved(String s) {
-
-    }
-
-    @Override
-    public void onRealTimeMessageReceived(RealTimeMessage realTimeMessage) {
-        byte[] b = realTimeMessage.getMessageData();
-        String message = new String(b);
-        Log.w("GameActivity", "Got a message: " + message);
-    }
 }

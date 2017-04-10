@@ -1,7 +1,7 @@
 package com.pa_gruppe11.freefalling.Singletons;
 
 
-import android.util.Log;
+import com.pa_gruppe11.freefalling.framework.GameServiceListener;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -29,6 +29,9 @@ public final class DataHandler implements Serializable{
 	private int screenHeight;
 
 	private static DataHandler INSTANCE ;
+
+
+	private static GameServiceListener messageListener = null; // The static part makes sure that this value will not get serialized
 
 	
 	private DataHandler() {}	// No need to initiate this file by other classes.
@@ -116,4 +119,17 @@ public final class DataHandler implements Serializable{
 	public void setHideMinimap(boolean hideMinimap) {
 		this.hideMinimap = hideMinimap;
 	}
+
+
+	/**
+	 * Returns messagelistener, or a new instance if it is not instantiated yet
+	 * @return
+	 */
+	public static GameServiceListener getMessageListener() {
+		return messageListener == null ? messageListener = new GameServiceListener() : messageListener;
+	}
+	public static void setMessageListener(GameServiceListener ml) {
+		messageListener = ml;
+	}
+
 }
