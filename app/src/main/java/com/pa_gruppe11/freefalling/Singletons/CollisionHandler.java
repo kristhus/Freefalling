@@ -39,27 +39,34 @@ public final class CollisionHandler {
 
     public boolean detectCollision(Collidable collider1, Collidable collider2){
 
-        float nextX1 = collider1.getNextX();
-        float nextY1 = collider1.getNextY();
 
 
-        float nextX2 = collider2.getNextX();
-        float nextY2 = collider2.getNextY();
+        RectF nextRect1 = collider1.getNextRect();
+        RectF nextRect2 = collider2.getNextRect();
 
+        RectF currentRect1 = collider1.getBoundingBox();
+        RectF currentRect2 = collider2.getBoundingBox();
 
-        RectF nextRect1 = collider1.getNextRect(nextX1, nextY1);
-        RectF nextRect2 = collider2.getNextRect(nextX2, nextY2);
-
-
+        /*
         if (nextRect1.intersect(nextRect2)){
             collider1.setCollided(true);
             collider2.setCollided(true);
 
-            if (nextRect1.bottom > nextRect2.top){
+
+            Log.w("CollisionHandler", collider1.toString() + " next bottom: " + nextRect1.bottom);
+
+            Log.w("CollisionHandler", collider2.toString() + " next top: " + nextRect2.top);
+
+
+
+            if (nextRect1.bottom < nextRect2.top){
                 collider1.setBottomCollision(true);
                 collider2.setTopCollision(true);
 
-                Log.w("Character", collider1.toString() + " bottom: " + collider1.getBoundingBox().bottom + collider2 + " top: " +
+                Log.w("CollisionHandler", "Bottom collision");
+
+
+                Log.w("CollisionHandler", collider1.toString() + " bottom: " + collider1.getBoundingBox().bottom + collider2 + " top: " +
                collider2.getBoundingBox().top);
 
                 if (nextRect1.left > nextRect2.right){
@@ -70,43 +77,26 @@ public final class CollisionHandler {
                     collider2.setLeftCollision(true);
                 }
 
-            } else {
+            } else if (nextRect1.top > nextRect2.bottom){
 
-                Log.w("CollisionHandler", "Blir det her kjørt??");
+                Log.w("CollisionHandler", "Top collision");
 
-                collider1.setTopCollision(true);
-                collider2.setBottomCollision(true);
-
-                if (nextRect1.left > nextRect2.right){
-                    collider1.setLeftCollision(true);
-                    collider2.setRightCollision(true);
-                }else if (nextRect1.left < nextRect2.right){
-                    collider1.setRightCollision(true);
-                    collider2.setLeftCollision(true);
-                }
-
-            }
-
-          /*  if (nextRect1.top < nextRect2.bottom){
-                collider1.setTopCollision(true);
-                collider2.setBottomCollision(true);
-
-                //   Log.w("Character", collider1.toString() + " bottom: " + collider1.getBoundingBox().bottom + collider2 + " top: " +
-                //   collider2.getBoundingBox().top);
+                Log.w("CollisionHandler", collider1.toString() + " top: " + collider1.getBoundingBox().top + collider2 + " bottom: " +
+                        collider2.getBoundingBox().bottom);
 
                 if (nextRect1.left > nextRect2.right){
                     collider1.setLeftCollision(true);
                     collider2.setRightCollision(true);
-                }else if (nextRect1.left < nextRect2.right){
+                }else if (nextRect1.right < nextRect2.left){
                     collider1.setRightCollision(true);
                     collider2.setLeftCollision(true);
                 }
-
             }
-            */
+
 
             return true;
         }
+
 
         // SETS COLLIDED
         collider1.setCollided(false);
@@ -126,10 +116,78 @@ public final class CollisionHandler {
 
 
         return false;
+
+        */
+
+        if (nextRect1.intersect(nextRect2)){
+
+            collider1.setCollided(true);
+            collider2.setCollided(true);
+
+            if (currentRect1.bottom < currentRect2.top){
+
+                Log.w("CollisionHandler", "Bottom-collision");
+
+                collider1.setBottomCollision(true);
+                collider2.setTopCollision(true);
+
+                if (currentRect1.left > currentRect2.right){
+
+                    //Log.w("CollisionHandler", "Left-collision");
+
+                    collider1.setLeftCollision(true);
+                    collider2.setRightCollision(true);
+
+                }else if (currentRect1.right < currentRect2.left){
+
+                    collider1.setRightCollision(true);
+                    collider2.setLeftCollision(true);
+
+                }
+
+            }else if (currentRect1.top > currentRect2.bottom){
+
+                if (currentRect1.left > currentRect2.right){
+
+                    //Log.w("CollisionHandler", "Left-collision");
+
+                    collider1.setLeftCollision(true);
+                    collider2.setRightCollision(true);
+
+                }else if (currentRect1.right < currentRect2.left){
+
+                    collider1.setRightCollision(true);
+                    collider2.setLeftCollision(true);
+
+                }
+
+            }
+
+            return true;
+        }
+
+        // SETS COLLIDED
+        collider1.setCollided(false);
+        collider2.setCollided(false);
+
+        // SETS TOP/BOTTOM/LEFT/RIGHT COLLISION
+        collider1.setTopCollision(false);
+        collider1.setBottomCollision(false);
+        collider1.setLeftCollision(false);
+        collider1.setRightCollision(false);
+
+        collider2.setTopCollision(false);
+        collider2.setBottomCollision(false);
+        collider2.setLeftCollision(false);
+        collider2.setRightCollision(false);
+
+        return false;
+
     }
 
     public void handleCollision(Collidable collider1, Collidable collider2){
 
+        /*
 
       if (collider1.isBottomCollision() && collider2.isPinned() ){
 
@@ -172,7 +230,14 @@ public final class CollisionHandler {
 
       }
 
+    */
 
+        if (collider1.isBottomCollision() || collider1.isTopCollision() && collider2.isPinned()){
+            collider1.setDy(collider2.getDy());
+
+        }else if (collider1.isLeftCollision() || collider1.isRightCollision() && collider2.isPinned()){
+            collider1.setDx(collider2.getDx());
+        }
 
     }
 

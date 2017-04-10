@@ -113,8 +113,6 @@ public class GameActivity extends GameMenu
             }
         }
 
-        if (gameMap != null)
-            gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
 
         // Update powerups and obstacles
         ArrayList<Obstacle> obstacles = gameMap.getObstacles();
@@ -154,6 +152,8 @@ public class GameActivity extends GameMenu
 
 
         thisPlayer.getCharacter().update(dt);           // Update this player
+        if (gameMap != null)
+            gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
         //testblock.update(dt);                           // Update this obstacle
     }
 

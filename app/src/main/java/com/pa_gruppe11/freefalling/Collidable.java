@@ -36,8 +36,6 @@ public class Collidable implements Drawable {
     protected float maxAccelerationX = 30; // max acceleration
     protected float maxAccelerationY = 30; // would take 5 seconds to fully change 180degrees with 10 acc, and 25 vel.
 
-    protected long dt = 0;
-
     private float scale;
     private float scaledHeight;
     private float scaledWidth;
@@ -47,11 +45,13 @@ public class Collidable implements Drawable {
 
     private boolean pinned = false; // Set to true if the collidable obeject does not move after handleCollision.
     private boolean collided = false;
+    private boolean collisionNext = false;
+
     private int rightBounds = DataHandler.getInstance().getScreenWidth();
     private int leftBounds = 0;
 
     private RectF boundingBox;
-    private Collidable collider;
+    private RectF nextRect;
     private Collidable collidesWith;
 
 
@@ -72,6 +72,9 @@ public class Collidable implements Drawable {
 
         this.width = width;
         this.height = height;
+
+        boundingBox = new RectF(x, y, x + width, y + height);
+        nextRect = new RectF(nextX, nextY, nextX + width, nextY + height);
 
         bitmap = ResourceLoader.getInstance().getImageList().get(id);
 
@@ -94,7 +97,7 @@ public class Collidable implements Drawable {
      * @param y
      * @return
      */
-    public RectF getNextRect(float x, float y){
+    public RectF calculateNextRect(float x, float y){
         RectF rect = new RectF(x, y, x + width, y + height);
         return rect;
     }
@@ -127,47 +130,41 @@ public class Collidable implements Drawable {
      */
     public void update(long dt){
 
-        setDt(dt);
 
-        // Controllable objects
+/*
+        boundingBox = new RectF(x, y, x + width, y + height);
 
-        /*if (!pinned) {
+        nextX = calculateNextX(dx, dt);
+        nextY = calculateNextY(dy, dt);
+*/
 
-            // SETTING THE SPEED
+
+        // SETTING THE SPEED
+
+
+        if (!collided || isPinned()) {
+
             setDx((dx + accelerationX * (float) dt / 1000));
             setDy((dy + accelerationY * (float) dt / 1000));
 
             // SETTING THE POSITION
             setX(x + dx * (float) dt / 1000);
             setY(y + dy * (float) dt / 1000);
-
         }
 
-        else{ // Update of object that can only move i one axis, primarily Obstales.
-
-            setX(x + dx * (float) dt / 1000);
-            setY(y + dy * (float) dt / 1000);
 
 
+       /* if (bottomCollision){
+            Log.w("Collidable", "Updates what should happen when bottomCollision");
+            setY(collidesWith.calculateNextY(collidesWith.getY() + 2, dt));
         }
-        */
-        // SETTING THE SPEED
-        setDx((dx + accelerationX * (float) dt / 1000));
-        setDy((dy + accelerationY * (float) dt / 1000));
-
-        if (!collided || isPinned()) {
-
-            // SETTING THE POSITION
-            setX(x + dx * (float) dt / 1000);
-            setY(y + dy * (float) dt / 1000);
-        }else if (isBottomCollision()){
-            setY(collidesWith.getNextY() + 2);
-        }
-
+*/
         boundingBox = new RectF(x, y, x + width, y + height);
 
         nextX = calculateNextX(dx, dt);
         nextY = calculateNextY(dy, dt);
+
+        nextRect = new RectF(nextX, nextY, nextX + width, nextY + height);
 
     }
 
@@ -268,11 +265,11 @@ public class Collidable implements Drawable {
 
     public void setPinned(boolean pinned){this.pinned = pinned;}
 
-    public void setCollider(Collidable collider){this.collider = collider;}
-
     public void setCollided(boolean collided){this.collided = collided;}
 
-    public void setDt(long dt){this.dt = dt;}
+    public void setCollisionNext(boolean collisionNext) {
+        this.collisionNext = collisionNext;
+    }
 
     public void setCollidesWith(Collidable collidesWith){this.collidesWith = collidesWith;}
 
@@ -298,21 +295,15 @@ public class Collidable implements Drawable {
 
     // GETTERS
 
-    public float getX() {
-        return x;
-    }
+    public float getX() {return x;}
 
-    public float getY() {
-        return y;
-    }
+    public float getY() {return y;}
 
-    public float getNextX() {
-        return nextX;
-    }
+    public float getNextX() {return nextX;}
 
-    public float getNextY() {
-        return nextY;
-    }
+    public float getNextY() {return nextY;}
+
+    public RectF getNextRect(){return nextRect;}
 
     public float getDx() {
         return dx;
@@ -321,8 +312,6 @@ public class Collidable implements Drawable {
     public float getDy() {
         return dy;
     }
-
-    public long getDt(){return dt;}
 
     public int getWidth(){return width;}
 
@@ -353,4 +342,6 @@ public class Collidable implements Drawable {
     }
 
     public boolean isCollided(){return collided;}
+
+    public boolean isCollisionNext() {return collisionNext;}
 }
