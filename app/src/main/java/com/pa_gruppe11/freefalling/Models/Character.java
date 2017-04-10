@@ -101,11 +101,11 @@ public class Character extends Collidable{
             float distX = touchedX - centreX;
             float distY = touchedY - centreY;
 
-            Log.w("Character", "distX: " + distX + "  distY: " + distY);
+           // Log.w("Character", "distX: " + distX + "  distY: " + distY);
 
             float distance = (float) Math.sqrt(Math.pow(centreX-touchedX,2) + Math.pow(centreY - touchedY,2));
 
-            Log.w("Character", "distance: " + distance);
+           // Log.w("Character", "distance: " + distance);
 
             if(distance > maxTouchRadius) { // Correction for touches outside the allowed max radius
                 //float scale = (maxTouchRadius/Math.max(distX, distY));
@@ -113,14 +113,14 @@ public class Character extends Collidable{
 
                 distX*=scale;
                 distY*=scale;
-                Log.w("Character", "scale: " + scale);
+             //   Log.w("Character", "scale: " + scale);
             }
             // TODO: This may not be correct, but need to run with valid implementationg to check first
             accelerationX = accModifier * maxAccelerationX * distX/maxTouchRadius;
             accelerationY = accModifier * maxAccelerationY * distY/maxTouchRadius;
 
-            Log.w("Character", "accelerationX: " + accelerationX);
-            Log.w("Character", "accelerationY: " + accelerationY);
+           // Log.w("Character", "accelerationX: " + accelerationX);
+           // Log.w("Character", "accelerationY: " + accelerationY);
 
         }
 

@@ -154,6 +154,7 @@ public class Collidable implements Drawable {
 
 
 
+
        /* if (bottomCollision){
             Log.w("Collidable", "Updates what should happen when bottomCollision");
             setY(collidesWith.calculateNextY(collidesWith.getY() + 2, dt));
