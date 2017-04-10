@@ -112,6 +112,7 @@ public class GameActivity extends GameMenu
                 opponent.getCharacter().update(dt);
             }
         }
+
         if (gameMap != null)
             gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
 
@@ -153,7 +154,7 @@ public class GameActivity extends GameMenu
 
 
         thisPlayer.getCharacter().update(dt);           // Update this player
-        testblock.update(dt);                           // Update this obstacle
+        //testblock.update(dt);                           // Update this obstacle
     }
 
     public void notifyReady() {
