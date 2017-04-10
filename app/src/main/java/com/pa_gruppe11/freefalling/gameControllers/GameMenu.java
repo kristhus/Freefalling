@@ -11,10 +11,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
 import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.pa_gruppe11.freefalling.R;
+import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
 import com.pa_gruppe11.freefalling.framework.BaseGameUtils;
 
@@ -85,11 +87,9 @@ public class GameMenu extends Activity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
-                        GameThread.getInstance().setSuspended(true);
-
-
-
-                        Log.w("GM", "Suspend: " + GameThread.getInstance().isSuspended());
+                        GameThread.getInstance().stop_gameThread();
+                        Games.RealTimeMultiplayer.leave(mGoogleApiClient, DataHandler.getMessageListener(), room.getRoomId());
+                        //Log.w("GM", "Suspend: " + GameThread.getInstance().isSuspended());
                         goTo(MainMenu.class);
                     }
                 });

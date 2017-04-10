@@ -6,7 +6,6 @@ import android.os.Bundle;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
@@ -21,7 +20,6 @@ import com.pa_gruppe11.freefalling.Models.PowerUp;
 import com.pa_gruppe11.freefalling.R;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.ViewGroup;
 
@@ -53,16 +51,19 @@ public class GameActivity extends GameMenu {
     // Controllers
     private PlayerController controller;
 
-    private Room room;
     private GameServiceListener serviceListener;
 
     private GameMessage gameMessage; // GameMessage sent to communicate character actions and movement
     private long messageTiming = 0;
-    private long messageInterval = 1000;
+    private long messageInterval = 100;
+    private boolean updateBasedCommunication = true;
+
+    private String drawPlayerName;
 
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
+        room = (Room) getIntent().getExtras().get(Multiplayer.EXTRA_ROOM);
         serviceListener = DataHandler.getInstance().getMessageListener();
         serviceListener.addListener(this);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -72,23 +73,48 @@ public class GameActivity extends GameMenu {
                 .addScope(Games.SCOPE_GAMES)
                 .build();
         mGoogleApiClient.connect();
-
-        room = (Room) getIntent().getExtras().get(Multiplayer.EXTRA_ROOM);
-        if(room != null) {
-            participants = room.getParticipants();
-        }
-        initiate();
     }
 
     public void initiate() {
+        Log.w("GameActivity", "Init");
+        thisPlayer = new Player();
+        thisPlayer.setCharacter(new Hanz(R.drawable.stickman, 65, 112));
+        if(room != null) {
+            participants = room.getParticipants();
+            int i = 0;
+            if(participants != null) {
+                opponents = new Player[participants.size()];
+                int index = 0;
+                Log.w("GameActivity", "This id: " + Games.Players.getCurrentPlayer(mGoogleApiClient).getPlayerId());
+                for(Participant p : participants) {
+                    //TODO: replace - debug purposes
+                    if(p.getPlayer() == null || !p.getPlayer().getPlayerId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
+                        Hanz c = new Hanz(R.drawable.stickman, 65, 112);
+                        c.setX(200*(index+1));
+                        c.setY(200);
+                        Player otherPlayer = new Player(p.getParticipantId(), i, null, c);
+                        String displayName = p.getDisplayName();
+                        otherPlayer.setDisplayName(displayName);
+                        opponents[i] = otherPlayer;
+                        i++;
+                    }else {
+                        thisPlayer.getCharacter().setX(200*(index+1));
+                        thisPlayer.getCharacter().setY(200);
+                        thisPlayer.setParticipantId(p.getParticipantId());
+                        thisPlayer.setDisplayName(p.getDisplayName());
+                    }
+                }
+                Log.w("GameActivity", "Ready to init game with " + opponents.length + " opponents");
+            }
+        }
+
+
         GameThread.getInstance().setActivity(this);
 
         gameMessage = new GameMessage(GameMessage.GAME_POSITION);
 
         //TODO: TESTING ONLY, REMOVE
         gameMap = new SkyStage();
-        thisPlayer = new Player();
-        thisPlayer.setCharacter(new Hanz(R.drawable.stickman, 65, 112));
         testblock = new Block(R.drawable.block, 106, 61);
 
         gameMap.addObstacle(testblock);
@@ -107,16 +133,20 @@ public class GameActivity extends GameMenu {
     }
 
     public void update(long dt) {
+
         if (opponents != null) {
             for (Player opponent : opponents) {
                 //if(thisPlayer.getCharacter().collides(opponent.getCharacter())) {
-                if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), opponent.getCharacter())) {
+          /*      if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), opponent.getCharacter())) {
                     thisPlayer.getCharacter().setCollidesWith(opponent.getCharacter());
                     CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), opponent.getCharacter());
                 }
-                opponent.getCharacter().update(dt);
+           */
+                if(!updateBasedCommunication)
+                    opponent.getCharacter().update(dt);
             }
         }
+
         if (gameMap != null)
             gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
 
@@ -145,13 +175,13 @@ public class GameActivity extends GameMenu {
 
         // SEND GameMessage
         messageTiming+=dt;
-        if(messageTiming > messageInterval) {   // TODO: remove, sending only once a second to not overflow monitor
+        if(messageTiming > messageInterval || updateBasedCommunication) {   // TODO: remove, sending only once a second to not overflow monitor
             messageTiming -= messageInterval;
             if(mGoogleApiClient.isConnected() && participants != null) {
                 gameMessage.setCharacterValues(thisPlayer.getCharacter());  // Prepare new values
 //                byte[] message = ("Other person = (" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY() + ")").getBytes();
                 for (Participant p : participants) {
-                        if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
+                    if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
                         Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, gameMessage.toBytes(), room.getRoomId());
                     }
                 }
@@ -164,6 +194,11 @@ public class GameActivity extends GameMenu {
         thisPlayer.getCharacter().update(dt);           // Update this player
         //testblock.update(dt);                           // Update this obstacle
     }
+
+    public Player[] getOpponents() {
+        return opponents;
+    }
+
 
     public void notifyReady() {
         if(!GameThread.getInstance().isStarted()) {
@@ -212,8 +247,11 @@ public class GameActivity extends GameMenu {
 
     @Override
     public void connected() {
+        super.connected();
+        initiate();
         Log.w("GameActivity", "Connected!");
     }
+
 
     @Override
     public void connectionSuspended(int i) {
@@ -229,10 +267,20 @@ public class GameActivity extends GameMenu {
 
     @Override
     public void messageReceived(RealTimeMessage realTimeMessage) {
+        if(!mConnected)
+            return;
         byte[] bytes = realTimeMessage.getMessageData();
         GameMessage messageReceived = GameMessage.fromBytes(bytes);
-        if(messageReceived != null)
-            Log.w("GameActivity", "Got a message: " + messageReceived);
+
+        if(messageReceived != null) {
+            String senderId = realTimeMessage.getSenderParticipantId();
+            for(Player p : opponents) {
+                if (p.getParticipantId().equals(senderId)) {
+                    p.getCharacter().setValues(messageReceived);
+                    break;
+               }
+            }
+        }
         else
             Log.w("GameActivity","Got a message, but data corrupted");
     }

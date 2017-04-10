@@ -62,7 +62,6 @@ public class GameServiceListener implements RealTimeMessageReceivedListener,
 
     @Override
     public void onRealTimeMessageReceived(RealTimeMessage realTimeMessage) {
-        Log.w("GameServiceListener", "Got a message, ding ding");
         if(listeners != null && listeners.keySet().size() > 0) {
             for(String key : listeners.keySet()) {
                 GameMenu m = listeners.get(key);

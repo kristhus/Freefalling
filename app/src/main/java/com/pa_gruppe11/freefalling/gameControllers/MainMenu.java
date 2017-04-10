@@ -51,7 +51,6 @@ public class MainMenu extends GameMenu
 
 
     private int roomId = -1;
-    private Room room;
     private GameServiceListener serviceListener;
 
     private View selector;
@@ -102,14 +101,13 @@ public class MainMenu extends GameMenu
 
     public void startQuickGame(View view) {
         Log.w("MainMenu", "StartQuickGame");
-        Bundle am = RoomConfig.createAutoMatchCriteria(1, 1, 0);
+        Bundle am = RoomConfig.createAutoMatchCriteria(1, 3, 0);
         RoomConfig.Builder roomConfigBuilder = createDefaultRoom();
         roomConfigBuilder.setAutoMatchCriteria(am);
         RoomConfig roomConfig = roomConfigBuilder.build();
 
         Games.RealTimeMultiplayer.create(mGoogleApiClient, roomConfig);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         showLoading();
 
 
@@ -158,6 +156,7 @@ public class MainMenu extends GameMenu
         Intent intent = new Intent(this, GameActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         intent.putExtra(Multiplayer.EXTRA_ROOM, room);
+        intent.putExtra("CURRENT_PLAYER_ID", Games.Players.getCurrentPlayer(mGoogleApiClient));
         startActivity(intent);
         finish();
 
@@ -260,7 +259,7 @@ public class MainMenu extends GameMenu
                 }
                 else if(resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                     //TODO: leave room
-
+                    Games.RealTimeMultiplayer.leave(mGoogleApiClient, serviceListener, room.getRoomId());
                 }
                 break;
         }
@@ -312,7 +311,8 @@ public class MainMenu extends GameMenu
 
     @Override
     public void roomConnected(int i, Room room) {
-        Log.w("MainMenu", "onRoomConnected");
+        super.roomConnected(i, room);
+        Log.w("MainMenu", "onRoomConnected: #participants: " + room.getParticipants().size());
     }
 
     @Override
