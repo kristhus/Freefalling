@@ -2,6 +2,7 @@ package com.pa_gruppe11.freefalling.Models;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.Log;
@@ -36,7 +37,7 @@ public class Character extends Collidable{
 
     private Collidable collidesWith;
 
-
+    private String displayName = "default";
 
     public Character(int id, int width, int height){
 
@@ -131,6 +132,12 @@ public class Character extends Collidable{
     public void draw(Canvas canvas) {
 //        canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), getX(), getY(), new Paint());
         super.draw(canvas);
+
+        // Draw displayName atop of charactermodel
+        Paint paint = new Paint();
+        paint.setTextSize(32);
+        paint.setColor(Color.RED);
+        canvas.drawText(displayName, x-30 + (width/2), y-30, paint);
     }
 
     @Override
@@ -145,6 +152,17 @@ public class Character extends Collidable{
 
     public void setTouches(ArrayList<ArrayList<Float>> touches) {
         this.touches = touches;
+    }
+
+    public void setValues(GameMessage gameMessage) {
+        x = gameMessage.getX();
+        y = gameMessage.getY();
+        dx = gameMessage.getDx();
+        dy = gameMessage.getDy();
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
 }

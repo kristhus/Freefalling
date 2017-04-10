@@ -155,4 +155,8 @@ public class GameThread extends Thread { //
         PERIOD_LENGTH = 1000/MAX_FPS;
     }
 
+    public void stop_gameThread() {
+        gameThread = new GameThread();
+    }
+
 }

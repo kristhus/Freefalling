@@ -6,7 +6,6 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -26,17 +25,14 @@ import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
-import com.google.android.gms.games.multiplayer.OnInvitationReceivedListener;
 
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
-import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
-import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListener;
-import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
 import com.pa_gruppe11.freefalling.R;
 import com.pa_gruppe11.freefalling.Singletons.Config;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
+import com.pa_gruppe11.freefalling.framework.GameServiceListener;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 import com.pa_gruppe11.freefalling.framework.GridViewAdapter;
 
@@ -48,27 +44,19 @@ import java.util.List;
  */
 
 public class MainMenu extends GameMenu
-        implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        OnInvitationReceivedListener,
-        RealTimeMessageReceivedListener,
-        RoomStatusUpdateListener,
-        RoomUpdateListener,
-        View.OnClickListener{
+        implements View.OnClickListener{
 
-    private GoogleApiClient mGoogleApiClient;
+  //  private GoogleApiClient mGoogleApiClient;
 
-    //Status codes ( only requirement is for them to be unique )
-    private static final int RC_SIGN_IN = 9001;
-    private static final int RC_SELECT_PLAYERS = 10000;
-    private static final int RC_WAITING_ROOM = 10002;
+
 
     private int roomId = -1;
-    private Room room;
+    private GameServiceListener serviceListener;
 
     private View selector;
     private GridView characterGridView;
     private GridViewAdapter characterAdapter;
+
 
 
     @Override
@@ -87,18 +75,17 @@ public class MainMenu extends GameMenu
 
         ResourceLoader.getInstance().setContext(this);
 
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
- //               .requestEmail()
-  //              .build();
 
+
+
+        serviceListener = DataHandler.getInstance().getMessageListener();
+        serviceListener.addListener(this);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
-//                .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
+           //     .addApi(Auth.GOOGLE_SIGN_IN_API)
+                .addConnectionCallbacks(serviceListener)
+                .addOnConnectionFailedListener(serviceListener)
             .build();
 
         mGoogleApiClient.connect();
@@ -114,13 +101,14 @@ public class MainMenu extends GameMenu
 
     public void startQuickGame(View view) {
         Log.w("MainMenu", "StartQuickGame");
-        Bundle am = RoomConfig.createAutoMatchCriteria(1, 1, 0);
+        Bundle am = RoomConfig.createAutoMatchCriteria(1, 3, 0);
         RoomConfig.Builder roomConfigBuilder = createDefaultRoom();
         roomConfigBuilder.setAutoMatchCriteria(am);
         RoomConfig roomConfig = roomConfigBuilder.build();
 
         Games.RealTimeMultiplayer.create(mGoogleApiClient, roomConfig);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        showLoading();
 
 
         //go to game screen
@@ -135,9 +123,9 @@ public class MainMenu extends GameMenu
     }
 
     public RoomConfig.Builder createDefaultRoom() {
-        return RoomConfig.builder(this)
-                .setMessageReceivedListener(this)
-                .setRoomStatusUpdateListener(this);
+        return RoomConfig.builder(serviceListener)
+                .setMessageReceivedListener(serviceListener)
+                .setRoomStatusUpdateListener(serviceListener);
     }
 
 
@@ -164,10 +152,11 @@ public class MainMenu extends GameMenu
         //ResourceLoader.getInstance().loadImage(R.drawable.stickman, this);
         //ResourceLoader.getInstance().loadImage(R.drawable.bg_sky, this);
         ResourceLoader.getInstance().manualLoad(this);
-
+        serviceListener.remove(this); // revoke notification when changing activity;
         Intent intent = new Intent(this, GameActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         intent.putExtra(Multiplayer.EXTRA_ROOM, room);
+        intent.putExtra("CURRENT_PLAYER_ID", Games.Players.getCurrentPlayer(mGoogleApiClient));
         startActivity(intent);
         finish();
 
@@ -175,7 +164,8 @@ public class MainMenu extends GameMenu
     }
 
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
+    public void connected() {
+        super.connected();
         Log.w("MainMenu", "Connected successfully");
         Toast.makeText(this, "Connected to Game Services",
                 Toast.LENGTH_SHORT).show();
@@ -183,7 +173,7 @@ public class MainMenu extends GameMenu
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
+    public void connectionSuspended(int i) {
         Log.w("MainMenu", "Connection suspended!");
         Toast.makeText(this, "Connection suspended",
                 Toast.LENGTH_SHORT).show();
@@ -191,15 +181,13 @@ public class MainMenu extends GameMenu
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.w("MainMenu", "Failed to connect");
-        Toast.makeText(this, "Failed connecting to Game Services",
-                Toast.LENGTH_SHORT).show();
+    public void connectionFailed(@NonNull ConnectionResult connectionResult) {
+        super.connectionFailed(connectionResult);
         findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void onInvitationReceived(Invitation invitation) {
+    public void invitationReceived(Invitation invitation) {
         Log.w("MainMenu", "Invitation received");
 
         if(invitation != null) {
@@ -212,7 +200,7 @@ public class MainMenu extends GameMenu
     }
 
     @Override
-    public void onInvitationRemoved(String s) {
+    public void invitationRemoved(String s) {
         Log.w("MainMenu", "Removed invitation");
     }
 
@@ -255,12 +243,12 @@ public class MainMenu extends GameMenu
                 break;
             case RC_SIGN_IN:
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                if(result.isSuccess()) {
+                if(result != null && result.isSuccess()) {
                     Log.w("MainMenu", "Success");
                     mGoogleApiClient.connect();
                 }
                 else
-                    Log.w("MainMenu", "Phail" + result.getStatus());
+                    Log.w("MainMenu", "RC_SIGN_IN failed with status " + (result!=null ? result.getStatus() : "result null"));
                 break;
             case RC_WAITING_ROOM:
                 Log.w("MainMenu", "RC_WAITING_ROOM");
@@ -271,7 +259,7 @@ public class MainMenu extends GameMenu
                 }
                 else if(resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                     //TODO: leave room
-
+                    Games.RealTimeMultiplayer.leave(mGoogleApiClient, serviceListener, room.getRoomId());
                 }
                 break;
         }
@@ -280,6 +268,7 @@ public class MainMenu extends GameMenu
     @Override
     public void onClick(View v) {
         Log.w("MainMenu", "opening signin");
+        mSignInClicked = true;
         mGoogleApiClient.connect();
         /*
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
@@ -288,12 +277,12 @@ public class MainMenu extends GameMenu
     }
 
     @Override
-    public void onRealTimeMessageReceived(RealTimeMessage realTimeMessage) {
+    public void messageReceived(RealTimeMessage realTimeMessage) {
         Log.w("MainMenu", "Received message from " + realTimeMessage.getSenderParticipantId() + " : " + realTimeMessage.getMessageData());
     }
 
     @Override
-    public void onRoomCreated(int i, Room room) {
+    public void roomCreated(int i, Room room) {
         this.room = room;
         Log.w("MainMenu", "Room created");
         Intent intent = Games.RealTimeMultiplayer.getWaitingRoomIntent(mGoogleApiClient, room, Integer.MAX_VALUE);
@@ -304,7 +293,7 @@ public class MainMenu extends GameMenu
     }
 
     @Override
-    public void onJoinedRoom(int statusCode, Room room) {
+    public void joinedRoom(int statusCode, Room room) {
         this.room = room;
         Log.w("MainMenu", "Joined room");
         if(statusCode != GamesStatusCodes.STATUS_OK) {
@@ -316,75 +305,21 @@ public class MainMenu extends GameMenu
     }
 
     @Override
-    public void onLeftRoom(int i, String s) {
-        room = null;
+    public void leftRoom(int i, String s) {
         Log.w("MainMenu", "Left room");
     }
 
     @Override
-    public void onRoomConnected(int i, Room room) {
-        Log.w("MainMenu", "onRoomConnected");
+    public void roomConnected(int i, Room room) {
+        super.roomConnected(i, room);
+        Log.w("MainMenu", "onRoomConnected: #participants: " + room.getParticipants().size());
     }
 
     @Override
-    public void onRoomConnecting(Room room) {
+    public void roomConnecting(Room room) {
         Log.w("MainMenu", "onRoomConnecting");
     }
 
-    @Override
-    public void onRoomAutoMatching(Room room) {
-        Log.w("MainMenu", "onRoomAutoMatching");
-    }
-
-    @Override
-    public void onPeerInvitedToRoom(Room room, List<String> list) {
-        Log.w("MainMenu", "onPeerInvitedToRoom");
-    }
-
-    @Override
-    public void onPeerDeclined(Room room, List<String> list) {
-        Log.w("MainMenu", "onPeerDeclined");
-    }
-
-    @Override
-    public void onPeerJoined(Room room, List<String> list) {
-        Log.w("MainMenu", "onPeerJoined");
-    }
-
-    @Override
-    public void onPeerLeft(Room room, List<String> list) {
-        Log.w("MainMenu", "onPeerLeft");
-    }
-
-    @Override
-    public void onConnectedToRoom(Room room) {
-        Log.w("MainMenu", "onConnectedToRoom");
-    }
-
-    @Override
-    public void onDisconnectedFromRoom(Room room) {
-        Log.w("MainMenu", "onDisconnectedFromRoom");
-    }
-
-    @Override
-    public void onPeersConnected(Room room, List<String> list) {
-        Log.w("MainMenu", "onPeersConnected");
-    }
-
-    @Override
-    public void onPeersDisconnected(Room room, List<String> list) {
-        Log.w("MainMenu", "onPeersDisconnected");
-    }
-
-    @Override
-    public void onP2PConnected(String s) {
-        Log.w("MainMenu", "onP2PConnected");
-    }
-
-    @Override
-    public void onP2PDisconnected(String s) {
-        Log.w("MainMenu", "onP2PDisconnected");
-    }
 
     public void showLoading() {
         findViewById(R.id.loadLayout).setVisibility(View.VISIBLE);
