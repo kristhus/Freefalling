@@ -151,6 +151,11 @@ public class MainMenu extends GameMenu
         //ResourceLoader.getInstance().loadImage(R.drawable.bg_sky, this);
         //ResourceLoader.getInstance().loadImage(R.drawable.stickman, this);
         //ResourceLoader.getInstance().loadImage(R.drawable.bg_sky, this);
+        if(!mGoogleApiClient.isConnected()) {
+            goTo(GameActivity.class);
+            return;
+        }
+
         ResourceLoader.getInstance().manualLoad(this);
         serviceListener.remove(this); // revoke notification when changing activity;
         Intent intent = new Intent(this, GameActivity.class);

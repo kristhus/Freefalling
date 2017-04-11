@@ -37,7 +37,7 @@ public class PlayerController extends SurfaceView implements SurfaceHolder.Callb
             float y = e.getY(i);
             ArrayList<Float> tmp = new ArrayList<Float>();
             tmp.add(x);tmp.add(y);
-            Log.w("PlayerController", "OOOH, you touched my talala    x: " + x + "   y: " + y);
+            //Log.w("PlayerController", "OOOH, you touched my talala    x: " + x + "   y: " + y);
             touches.add(tmp);
         }
         context.getPlayer().getCharacter().setTouches(touches);

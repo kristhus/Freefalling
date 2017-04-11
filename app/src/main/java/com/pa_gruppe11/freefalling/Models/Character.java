@@ -56,37 +56,6 @@ public class Character extends Collidable{
     public void update(long dt){
         respondToTouch(); // we do this here, to assure the order is done correctly
         super.update(dt);
-/*
-        if ( isBottomCollision() && collidesWith.isPinned()){
-
-
-           // Log.w("Character", "Her skal det kolliderast!");
-
-            setDy(collidesWith.getDy());
-
-
-
-
-           // Log.w("Character", "Collideswith according to character is: " + collidesWith.toString());
-           // Log.w("Character", "Character collides with something! This happens in Character.update()");
-
-        }
-*/
-
-
-        /*
-        setDx((dx + accelerationX * (float)dt/1000));
-        setDy((dy + accelerationY * (float)dt/1000));
-
-       // Log.w("CharacterPRE", "dt in seconds: " + accelerationY * (float)dt/1000);
-
-        setX(x + dx * (float)dt/1000);
-        setY(y + dy * (float)dt/1000);
-        */
-     //   Log.w("CharacterPOST", "X: " + x  +   "    Y: " + y);
-
-
-
     }
 
     public void respondToTouch() {
@@ -96,8 +65,8 @@ public class Character extends Collidable{
         if(touches != null && touches.size() > 0) {
             // TODO: handle only 1 touch to begin with, find out if loop through list would be wurt
             int i = 0;  // replace this with loop if necessary or wanted
-            float touchedX = touches.get(i).get(0);
-            float touchedY = touches.get(i).get(1);
+            float touchedX = touches.get(i).get(0); // x
+            float touchedY = touches.get(i).get(1); // y
 
             float distX = touchedX - centreX;
             float distY = touchedY - centreY;

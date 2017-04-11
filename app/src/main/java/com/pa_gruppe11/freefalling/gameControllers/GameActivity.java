@@ -66,7 +66,8 @@ public class GameActivity extends GameMenu {
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
-        room = (Room) getIntent().getExtras().get(Multiplayer.EXTRA_ROOM);
+        if(getIntent().hasExtra(Multiplayer.EXTRA_ROOM))
+            room = (Room) getIntent().getExtras().get(Multiplayer.EXTRA_ROOM);
         serviceListener = DataHandler.getInstance().getMessageListener();
         serviceListener.addListener(this);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -76,6 +77,10 @@ public class GameActivity extends GameMenu {
                 .addScope(Games.SCOPE_GAMES)
                 .build();
         mGoogleApiClient.connect();
+
+        if(!getIntent().hasExtra(Multiplayer.EXTRA_ROOM))
+            initiate();
+
     }
 
     public void initiate() {
@@ -115,7 +120,25 @@ public class GameActivity extends GameMenu {
 
         //TODO: TESTING ONLY, REMOVE
         gameMap = new SkyStage();
-        testblock = new Block(R.drawable.block, 106, 61);
+        testblock = new Block(R.drawable.block, 500, 50);
+        testblock.setAngularVelocity((float) Math.PI/2);
+        testblock.setRotate(true);
+
+        //
+        ArrayList<VectorSAT> c1 = Collidable.getCorners(thisPlayer.getCharacter(), 20);  // The rotated corners of collidable1
+        ArrayList<VectorSAT> c2 = Collidable.getCorners(testblock, 20);
+        ArrayList<VectorSAT> axis = Collidable.getAxis(c1, c2);
+
+        for(VectorSAT v : c1) {
+
+        }
+
+        int i = 0;
+        for(VectorSAT v : axis) {
+            Log.w("GameActivity", "axis " + i + "   " + v);
+            i++;
+        }
+
 
         gameMap.addObstacle(testblock);
 
@@ -136,14 +159,18 @@ public class GameActivity extends GameMenu {
 
         if (opponents != null) {
             for (Player opponent : opponents) {
-                //if(thisPlayer.getCharacter().collides(opponent.getCharacter())) {
-          /*      if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), opponent.getCharacter())) {
-                    thisPlayer.getCharacter().setCollidesWith(opponent.getCharacter());
-                    CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), opponent.getCharacter());
+                HashMap<String, Object> mtvList =
+                        Collidable.collidesMTV(
+                                opponent.getCharacter().getBounds(),
+                                thisPlayer.getCharacter().getBounds());
+                if((boolean) mtvList.get("boolean")) {
+                    VectorSAT mtv = (VectorSAT) mtvList.get("VectorSAT");
+                    thisPlayer.getCharacter().setDebugString("Kållesjcøn");
+                    thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
+                    thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
                 }
-           */
-                if(!updateBasedCommunication)   // refreshes on each message retreived, which is each frame when true
-                    opponent.getCharacter().update(dt);
+                //if(!updateBasedCommunication)   // refreshes on each message retreived, which is each frame when true
+                  //  opponent.getCharacter().update(dt);
             }
         }
 
@@ -152,13 +179,25 @@ public class GameActivity extends GameMenu {
         ArrayList<Obstacle> obstacles = gameMap.getObstacles();
         if (obstacles != null) {
             for (Obstacle o : obstacles) {
-                HashMap<String, Object> mtvList = Collidable.collidesMTV(thisPlayer.getCharacter().getBounds(), o.getBounds());
+                HashMap<String, Object> mtvList = Collidable.SATcollide(o, thisPlayer.getCharacter(), dt);
+                if((boolean) mtvList.get("boolean")) {
+                    VectorSAT mtv = (VectorSAT) mtvList.get("VectorSAT");
+                    thisPlayer.getCharacter().setDebugString("Kållesjcøn");
+                    thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
+                    thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
+
+                   // Log.w("GameActivity", "Collision");
+                }else
+                    thisPlayer.getCharacter().setDebugString("");
+             /*   //ordinary mtv collision
+                HashMap<String, Object> mtvList = Collidable.collidesMTV(o.getBounds(), thisPlayer.getCharacter().getBounds());
                 if((boolean) mtvList.get("boolean")){
                     VectorSAT mtv = (VectorSAT) mtvList.get("VectorSAT");
                     thisPlayer.getCharacter().setDebugString("Kållesjcøn");
                     thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
                     thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
                 }
+                */
             }
         }
 /*

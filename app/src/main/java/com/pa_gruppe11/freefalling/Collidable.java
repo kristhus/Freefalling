@@ -14,6 +14,7 @@ import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 import com.pa_gruppe11.freefalling.framework.RectSAT;
 import com.pa_gruppe11.freefalling.framework.VectorSAT;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +38,10 @@ public class Collidable implements Drawable {
     protected float dy = 0.0f;
     private float maxDx = 100.0f; // max velocity    - not necessarily final (powerup?)
     private float maxDy = 100.0f; // TODO: MAKE THIS 5% OF THE SCREEN HEIGHT
+
+    private float angularVelocity; // rads per second, pi/2 seems legit
+    private float angle;
+    private boolean rotate;
 
     protected int height;
     protected int width;
@@ -72,7 +77,7 @@ public class Collidable implements Drawable {
     private Bitmap bitmap;
 
 
-    private String debugString = "collission";
+    private String debugString = "";
 
     public Collidable(int id, int width, int height){
 
@@ -151,6 +156,17 @@ public class Collidable implements Drawable {
         setY(y + dy * (float) dt / 1000);
 
 
+        // SETTING THE ANGULAR VELOCITY
+        if(true) {
+            if(angle > 2*Math.PI)   // keep angle in the interval [-2PI, 2PI]
+                angle -= 2*Math.PI;
+            else if(angle < -2*Math.PI)
+                angle += 2*Math.PI;
+            angle += angularVelocity * (float) dt / 1000;
+            //DELETE THIS AFTER TESTING (edge-rotation)
+            setRotationPoints(getCorners(this, dt));
+        }
+
 
 
     }
@@ -213,27 +229,126 @@ public class Collidable implements Drawable {
             mtvList.add(new VectorSAT(0, b1.top - b2.bottom));
             mtvList.add(new VectorSAT(0, b1.bottom - b2.top));
 
-
-            Log.w("Collidable", "0: " + mtvList.get(0).getLength() + "   1: " + mtvList.get(1).getLength() +
-                    "    2: " + mtvList.get(2).getLength() + "    3: " + mtvList.get(3).getLength());
             Collections.sort(mtvList);
-            Log.w("Collidable", "0: " + mtvList.get(0).getLength() + "   1: " + mtvList.get(1).getLength() +
-                    "    2: " + mtvList.get(2).getLength() + "    3: " + mtvList.get(3).getLength());
-
-
             mtv = mtvList.get(0);
         }
         retVal.put("VectorSAT", mtv);
         return retVal;
     }
 
+    /**
+     * Get the centre position of the collidable object
+     * @param c
+     * @return
+     */
+    public static PointF getCentre(Collidable c) {
+        return new PointF(c.getX() + c.getWidth()/2, c.getY() + c.getHeight()/2);
+    }
+
+    /**
+     * Get corners of a collidable object to be rotated. Needs frame time, to calculate
+     * angular velocity for this frame
+     * @param c
+     * @param dt
+     * @return
+     */
+    public static ArrayList<VectorSAT> getCorners(Collidable c, long dt) { // dt needed to get angular velocity for this frame
+        ArrayList<VectorSAT> corners = new ArrayList<>();
+        PointF centre = getCentre(c);
+
+        float rot = c.getAngle();   // Angular velocity for current frame
+
+        ArrayList<VectorSAT> world_cords = new ArrayList<>();
+        world_cords.add(new VectorSAT(c.getX(), c.getY()));                                 // top left
+        world_cords.add(new VectorSAT(c.getX() + c.getWidth(), c.getY()));                  // top right
+        world_cords.add(new VectorSAT(c.getX(), c.getY() + c.getHeight()));                 // bottom left
+        world_cords.add(new VectorSAT(c.getX() + c.getWidth(), c.getY() + c.getHeight()));  // bottom right
+
+
+        for(VectorSAT v : world_cords) {
+            float x = (float) (centre.x + (v.x - centre.x) * Math.cos(rot) - (v.y - centre.y) * Math.sin(rot));
+            float y = (float) (centre.y + (v.x - centre.x) * Math.sin(rot) + (v.y - centre.y) * Math.cos(rot));
+            corners.add(new VectorSAT(x,y));
+        }
+        return corners;
+    }
+
+    public static ArrayList<VectorSAT> getAxis(ArrayList<VectorSAT> c1, ArrayList<VectorSAT> c2) {
+        ArrayList<VectorSAT> axis = new ArrayList<>();
+        axis.add(VectorSAT.getUnitVector(new VectorSAT(c1.get(1).x -  c1.get(0).x, c1.get(1).y - c1.get(0).y))); // topright - top left
+        axis.add(VectorSAT.getUnitVector(new VectorSAT(c1.get(2).x -  c1.get(0).x, c1.get(2).y - c1.get(0).y))); // bottom right - top right
+        axis.add(VectorSAT.getUnitVector(new VectorSAT(c2.get(1).x -  c2.get(0).x, c2.get(1).y - c2.get(0).y)));    // ok?
+        axis.add(VectorSAT.getUnitVector(new VectorSAT(c2.get(2).x -  c2.get(0).x, c2.get(2).y - c2.get(0).y)));
+        return axis;
+    }
+
+    public static float dotProduct(VectorSAT v1, VectorSAT v2) {
+        return v1.x * v2.x + v1.y * v2.y;
+    }
+
+    public static HashMap<String, Object> SATcollide(Collidable collidable1, Collidable collidable2, long dt) {
+        ArrayList<VectorSAT> c1 = getCorners(collidable1, dt);  // The rotated corners of collidable1
+        ArrayList<VectorSAT> c2 = getCorners(collidable2, dt);
+        ArrayList<VectorSAT> axis = getAxis(c1, c2);
+
+        VectorSAT mtv = new VectorSAT(999999.0f, 999999.0f ); //TODO: lul
+
+        HashMap<String, Object> retVal = new HashMap<>();
+        retVal.put("boolean", true);
+        retVal.put("VectorSAT", new VectorSAT(0,0));
+
+        // For hver akse (4 akser), finn for hver shape, nærmeste og borteste punkt fra aksen
+        for(VectorSAT v1 : axis) {  // For hver akse
+            ArrayList<Float> scalarsc1v = new ArrayList<>();
+            ArrayList<Float> scalarsc2v = new ArrayList<>();
+            for(int i = 0; i < c1.size(); i++) {    // for hvert punkt i hjørnet (c1length == c2length)
+                scalarsc1v.add(dotProduct(c1.get(i), v1));
+                scalarsc2v.add(dotProduct(c2.get(i), v1));
+            }
+
+            Collections.sort(scalarsc1v);   // sort largest to shortest
+            Collections.sort(scalarsc2v);
+
+            float s1min = scalarsc1v.get(0);
+            float s1max = scalarsc1v.get(scalarsc1v.size()-1);
+
+            float s2min = scalarsc2v.get(0);
+            float s2max = scalarsc2v.get(scalarsc2v.size()-1);
+
+            if (s2min > s1max || s2max < s1min) {
+                retVal.put("boolean", false);
+                return retVal;
+            }
+
+            float overlap = (s1max > s2max) ? -(s2max - s1min) : (s1max-s2min);
+            if( Math.abs(overlap) < mtv.getLength()) {
+                mtv = new VectorSAT(v1.x * overlap, v1.y * overlap);
+            }
+
+        }
+        retVal.put("VectorSAT", mtv);
+        return retVal;
+    }
 
 /*
-
-		-- get the smallest difference
-		table.sort(edgeDifferences, function(a, b) return a.magnitude < b.magnitude; end);
-		mtv = edgeDifferences[1];
+		local overlap = s1max > s2max and -(s2max - s1min) or (s1max - s2min);
+		if math.abs(overlap) < mtv.magnitude then
+			-- overlap might be negative to account for proper direction
+			mtv = axis[i] * overlap;
+		end;
+	end;
+	return true, mtv;
  */
+
+
+    /*
+    temp, delete
+     */
+    private ArrayList<VectorSAT> rotationPoints;
+    private ArrayList<VectorSAT> getRotationPoints() {return rotationPoints;}
+    private void setRotationPoints(ArrayList<VectorSAT> r){rotationPoints=r;}
+
+
 
     /**
      * Draws the collidable object onto a canvas. The BitMap is loaded through the Singleton
@@ -245,7 +360,31 @@ public class Collidable implements Drawable {
 
         Paint paint = new Paint();
 
-        canvas.drawBitmap(bitmap, x, y, paint);
+
+
+        if(rotate) {
+            Matrix rotationMatrix = new Matrix();
+            rotationMatrix.setTranslate(x, y);
+            rotationMatrix.postRotate((float)Math.toDegrees(angle), getCentre(this).x, getCentre(this).y);
+            canvas.drawBitmap(bitmap, rotationMatrix, paint);
+            //canvas.save(Canvas.MATRIX_SAVE_FLAG);
+            //canvas.rotate((float)Math.toDegrees((angle)));
+        } else {
+            canvas.drawBitmap(bitmap, x, y, paint);
+        }
+//        if(rotate) {
+ //           canvas.restore();
+   //     }
+
+      // Paints the corners of a rotating object
+        if(rotationPoints != null) {
+            paint.setColor(Color.GREEN);
+            for(VectorSAT v : rotationPoints) {
+                canvas.drawRect(v.x, v.y, v.x+10, v.y+10, paint);
+            }
+        }
+
+
         if(!debugString.equals("")) {
             paint.setTextSize(64);
             paint.setColor(Color.BLACK);
@@ -422,4 +561,18 @@ public class Collidable implements Drawable {
     public void setDebugString(String debugString) {
         this.debugString = debugString;
     }
+
+    public void setAngularVelocity(float angularVelocity) {
+        this.angularVelocity = angularVelocity;
+    }
+    public float getAngularVelocity() {
+        return angularVelocity;
+    }
+    public void setRotate(boolean rotate) {
+        this.rotate = rotate;
+    }
+    public float getAngle() {
+        return angle;
+    }
+
 }
