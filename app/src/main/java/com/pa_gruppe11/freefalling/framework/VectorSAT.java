@@ -11,10 +11,13 @@ public class VectorSAT implements Comparable<VectorSAT>{
     public float x;
     public float y;
 
+    public float magnitude;
+
 
     public VectorSAT(float x, float y) {
         this.x = x;
         this.y = y;
+
     }
 
     @Override
@@ -44,8 +47,19 @@ public class VectorSAT implements Comparable<VectorSAT>{
         return getUnitVector(new VectorSAT(v.y, -v.x));
     }
 
+    public float calculateMagnitude(float x, float y){
+        return (float)Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    }
+
     public String toString() {
         return "[" + x + ", "+y + "]";
     }
 
+    public float getMagnitude() {
+        return magnitude;
+    }
+
+    public void setMagnitude(float magnitude) {
+        this.magnitude = magnitude;
+    }
 }

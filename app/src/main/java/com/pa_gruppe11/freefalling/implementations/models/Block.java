@@ -14,12 +14,27 @@ public class Block extends Obstacle{
         super(id, width, height);
         Log.w("Block", "Constructed a new Block");
         setPinned(true);
-  //      setWidth(106);
+        //      setWidth(106);
 //        setHeight(61);
         setX(500);
         setY(1200);
-        setDx(0);
-        setDy(0);
+
+        dx = 0;
+        dy = 0;
+        pDx = 5;
+        pDy = 5;
+        pAx = 0;
+        pAy = 0;
+        vector.x = 0;
+        vector.y = 0;
+
+        setMaxDx(screenWidth * pDx/100);
+        setMaxDy(screenHeight * pDy/100);
+
+        accelerationX = screenWidth * pAx/100;
+        accelerationY = screenHeight * pAy/100;
+
+
     }
 
     @Override

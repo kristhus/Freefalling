@@ -14,8 +14,29 @@ public class Hanz extends Character {
 
     public Hanz(int id, int width, int height) {
         super(id, width, height);
-        setX(420);
+        setX(300);
         setY(1200);
+
+        //setMaxDx(250);
+        //setMaxDy(250);
+
+        vector.x = 0;
+        vector.y = 0;
+
+        dx = 0;
+        dy = 0;
+
+        pDx = 10;
+        pDy = 10;
+        pAx = 50;
+        pAy = 50;
+
+        setMaxDx(screenHeight * pDx/100);
+        setMaxDy(screenHeight * pDy/100);
+
+        accelerationX = 0;
+        accelerationY = 0;
+
 
      //   setDx(10);
      //   setDy(10);
