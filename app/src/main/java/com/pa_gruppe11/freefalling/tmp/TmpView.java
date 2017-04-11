@@ -3,8 +3,7 @@ package com.pa_gruppe11.freefalling.tmp;
 import android.graphics.Canvas;
 import android.view.SurfaceView;
 
-import com.pa_gruppe11.freefalling.R;
-import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
+import com.pa_gruppe11.freefalling.Models.Player;
 import com.pa_gruppe11.freefalling.gameControllers.GameActivity;
 
 /**
@@ -27,6 +26,10 @@ public class TmpView extends SurfaceView{
         gameContext.getGameMap().draw(canvas);  // draw current frame
         gameContext.getObstacle().draw(canvas);
         gameContext.getPlayer().getCharacter().draw(canvas);
+        if(gameContext.getOpponents() != null) {
+            for (Player p : gameContext.getOpponents())
+                p.getCharacter().draw(canvas);
+        }
     }
 
 

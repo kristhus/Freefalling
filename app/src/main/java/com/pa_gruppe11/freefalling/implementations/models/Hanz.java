@@ -14,8 +14,8 @@ public class Hanz extends Character {
 
     public Hanz(int id, int width, int height) {
         super(id, width, height);
-        setX(100);
-        setY(100);
+        setX(420);
+        setY(1200);
 
      //   setDx(10);
      //   setDy(10);

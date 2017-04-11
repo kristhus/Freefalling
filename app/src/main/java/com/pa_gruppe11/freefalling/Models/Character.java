@@ -2,6 +2,7 @@ package com.pa_gruppe11.freefalling.Models;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.Log;
@@ -36,7 +37,7 @@ public class Character extends Collidable{
 
     private Collidable collidesWith;
 
-
+    private String displayName = "default";
 
     public Character(int id, int width, int height){
 
@@ -55,30 +56,6 @@ public class Character extends Collidable{
     public void update(long dt){
         respondToTouch(); // we do this here, to assure the order is done correctly
         super.update(dt);
-
-        if ( isCollided()){
-            //setDx(collidesWith.getDx());
-            //setDy(collidesWith.getDy());
-
-            Log.w("Character", "Collideswith according to character is: " + collidesWith.toString());
-            Log.w("Character", "Character collides with something! This happens in Character.update()");
-        }
-
-
-
-        /*
-        setDx((dx + accelerationX * (float)dt/1000));
-        setDy((dy + accelerationY * (float)dt/1000));
-
-       // Log.w("CharacterPRE", "dt in seconds: " + accelerationY * (float)dt/1000);
-
-        setX(x + dx * (float)dt/1000);
-        setY(y + dy * (float)dt/1000);
-        */
-     //   Log.w("CharacterPOST", "X: " + x  +   "    Y: " + y);
-
-
-
     }
 
     public void respondToTouch() {
@@ -88,17 +65,17 @@ public class Character extends Collidable{
         if(touches != null && touches.size() > 0) {
             // TODO: handle only 1 touch to begin with, find out if loop through list would be wurt
             int i = 0;  // replace this with loop if necessary or wanted
-            float touchedX = touches.get(i).get(0);
-            float touchedY = touches.get(i).get(1);
+            float touchedX = touches.get(i).get(0); // x
+            float touchedY = touches.get(i).get(1); // y
 
             float distX = touchedX - centreX;
             float distY = touchedY - centreY;
 
-            Log.w("Character", "distX: " + distX + "  distY: " + distY);
+           // Log.w("Character", "distX: " + distX + "  distY: " + distY);
 
             float distance = (float) Math.sqrt(Math.pow(centreX-touchedX,2) + Math.pow(centreY - touchedY,2));
 
-            Log.w("Character", "distance: " + distance);
+           // Log.w("Character", "distance: " + distance);
 
             if(distance > maxTouchRadius) { // Correction for touches outside the allowed max radius
                 //float scale = (maxTouchRadius/Math.max(distX, distY));
@@ -106,14 +83,14 @@ public class Character extends Collidable{
 
                 distX*=scale;
                 distY*=scale;
-                Log.w("Character", "scale: " + scale);
+             //   Log.w("Character", "scale: " + scale);
             }
             // TODO: This may not be correct, but need to run with valid implementationg to check first
             accelerationX = accModifier * maxAccelerationX * distX/maxTouchRadius;
             accelerationY = accModifier * maxAccelerationY * distY/maxTouchRadius;
 
-            Log.w("Character", "accelerationX: " + accelerationX);
-            Log.w("Character", "accelerationY: " + accelerationY);
+           // Log.w("Character", "accelerationX: " + accelerationX);
+           // Log.w("Character", "accelerationY: " + accelerationY);
 
         }
 
@@ -124,11 +101,13 @@ public class Character extends Collidable{
     public void draw(Canvas canvas) {
 //        canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), getX(), getY(), new Paint());
         super.draw(canvas);
-    }
 
-    @Override
-    public void setCollidesWith(Collidable collidesWith) {
-        this.collidesWith = collidesWith;
+        // Draw displayName atop of charactermodel
+        Paint paint = new Paint();
+        paint.setTextSize(32);
+        paint.setColor(Color.RED);
+        canvas.drawText(displayName, x-30 + (width/2), y-30, paint);
+
     }
 
     @Override
@@ -139,4 +118,16 @@ public class Character extends Collidable{
     public void setTouches(ArrayList<ArrayList<Float>> touches) {
         this.touches = touches;
     }
+
+    public void setValues(GameMessage gameMessage) {
+        x = gameMessage.getX();
+        y = gameMessage.getY();
+        dx = gameMessage.getDx();
+        dy = gameMessage.getDy();
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
 }

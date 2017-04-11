@@ -1,21 +1,27 @@
 package com.pa_gruppe11.freefalling.gameControllers;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.multiplayer.Invitation;
-import com.google.android.gms.games.multiplayer.OnInvitationReceivedListener;
+import com.google.android.gms.games.multiplayer.Multiplayer;
+import com.google.android.gms.games.multiplayer.Participant;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
+import com.google.android.gms.games.multiplayer.realtime.Room;
+import com.pa_gruppe11.freefalling.Collidable;
 import com.pa_gruppe11.freefalling.Models.GameMap;
+import com.pa_gruppe11.freefalling.Models.GameMessage;
 import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
+import com.pa_gruppe11.freefalling.framework.GameServiceListener;
+import com.pa_gruppe11.freefalling.framework.VectorSAT;
 import com.pa_gruppe11.freefalling.implementations.models.Hanz;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
 import com.pa_gruppe11.freefalling.Models.PowerUp;
 import com.pa_gruppe11.freefalling.R;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.ViewGroup;
 
@@ -27,19 +33,19 @@ import com.pa_gruppe11.freefalling.tmp.TmpView;
 import com.pa_gruppe11.freefalling.Models.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Kristian on 31/03/2017.
  */
-public class GameActivity extends GameMenu
-        implements GoogleApiClient.ConnectionCallbacks,
-                GoogleApiClient.OnConnectionFailedListener,
-                OnInvitationReceivedListener {
+public class GameActivity extends GameMenu {
 
     // MODELS
     private Player[] opponents;
     private GameMap gameMap; //
     private Player thisPlayer;
+
+    private ArrayList<Participant> participants;
 
     // TODO: REMOVE AFTER TESTING
 
@@ -48,29 +54,80 @@ public class GameActivity extends GameMenu
     // Controllers
     private PlayerController controller;
 
-    private GoogleApiClient mGoogleApiClient;
+    private GameServiceListener serviceListener;
+
+    private GameMessage gameMessage; // GameMessage sent to communicate character actions and movement
+    private long messageTiming = 0;
+    private long messageInterval = 100;
+    private boolean updateBasedCommunication = true;
+
+    private String drawPlayerName;
 
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
+        if(getIntent().hasExtra(Multiplayer.EXTRA_ROOM))
+            room = (Room) getIntent().getExtras().get(Multiplayer.EXTRA_ROOM);
+        serviceListener = DataHandler.getInstance().getMessageListener();
+        serviceListener.addListener(this);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
+                .addConnectionCallbacks(serviceListener)
+                .addOnConnectionFailedListener(serviceListener)
                 .addApi(Games.API)
                 .addScope(Games.SCOPE_GAMES)
                 .build();
         mGoogleApiClient.connect();
-        initiate();
+
+        if(!getIntent().hasExtra(Multiplayer.EXTRA_ROOM))
+            initiate();
+
     }
 
     public void initiate() {
+        thisPlayer = new Player();
+        thisPlayer.setCharacter(new Hanz(R.drawable.stickman, 65, 112));
+        if(room != null) {
+            participants = room.getParticipants();
+            int i = 0;
+            if(participants != null) {
+                opponents = new Player[participants.size()-1];  //-1 is thisPlayer
+                int index = 0;
+                for(Participant p : participants) {
+                    //TODO: replace - debug purposes
+                    if(p.getPlayer() == null || !p.getPlayer().getPlayerId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
+                        Hanz c = new Hanz(R.drawable.stickman, 65, 112);
+                        c.setX(200*(index+1));
+                        c.setY(200);
+                        Player otherPlayer = new Player(p.getParticipantId(), i, null, c);
+                        String displayName = p.getDisplayName();
+                        otherPlayer.setDisplayName(displayName);
+                        opponents[i] = otherPlayer;
+                        i++;
+                    }else {
+                        thisPlayer.getCharacter().setX(200*(index+1));
+                        thisPlayer.getCharacter().setY(200);
+                        thisPlayer.setParticipantId(p.getParticipantId());
+                        thisPlayer.setDisplayName(p.getDisplayName());
+                    }
+                }
+            }
+        }
+
+
         GameThread.getInstance().setActivity(this);
+
+        gameMessage = new GameMessage(GameMessage.GAME_POSITION);
 
         //TODO: TESTING ONLY, REMOVE
         gameMap = new SkyStage();
-        thisPlayer = new Player();
-        thisPlayer.setCharacter(new Hanz(R.drawable.stickman, 65, 112));
-        testblock = new Block(R.drawable.block, 106, 61);
+        testblock = new Block(R.drawable.block, 500, 50);
+        testblock.setAngularVelocity((float) Math.PI/2);
+        testblock.setRotate(true);
+
+        //
+        ArrayList<VectorSAT> c1 = Collidable.getCorners(thisPlayer.getCharacter(), 20);  // The rotated corners of collidable1
+        ArrayList<VectorSAT> c2 = Collidable.getCorners(testblock, 20);
+        ArrayList<VectorSAT> axis = Collidable.getAxis(c1, c2);
 
         gameMap.addObstacle(testblock);
 
@@ -88,27 +145,39 @@ public class GameActivity extends GameMenu
     }
 
     public void update(long dt) {
+
         if (opponents != null) {
             for (Player opponent : opponents) {
-                //if(thisPlayer.getCharacter().collides(opponent.getCharacter())) {
-                if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), opponent.getCharacter())) {
-                    thisPlayer.getCharacter().setCollidesWith(opponent.getCharacter());
-                    CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), opponent.getCharacter());
+                HashMap<String, Object> mtvList =
+                        Collidable.collidesMTV(
+                                opponent.getCharacter().getBounds(),
+                                thisPlayer.getCharacter().getBounds());
+                if((boolean) mtvList.get("boolean")) {
+                    VectorSAT mtv = (VectorSAT) mtvList.get("VectorSAT");
+                    thisPlayer.getCharacter().setDebugString("Kållesjcøn");
+                    thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
+                    thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
                 }
-                opponent.getCharacter().update(dt);
+                //if(!updateBasedCommunication)   // refreshes on each message retreived, which is each frame when true
+                  //  opponent.getCharacter().update(dt);
             }
         }
-        if (gameMap != null)
-            gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
+
 
         // Update powerups and obstacles
         ArrayList<Obstacle> obstacles = gameMap.getObstacles();
         if (obstacles != null) {
             for (Obstacle o : obstacles) {
-                if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), o)) {
-                    thisPlayer.getCharacter().setCollidesWith(o);
-                    CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), o);
-                }
+                HashMap<String, Object> mtvList = Collidable.SATcollide(o, thisPlayer.getCharacter(), dt);
+                if((boolean) mtvList.get("boolean")) {
+                    VectorSAT mtv = (VectorSAT) mtvList.get("VectorSAT");
+                    thisPlayer.getCharacter().setDebugString("Kållesjcøn");
+                    thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
+                    thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
+
+                   // Log.w("GameActivity", "Collision");
+                }else
+                    thisPlayer.getCharacter().setDebugString("");
             }
         }
 
@@ -117,16 +186,34 @@ public class GameActivity extends GameMenu
             for (PowerUp p : powerUps) {
                 //if(thisPlayer.getCharacter().collides(p))
                 //  thisPlayer.getCharacter().setCollidesWith(p);
-                if (CollisionHandler.getInstance().detectCollision(thisPlayer.getCharacter(), p)) {
-                    thisPlayer.getCharacter().setCollidesWith(p);
-                    CollisionHandler.getInstance().handleCollision(thisPlayer.getCharacter(), p);
+            }
+        }
+
+        // SEND GameMessage
+        messageTiming+=dt;
+        if(messageTiming > messageInterval || updateBasedCommunication) {   // TODO: remove, sending only once a second to not overflow monitor
+            messageTiming -= messageInterval;
+            if(mGoogleApiClient.isConnected() && participants != null) {
+                gameMessage.setCharacterValues(thisPlayer.getCharacter());  // Prepare new values
+//                byte[] message = ("Other person = (" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY() + ")").getBytes();
+                for (Participant p : participants) {
+                    if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
+                        Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, gameMessage.toBytes(), room.getRoomId());
+                    }
                 }
             }
         }
 
+
         thisPlayer.getCharacter().update(dt);           // Update this player
-        testblock.update(dt);                           // Update this obstacle
+        if (gameMap != null)
+            gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
     }
+
+    public Player[] getOpponents() {
+        return opponents;
+    }
+
 
     public void notifyReady() {
         if(!GameThread.getInstance().isStarted()) {
@@ -160,30 +247,57 @@ public class GameActivity extends GameMenu
         return controller;
     }
 
+
+
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.w("GameActivity", "onActivityResult");
+        switch(requestCode) {
+
+        }
+    }
+
+
+
+    @Override
+    public void connected() {
+        super.connected();
+        initiate();
         Log.w("GameActivity", "Connected!");
     }
 
+
     @Override
-    public void onConnectionSuspended(int i) {
+    public void connectionSuspended(int i) {
         Log.w("GameActivity", "Connection suspended");
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    public void connectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.w("GameActivity", "Failed to connect");
         Log.w("GameActivity", "" + connectionResult.getErrorCode());
         Log.w("GameActivity", connectionResult.getErrorMessage() + "");
     }
 
     @Override
-    public void onInvitationReceived(Invitation invitation) {
-        Log.w("GameActivity", "Received an invitation");
+    public void messageReceived(RealTimeMessage realTimeMessage) {
+        if(!mConnected)
+            return;
+        byte[] bytes = realTimeMessage.getMessageData();
+        GameMessage messageReceived = GameMessage.fromBytes(bytes);
+
+        if(messageReceived != null) {
+            String senderId = realTimeMessage.getSenderParticipantId();
+            for(Player p : opponents) {
+                if (p.getParticipantId().equals(senderId)) {
+                    p.getCharacter().setValues(messageReceived);
+                    break;
+               }
+            }
+        }
+        else
+            Log.w("GameActivity","Got a message, but data corrupted");
     }
 
-    @Override
-    public void onInvitationRemoved(String s) {
-
-    }
 }
