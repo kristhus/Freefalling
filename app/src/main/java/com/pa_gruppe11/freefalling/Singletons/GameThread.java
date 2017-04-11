@@ -97,6 +97,9 @@ public class GameThread extends Thread { //
                         framesSkipped++;
                         dt = System.currentTimeMillis() - beginTime;
                     }
+                    if(framesSkipped > 0) {
+                        Log.w("GameThread", "Skipped " + framesSkipped + " frames");
+                    }
                     //dt = System.currentTimeMillis() - beginTime;	// Time elapsed in current loop, to be used in controller's update
                 }
             } catch(Exception e){

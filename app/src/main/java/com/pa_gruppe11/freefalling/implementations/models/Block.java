@@ -16,10 +16,10 @@ public class Block extends Obstacle{
         setPinned(true);
   //      setWidth(106);
 //        setHeight(61);
-        setX(500);
-        setY(1200);
-        setDx(0);
-        setDy(0);
+        //setX(500);
+        //setY(1200);
+        //setDx(0);
+        //setDy(0);
     }
 
     @Override

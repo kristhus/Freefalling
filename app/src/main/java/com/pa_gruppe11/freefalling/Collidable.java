@@ -93,6 +93,7 @@ public class Collidable implements Drawable {
         this.width = width;
         this.height = height;
 
+
         boundingBox = new RectF(x, y, x + width, y + height);
       //  nextRect = new RectF(nextX, nextY, nextX + width, nextY + height);
 
@@ -367,17 +368,13 @@ public class Collidable implements Drawable {
 
         if(rotate) {
             Matrix rotationMatrix = new Matrix();
-            rotationMatrix.setTranslate(x, y);
-            rotationMatrix.postRotate((float)Math.toDegrees(angle), getCentre(this).x, getCentre(this).y);
+            rotationMatrix.setTranslate(x, drawY);
+            rotationMatrix.postRotate((float)Math.toDegrees(angle), getCentre(this).x, drawY);
             canvas.drawBitmap(bitmap, rotationMatrix, paint);
-            //canvas.save(Canvas.MATRIX_SAVE_FLAG);
-            //canvas.rotate((float)Math.toDegrees((angle)));
+
         } else {
-            canvas.drawBitmap(bitmap, x, y, paint);
+            canvas.drawBitmap(bitmap, x, drawY, paint);
         }
-//        if(rotate) {
- //           canvas.restore();
-   //     }
 
       // Paints the corners of a rotating object
         if(rotationPoints != null) {
@@ -431,8 +428,9 @@ public class Collidable implements Drawable {
      */
     public void setY(float y)
     {
-        if (true)       // true is placeholder for something in the future
+        if (true) {      // true is placeholder for something in the future
             this.y = y;
+        }
         //else
            // Log.w("Collidable", "The object collides with something in y-direction.");
     }
@@ -576,6 +574,12 @@ public class Collidable implements Drawable {
     }
     public float getAngle() {
         return angle;
+    }
+    public float getDrawY() {
+        return drawY;
+    }
+    public void setDrawY(float drawY) {
+        this.drawY = drawY;
     }
 
 }

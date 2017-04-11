@@ -86,6 +86,10 @@ public class GameActivity extends GameMenu {
     public void initiate() {
         thisPlayer = new Player();
         thisPlayer.setCharacter(new Hanz(R.drawable.stickman, 65, 112));
+
+        // change back to calculated x-value
+        thisPlayer.getCharacter().setDrawY(
+                DataHandler.getInstance().getScreenHeight()/2 - thisPlayer.getCharacter().getHeight()/2);
         if(room != null) {
             participants = room.getParticipants();
             int i = 0;
@@ -94,7 +98,8 @@ public class GameActivity extends GameMenu {
                 int index = 0;
                 for(Participant p : participants) {
                     //TODO: replace - debug purposes
-                    if(p.getPlayer() == null || !p.getPlayer().getPlayerId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
+                    if(p.getPlayer() == null ||
+                            !p.getPlayer().getPlayerId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
                         Hanz c = new Hanz(R.drawable.stickman, 65, 112);
                         c.setX(200*(index+1));
                         c.setY(200);
@@ -118,11 +123,25 @@ public class GameActivity extends GameMenu {
 
         gameMessage = new GameMessage(GameMessage.GAME_POSITION);
 
-        //TODO: TESTING ONLY, REMOVE
+        //TODO: TESTING ONLY, REMOVE AND PLACE IN SkyStage
         gameMap = new SkyStage();
         testblock = new Block(R.drawable.block, 500, 50);
         testblock.setAngularVelocity((float) Math.PI/2);
+        testblock.setX(1200);
+        testblock.setY(800);
         testblock.setRotate(true);
+
+        Block testblock2 = new Block(R.drawable.block, 500, 50);
+        testblock2.setAngularVelocity((float) -Math.PI/2);
+        testblock2.setRotate(true);
+        testblock2.setY(400);
+        testblock2.setX(200);
+
+        Block testblock3 = new Block(R.drawable.block, 500, 50);
+        testblock3.setAngularVelocity((float) Math.PI/2);
+        testblock3.setRotate(true);
+        testblock3.setY(2500);
+        testblock3.setX(200);
 
         //
         ArrayList<VectorSAT> c1 = Collidable.getCorners(thisPlayer.getCharacter(), 20);  // The rotated corners of collidable1
@@ -130,6 +149,10 @@ public class GameActivity extends GameMenu {
         ArrayList<VectorSAT> axis = Collidable.getAxis(c1, c2);
 
         gameMap.addObstacle(testblock);
+        gameMap.addObstacle(testblock2);
+        gameMap.addObstacle(testblock3);
+
+        gameMap.setThisCharacter(thisPlayer.getCharacter());
 
         TmpView tmpView = new TmpView(this);
         setContentView(tmpView);
@@ -145,6 +168,9 @@ public class GameActivity extends GameMenu {
     }
 
     public void update(long dt) {
+
+        thisPlayer.getCharacter().getPreviousPosition().x = thisPlayer.getCharacter().getX();
+        thisPlayer.getCharacter().getPreviousPosition().y = thisPlayer.getCharacter().getY();
 
         if (opponents != null) {
             for (Player opponent : opponents) {
@@ -168,16 +194,21 @@ public class GameActivity extends GameMenu {
         ArrayList<Obstacle> obstacles = gameMap.getObstacles();
         if (obstacles != null) {
             for (Obstacle o : obstacles) {
+                o.setDrawY(o.getY() -
+                        gameMap.getY() +
+                        DataHandler.getInstance().getScreenHeight()/2 -
+                        thisPlayer.getCharacter().getHeight()/2);  // TODO: move somewhere else?
+                thisPlayer.getCharacter().setDebugString("" + gameMap.getY());
                 HashMap<String, Object> mtvList = Collidable.SATcollide(o, thisPlayer.getCharacter(), dt);
-                if((boolean) mtvList.get("boolean")) {
+                if ((boolean) mtvList.get("boolean")) {
                     VectorSAT mtv = (VectorSAT) mtvList.get("VectorSAT");
-                    thisPlayer.getCharacter().setDebugString("Kållesjcøn");
                     thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
                     thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
 
-                   // Log.w("GameActivity", "Collision");
-                }else
-                    thisPlayer.getCharacter().setDebugString("");
+                    // Log.w("GameActivity", "Collision");
+                } else {
+                    // thisPlayer.getCharacter().setDebugString("(" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY());
+                }
             }
         }
 
@@ -203,7 +234,6 @@ public class GameActivity extends GameMenu {
                 }
             }
         }
-
 
         thisPlayer.getCharacter().update(dt);           // Update this player
         if (gameMap != null)

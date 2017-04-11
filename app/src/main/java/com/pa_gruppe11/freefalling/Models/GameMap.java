@@ -58,11 +58,14 @@ public class GameMap implements Drawable {
     private boolean initFinale = false;
     private String done = "";
 
-    public GameMap(int id, ArrayList<PowerUp> powerups, ArrayList<Obstacle> obstacles){
+    private Character thisCharacter;
+
+    public GameMap(int id, ArrayList<PowerUp> powerups, ArrayList<Obstacle> obstacles, Character thisCharacter){
         this(id);
         this.id = id;
         this.powerups = powerups;
         this.obstacles = obstacles;
+        this.thisCharacter = thisCharacter;
         // TODO: Do shit with arrays
     }
 
@@ -104,11 +107,12 @@ public class GameMap implements Drawable {
 
     public void update(long dt){
         float delta = (float)dt/1000;  // If fps is really choppy, try using another method.
-        drawY += pdy*delta;
+        drawY += thisCharacter.getDy();
         drawX += dx*delta;
 
         if(y < endY) {
-            y += Math.abs(pdy*delta); //TODO: Swap this with a modification of character y-progress
+            //y += Math.abs(pdy*delta); //TODO: Swap this with a modification of character y-progress
+            y = thisCharacter.getY();
         }else {
             //TODO: init finishline
             initFinale = true;
@@ -119,13 +123,24 @@ public class GameMap implements Drawable {
             done = "FERDIG NO";
         }
 
+
+
         if(drawY <= -scaledHeight) {    //if entire first image is off-screen, reset position (causes flicker???)
             drawY += scaledHeight;
             transformationMatrix.setTranslate(0, drawY);
             transformationMatrix.postScale(scale, scale);
-        }else {                         // Condition fulfilled most of the time
-            transformationMatrix.postTranslate(dx * delta, pdy * delta);
+        } /*else if(drawY <0) {
+            drawY += scaledHeight;
+            transformationMatrix.setTranslate(0, drawY);
+            transformationMatrix.postScale(scale, scale);
+        }*/
+        else {                         // Condition fulfilled most of the time
+            transformationMatrix.postTranslate(dx * delta, thisCharacter.getPreviousPosition().y - thisCharacter.getY());
         }
+
+
+
+
 
         if(powerups != null) {
             for(PowerUp p : powerups) {
@@ -147,6 +162,8 @@ public class GameMap implements Drawable {
     public void draw(Canvas canvas) {
         Paint paint = new Paint();      // Do not set antialiasflag, as the smoothing makes lines appear between bitmaps
         paint.setFilterBitmap(false);
+
+
 
         Matrix tmpMatrix = new Matrix(transformationMatrix);
         for(int i = 1; i <= numberOfTimesToDraw; i++) { // Very costly
@@ -224,5 +241,12 @@ public class GameMap implements Drawable {
         obstacles.add(obstacle);
     }
 
+    public void setThisCharacter(Character c) {
+        thisCharacter = c;
+    }
 
+
+    public float getY() {
+        return y;
+    }
 }

@@ -13,6 +13,7 @@ import com.pa_gruppe11.freefalling.Drawable;
 import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
+import com.pa_gruppe11.freefalling.framework.VectorSAT;
 
 import java.util.ArrayList;
 
@@ -39,10 +40,13 @@ public class Character extends Collidable{
 
     private String displayName = "default";
 
+    private VectorSAT previousPosition;
+
     public Character(int id, int width, int height){
 
         super(id, width, height);
 
+        previousPosition = new VectorSAT(0,0);
 
         transformationMatrix = new Matrix();
         transformationMatrix.setTranslate(0, 0);
@@ -60,7 +64,7 @@ public class Character extends Collidable{
 
     public void respondToTouch() {
         float centreX = x + width/2;
-        float centreY = y + height/2;
+        float centreY = drawY + height/2;
 
         if(touches != null && touches.size() > 0) {
             // TODO: handle only 1 touch to begin with, find out if loop through list would be wurt
@@ -128,6 +132,13 @@ public class Character extends Collidable{
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public VectorSAT getPreviousPosition() {
+        return previousPosition;
+    }
+    public void setPreviousPosition(VectorSAT previousPosition) {
+        this.previousPosition = previousPosition;
     }
 
 }
