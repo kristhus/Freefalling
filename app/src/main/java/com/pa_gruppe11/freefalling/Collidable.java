@@ -85,16 +85,12 @@ public class Collidable implements Drawable {
 
     public Collidable(int id, int width, int height){
 
-//        float screenWidth = DataHandler.getInstance().screenWidth;
-  ///      float screenHeight = DataHandler.getInstance().screenHeight;
-
         this.id = id;
 
         this.width = width;
         this.height = height;
 
         boundingBox = new RectF(x, y, x + width, y + height);
-      //  nextRect = new RectF(nextX, nextY, nextX + width, nextY + height);
 
         bitmap = ResourceLoader.getInstance().getImageList().get(id);
 
@@ -102,13 +98,8 @@ public class Collidable implements Drawable {
 
         bitmap = ResourceLoader.getInstance().getResizedBitmap(bitmap, width, height);
 
-        //scale = width / ResourceLoader.getInstance().getImage(id).getWidth();
-      //  scaledHeight = ResourceLoader.getInstance().getImage(id).getHeight()*scale;
-    //    scaledWidth = ResourceLoader.getInstance().getImage(id).getWidth()*scale;
-
         transformationMatrix = new Matrix();
-//        transformationMatrix.setTranslate(0.0f, 0.0f);
-  //      transformationMatrix.postScale(scale, scale);
+
     }
 
     /**
@@ -334,15 +325,6 @@ public class Collidable implements Drawable {
         return retVal;
     }
 
-/*
-		local overlap = s1max > s2max and -(s2max - s1min) or (s1max - s2min);
-		if math.abs(overlap) < mtv.magnitude then
-			-- overlap might be negative to account for proper direction
-			mtv = axis[i] * overlap;
-		end;
-	end;
-	return true, mtv;
- */
 
 
     /*
@@ -414,8 +396,6 @@ public class Collidable implements Drawable {
      */
     public void setX(float x){
 
-        // || isPinned() because objects like obstacles should move anyway
-
         if ((x + width) < rightBounds && x > leftBounds ) {
             this.x = x;
         }
@@ -431,10 +411,7 @@ public class Collidable implements Drawable {
      */
     public void setY(float y)
     {
-        if (true)       // true is placeholder for something in the future
-            this.y = y;
-        //else
-           // Log.w("Collidable", "The object collides with something in y-direction.");
+         this.y = y;
     }
 
     /**
@@ -450,9 +427,6 @@ public class Collidable implements Drawable {
         }else if (dx < 0){              // The speed given is negative.
             this.dx = -maxDx;
         }
-
-
-        //Log.w("Collidable", "dx = " + this.dx);
 
     }
 
@@ -470,8 +444,7 @@ public class Collidable implements Drawable {
             this.dy = -maxDy;
         }
 
-//        Log.w("Collidable", "dy = " + this.dy);
-     }
+    }
 
     public void setWidth(int width){this.width = width;}
 
