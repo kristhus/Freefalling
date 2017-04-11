@@ -34,6 +34,10 @@ public class Collidable implements Drawable {
     protected float nextX = 0.0f;
     protected float nextY = 0.0f;
 
+    protected float drawX = 0.0f; // unused, as vertical falling
+    protected float drawY = 0.0f;
+
+
     protected float dx = 0.0f;
     protected float dy = 0.0f;
     private float maxDx = 100.0f; // max velocity    - not necessarily final (powerup?)
@@ -359,7 +363,6 @@ public class Collidable implements Drawable {
     public void draw(Canvas canvas) {
 
         Paint paint = new Paint();
-
 
 
         if(rotate) {

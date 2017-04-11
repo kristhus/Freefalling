@@ -129,17 +129,6 @@ public class GameActivity extends GameMenu {
         ArrayList<VectorSAT> c2 = Collidable.getCorners(testblock, 20);
         ArrayList<VectorSAT> axis = Collidable.getAxis(c1, c2);
 
-        for(VectorSAT v : c1) {
-
-        }
-
-        int i = 0;
-        for(VectorSAT v : axis) {
-            Log.w("GameActivity", "axis " + i + "   " + v);
-            i++;
-        }
-
-
         gameMap.addObstacle(testblock);
 
         TmpView tmpView = new TmpView(this);
@@ -189,27 +178,9 @@ public class GameActivity extends GameMenu {
                    // Log.w("GameActivity", "Collision");
                 }else
                     thisPlayer.getCharacter().setDebugString("");
-             /*   //ordinary mtv collision
-                HashMap<String, Object> mtvList = Collidable.collidesMTV(o.getBounds(), thisPlayer.getCharacter().getBounds());
-                if((boolean) mtvList.get("boolean")){
-                    VectorSAT mtv = (VectorSAT) mtvList.get("VectorSAT");
-                    thisPlayer.getCharacter().setDebugString("Kållesjcøn");
-                    thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
-                    thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
-                }
-                */
             }
         }
-/*
-local f2 = script.Parent:WaitForChild("Frame2");
- 
-game:GetService("RunService").RenderStepped:connect(function()
-	local doesCollide, mtv = collidesMTV(f2, f1);
-	if doesCollide then
-		f1.Position = f1.Position + UDim2.new(0, mtv.x, 0, mtv.y);
-	end;
-end);
- */
+
         ArrayList<PowerUp> powerUps = gameMap.getPowerups();
         if (powerUps != null) {
             for (PowerUp p : powerUps) {
@@ -233,13 +204,10 @@ end);
             }
         }
 
-        //
-
 
         thisPlayer.getCharacter().update(dt);           // Update this player
         if (gameMap != null)
             gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
-        //testblock.update(dt);                           // Update this obstacle
     }
 
     public Player[] getOpponents() {
