@@ -195,8 +195,7 @@ public class GameActivity extends GameMenu {
                         thisPlayer.getCharacter().getHeight()/2);  // TODO: move somewhere else?
                 thisPlayer.getCharacter().setDebugString("" + gameMap.getY());
 
-                VectorSAT mtv = null;
-                mtv = o.SATcollide(o, thisPlayer.getCharacter(), dt);       // TODO: Massive memory leak
+                VectorSAT mtv = o.SATcollide(o, thisPlayer.getCharacter(), dt);       // TODO: Massive memory leak
                 if (mtv != null) {
                     thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
                     thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
@@ -231,9 +230,9 @@ public class GameActivity extends GameMenu {
             }
         }
 
-        //thisPlayer.getCharacter().update(dt);           // Update this player
-        //if (gameMap != null)
-          //  gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
+        thisPlayer.getCharacter().update(dt);           // Update this player
+        if (gameMap != null)
+            gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
     }
 
     public Player[] getOpponents() {

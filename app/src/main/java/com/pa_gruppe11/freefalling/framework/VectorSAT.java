@@ -31,7 +31,7 @@ public class VectorSAT implements Comparable<VectorSAT>{
     }
 
 
-    public VectorSAT getUnitVector(VectorSAT vector) {
+    public static VectorSAT getUnitVector(VectorSAT vector) {
         VectorSAT v = new VectorSAT(vector.x, vector.y);    // copy of vector
         float vLength = (float) Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2));
         v.x = v.x/vLength;
@@ -40,9 +40,8 @@ public class VectorSAT implements Comparable<VectorSAT>{
     }
 
 
-    public VectorSAT getPerpendicular(VectorSAT v) {
-        VectorSAT unitVector = new VectorSAT(v.x, -v.y);
-        return unitVector;
+    public static VectorSAT getPerpendicular(VectorSAT v) {
+        return getUnitVector(new VectorSAT(v.y, -v.x));
     }
 
     public String toString() {
