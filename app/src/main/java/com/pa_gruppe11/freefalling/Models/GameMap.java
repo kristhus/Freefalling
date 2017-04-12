@@ -107,7 +107,7 @@ public class GameMap implements Drawable {
 
     public void update(long dt){
         float delta = (float)dt/1000;  // If fps is really choppy, try using another method.
-        drawY += thisCharacter.getDy();
+        drawY += (thisCharacter.getPreviousPosition().y - thisCharacter.getY());
         drawX += dx*delta;
 
         if(y < endY) {
@@ -166,9 +166,14 @@ public class GameMap implements Drawable {
 
 
         Matrix tmpMatrix = new Matrix(transformationMatrix);
-        for(int i = 1; i <= numberOfTimesToDraw; i++) { // Very costly
+            // if()     //if image is within canvasbounds, draw it
+        // if(drawY + (scaledHeight*i) < DataHandler.getInstance().getScreenHeight())
+        int i = 0;
+        thisCharacter.setDebugString("drawY: " + drawY);
+        while(drawY + (scaledHeight*i) < DataHandler.getInstance().getScreenHeight()) {
             canvas.drawBitmap(ResourceLoader.getInstance().getImage(id), tmpMatrix, paint);
-            tmpMatrix.postTranslate(0, scaledHeight); // Black stripes some times, drawY's fault
+            tmpMatrix.postTranslate(0, scaledHeight);
+            i++;
         }
 
         if(obstacles != null) {

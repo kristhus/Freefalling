@@ -143,11 +143,6 @@ public class GameActivity extends GameMenu {
         testblock3.setY(2500);
         testblock3.setX(200);
 
-        //
-        ArrayList<VectorSAT> c1 = Collidable.getCorners(thisPlayer.getCharacter(), 20);  // The rotated corners of collidable1
-        ArrayList<VectorSAT> c2 = Collidable.getCorners(testblock, 20);
-        ArrayList<VectorSAT> axis = Collidable.getAxis(c1, c2);
-
         gameMap.addObstacle(testblock);
         gameMap.addObstacle(testblock2);
         gameMap.addObstacle(testblock3);
@@ -175,7 +170,7 @@ public class GameActivity extends GameMenu {
         if (opponents != null) {
             for (Player opponent : opponents) {
                 HashMap<String, Object> mtvList =
-                        Collidable.collidesMTV(
+                        opponent.getCharacter().collidesMTV(            // TODO: possible memory leak
                                 opponent.getCharacter().getBounds(),
                                 thisPlayer.getCharacter().getBounds());
                 if((boolean) mtvList.get("boolean")) {
@@ -199,9 +194,10 @@ public class GameActivity extends GameMenu {
                         DataHandler.getInstance().getScreenHeight()/2 -
                         thisPlayer.getCharacter().getHeight()/2);  // TODO: move somewhere else?
                 thisPlayer.getCharacter().setDebugString("" + gameMap.getY());
-                HashMap<String, Object> mtvList = Collidable.SATcollide(o, thisPlayer.getCharacter(), dt);
-                if ((boolean) mtvList.get("boolean")) {
-                    VectorSAT mtv = (VectorSAT) mtvList.get("VectorSAT");
+
+                VectorSAT mtv = null;
+                mtv = o.SATcollide(o, thisPlayer.getCharacter(), dt);       // TODO: Massive memory leak
+                if (mtv != null) {
                     thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
                     thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
 
@@ -235,9 +231,9 @@ public class GameActivity extends GameMenu {
             }
         }
 
-        thisPlayer.getCharacter().update(dt);           // Update this player
-        if (gameMap != null)
-            gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
+        //thisPlayer.getCharacter().update(dt);           // Update this player
+        //if (gameMap != null)
+          //  gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
     }
 
     public Player[] getOpponents() {
