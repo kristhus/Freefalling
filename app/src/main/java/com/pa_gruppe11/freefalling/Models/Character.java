@@ -13,6 +13,7 @@ import com.pa_gruppe11.freefalling.Drawable;
 import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
+import com.pa_gruppe11.freefalling.framework.VectorSAT;
 
 import java.util.ArrayList;
 
@@ -31,7 +32,7 @@ public class Character extends Collidable{
     private float maxTouchRadius;
 
 
-    private float accModifier = 10;
+    private float accModifier = 0;
 
     private ArrayList<ArrayList<Float>> touches;
 
@@ -39,13 +40,25 @@ public class Character extends Collidable{
 
     private String displayName = "default";
 
+    private float centreX;
+
+    private float centreY;
+
+    private float touchedX = 0.0f;
+
+    private float touchedY = 0.0f;
+
+
+    private VectorSAT oldVector;
+    private VectorSAT oldUnitVector;
+
     public Character(int id, int width, int height){
 
         super(id, width, height);
 
-
         transformationMatrix = new Matrix();
         transformationMatrix.setTranslate(0, 0);
+
 
         // maxTouchRadius set to 10% of the screenheight.
         maxTouchRadius = DataHandler.getInstance().getScreenHeight()*(pMaxTouch/100);
@@ -55,8 +68,17 @@ public class Character extends Collidable{
 
     @Override
     public void update(long dt){
+
         respondToTouch(); // we do this here, to assure the order is done correctly
         super.update(dt);
+
+
+        //centreX = x + width/2;
+        //centreY = y + height/2;
+
+
+
+
     }
 
     // Correct centreX and centreY? - check
@@ -119,25 +141,33 @@ public class Character extends Collidable{
 
     */
 
+
+
     public void respondToTouch(){
 
-        float centreX = x + width/2;
-        float centreY = y + height/2;
+        oldVector = getVector();
+        oldUnitVector = getUnitVector();
+
+        centreX = x + width/2;
+        centreY = y + height/2;
+
 
         if(touches != null && touches.size() > 0){
 
             int i = 0;  // replace this with loop if necessary or wanted
-            float touchedX = touches.get(i).get(0); // x
-            float touchedY = touches.get(i).get(1); // y
+            touchedX = touches.get(i).get(0); // x
+            touchedY = touches.get(i).get(1); // y
 
-            vector.x = touchedX - centreX;
-            vector.y = touchedY - centreY;
+            vector = new VectorSAT(touchedX - centreX, touchedY - centreY);
+
+            Log.w("Character", "dx: " + vector.x + "    dy: " + vector.y);
+
+           // vector = new VectorSAT(centreX - touchedX, touchedY - centreY);
 
             vector.setMagnitude(vector.calculateMagnitude(vector.x, vector.y));
 
             // Setting the unit vector. This is the general direction the character should be heading after a touch.
-            unitVector.x = vector.x / vector.magnitude;
-            unitVector.y = vector.y / vector.magnitude;
+            unitVector = new VectorSAT(vector.x / vector.magnitude, vector.y / vector.magnitude);
 
             unitVector.setMagnitude(unitVector.calculateMagnitude(unitVector.x, unitVector.y));
 
@@ -161,16 +191,35 @@ public class Character extends Collidable{
 
             */
 
-            dx = unitVector.x;
-            dy = unitVector.y;
 
             unitVector.setMagnitude(unitVector.calculateMagnitude(unitVector.x, unitVector.y));
 
+            Log.w("Character", "vector.x: " + vector.x + "  oldVector.x: " + oldVector.x);
+            Log.w("Character", "vector.x: " + vector.y + "  oldVector.x: " + oldVector.y);
 
-            accelerationX = dx * (screenHeight * pAx / 100);
-            accelerationY = dy * (screenHeight * pAy / 100);
+
+            /*
+            if (Math.abs(vector.x) > Math.abs(oldVector.x)){
+
+                Log.w("Character", "Blir det her kjørt?");
+                accelerationX = unitVector.x * (screenHeight * pAx / 100);
+            }else{
+                accelerationX = 0; // Should be negative??
+            }
+
+            if (Math.abs(vector.y) > Math.abs(oldVector.y)){
+                accelerationY = unitVector.y * (screenHeight * pAy / 100);
+            }else{
+                accelerationY = 0; // Should be negative??
+            }
+
+            */
+
+
 
         }
+
+
 
         touches = null;
     }

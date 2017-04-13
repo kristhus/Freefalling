@@ -100,8 +100,8 @@ public class Collidable implements Drawable {
         this.width = width;
         this.height = height;
 
-        vector = new VectorSAT(x + width/2, y + height/2);
-        unitVector = new VectorSAT(x + width/2, y + height/2);
+        vector = new VectorSAT(0, 0);
+        unitVector = new VectorSAT(0, 0);
 
         boundingBox = new RectF(x, y, x + width, y + height);
 
@@ -165,21 +165,32 @@ public class Collidable implements Drawable {
 ///        Log.w("Collidable", this.toString() + ": dx = " + dx + "    dy: " + dy);
 
         // SETTING THE SPEED
-        Log.w("Collidable", toString() + "  dx: " + dx + "     dy: " + dy + "   accelerationX: " + accelerationX +
-        "   accelerationY: " + accelerationY);
+
+        //   Log.w("Collidable", toString() + "  dx: " + dx + "     dy: " + dy + "   accelerationX: " + accelerationX +
+     //   "   accelerationY: " + accelerationY);
 
 //        setDx(dx + ((unitVector.x / Math.abs(unitVector.x)) * accelerationX * (float) dt / 1000));
   //      setDy(dy + ((unitVector.y / Math.abs(unitVector.y)) * accelerationY * (float) dt / 1000));
 
 
-        setDx(dx + (accelerationX * (float) dt / 1000));
-        setDy(dy + (accelerationY * (float) dt / 1000));
+        //setDx(dx + (unitVector.x * accelerationX * (float) dt / 1000));
+        //setDy(dy + (unitVector.y * accelerationY * (float) dt / 1000));
 
+        //setDx(dx + ((float) dt / 1000));
+        //setDy(dy + ((float) dt / 1000));
+
+
+//        setDx(vector.x);
+  //      setDy(vector.y);
+
+        setDx((dx + accelerationX * (float) dt / 1000));
+        setDy((dy + accelerationY * (float) dt / 1000));
 
 
         // SETTING THE POSITION
         setX(x + (dx * ((float) dt / 1000)));
         setY(y + (dy * ((float) dt / 1000)));
+
 
 
         // SETTING THE ANGULAR VELOCITY
