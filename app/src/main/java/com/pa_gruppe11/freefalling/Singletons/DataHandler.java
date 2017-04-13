@@ -132,4 +132,25 @@ public final class DataHandler implements Serializable{
 		messageListener = ml;
 	}
 
+	/**
+	 *
+	 * @param width percentage of the screenwidth's position
+	 */
+	public int getRelativeWidth(float width) {
+		return (int) (screenWidth * (width/100));
+	}
+
+	/**
+	 *
+	 * @param height percentage of the screenHeight's position
+	 */
+	public int getRelativeHeight(float height) {
+		return (int) (screenHeight * (height/100));
+	}
+
+	public int getRelativeX(float x) {
+		return (int) (screenWidth * (x/100));
+	}
+
+
 }

@@ -85,9 +85,6 @@ public class Collidable implements Drawable {
 
     public Collidable(int id, int width, int height){
 
-//        float screenWidth = DataHandler.getInstance().screenWidth;
-  ///      float screenHeight = DataHandler.getInstance().screenHeight;
-
         this.id = id;
 
         this.width = width;
@@ -95,7 +92,6 @@ public class Collidable implements Drawable {
 
 
         boundingBox = new RectF(x, y, x + width, y + height);
-      //  nextRect = new RectF(nextX, nextY, nextX + width, nextY + height);
 
         bitmap = ResourceLoader.getInstance().getImageList().get(id);
 
@@ -103,13 +99,7 @@ public class Collidable implements Drawable {
 
         bitmap = ResourceLoader.getInstance().getResizedBitmap(bitmap, width, height);
 
-        //scale = width / ResourceLoader.getInstance().getImage(id).getWidth();
-      //  scaledHeight = ResourceLoader.getInstance().getImage(id).getHeight()*scale;
-    //    scaledWidth = ResourceLoader.getInstance().getImage(id).getWidth()*scale;
-
         transformationMatrix = new Matrix();
-//        transformationMatrix.setTranslate(0.0f, 0.0f);
-  //      transformationMatrix.postScale(scale, scale);
     }
 
     /**

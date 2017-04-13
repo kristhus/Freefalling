@@ -3,6 +3,7 @@ package com.pa_gruppe11.freefalling.Models;
 import android.widget.ImageView;
 
 import com.pa_gruppe11.freefalling.Collidable;
+import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
 /**
@@ -11,6 +12,8 @@ import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 
 public class Obstacle extends Collidable{
 
+
+    private boolean lethal = false;
 
     public Obstacle(int id, int width, int height){
         super(id, width, height);
@@ -23,8 +26,17 @@ public class Obstacle extends Collidable{
 
 
 
+
     @Override
     public String toString(){
         return "Obstacle";
     }
+
+    public void setLethal(boolean lethal) {
+        this.lethal = lethal;
+    }
+    public boolean isLethal() {
+        return lethal;
+    }
+
 }

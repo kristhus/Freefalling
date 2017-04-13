@@ -55,6 +55,9 @@ public class GameMap implements Drawable {
     protected float minimapEndY = 0.20f;    // 20 % of height
     protected float lineThickness = 0.01f;
 
+    protected ArrayList<Float> respawnPoints;
+
+
     private boolean initFinale = false;
     private String done = "";
 
@@ -67,6 +70,7 @@ public class GameMap implements Drawable {
         this.obstacles = obstacles;
         this.thisCharacter = thisCharacter;
         // TODO: Do shit with arrays
+
     }
 
     public GameMap(int id) {
@@ -254,4 +258,22 @@ public class GameMap implements Drawable {
     public float getY() {
         return y;
     }
+
+    public ArrayList<Float> getRespawnPoints() {
+        return respawnPoints;
+    }
+
+    public float getClosestRespawnPoint(float posY) {
+        float closest = 0;
+        for(float respawnY : respawnPoints) {
+            float distance = posY - respawnY;
+            if(distance >= 0 && distance > closest) {   // closest point current y has passed
+                closest = respawnY;
+            }else
+                return closest;
+        }
+
+        return 0.0f;
+    }
+
 }

@@ -50,8 +50,6 @@ public class GameActivity extends GameMenu {
 
     // TODO: REMOVE AFTER TESTING
 
-    private Block testblock;
-
     // Controllers
     private PlayerController controller;
 
@@ -124,27 +122,6 @@ public class GameActivity extends GameMenu {
 
         //TODO: TESTING ONLY, REMOVE AND PLACE IN SkyStage
         gameMap = new SkyStage();
-        testblock = new Block(R.drawable.block, 500, 50);
-        testblock.setAngularVelocity((float) Math.PI/2);
-        testblock.setX(1200);
-        testblock.setY(800);
-        testblock.setRotate(true);
-
-        Block testblock2 = new Block(R.drawable.block, 500, 50);
-        testblock2.setAngularVelocity((float) -Math.PI/2);
-        testblock2.setRotate(true);
-        testblock2.setY(400);
-        testblock2.setX(200);
-
-        Block testblock3 = new Block(R.drawable.block, 500, 50);
-        testblock3.setAngularVelocity((float) Math.PI/2);
-        testblock3.setRotate(true);
-        testblock3.setY(2500);
-        testblock3.setX(200);
-
-        gameMap.addObstacle(testblock);
-        gameMap.addObstacle(testblock2);
-        gameMap.addObstacle(testblock3);
 
         gameMap.setThisCharacter(thisPlayer.getCharacter());
 
@@ -191,16 +168,22 @@ public class GameActivity extends GameMenu {
 
         // Update powerups and obstacles
         ArrayList<Obstacle> obstacles = gameMap.getObstacles();
+        thisPlayer.getCharacter().setDebugString("" + gameMap.getY());
         if (obstacles != null) {
             for (Obstacle o : obstacles) {
                 o.setDrawY(o.getY() -
                         gameMap.getY() +
                         DataHandler.getInstance().getScreenHeight()/2 -
                         thisPlayer.getCharacter().getHeight()/2);  // TODO: move somewhere else?
-                thisPlayer.getCharacter().setDebugString("" + gameMap.getY());
 
                 VectorSAT mtv = o.SATcollide(o, thisPlayer.getCharacter(), dt);       // TODO: Massive memory leak
                 if (mtv != null) {
+                    if(o.isLethal()) {
+                        // TODO: death-animation?
+                        float res = gameMap.getClosestRespawnPoint(thisPlayer.getCharacter().getY());
+                        Log.w("GameActivity", "res: " + res);
+                        thisPlayer.getCharacter().setY(res);
+                    }
                     thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
                     thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
 
@@ -271,8 +254,6 @@ public class GameActivity extends GameMenu {
 
     // TODO: Remove after testing.
     public Player getPlayer(){return thisPlayer;}
-
-    public Obstacle getObstacle(){return testblock;}
 
     public PlayerController getController() {
         return controller;
