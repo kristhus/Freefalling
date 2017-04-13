@@ -42,6 +42,8 @@ public class Character extends Collidable{
 
     private VectorSAT previousPosition;
 
+    private boolean thisCharacter = false;  // If this is the current client's user
+
     public Character(int id, int width, int height){
 
         super(id, width, height);
@@ -110,7 +112,7 @@ public class Character extends Collidable{
         Paint paint = new Paint();
         paint.setTextSize(32);
         paint.setColor(Color.RED);
-        canvas.drawText(displayName, x-30 + (width/2), y-30, paint);
+        canvas.drawText(displayName, x-30 + (width/2), drawY-30, paint);
 
     }
 
@@ -139,6 +141,14 @@ public class Character extends Collidable{
     }
     public void setPreviousPosition(VectorSAT previousPosition) {
         this.previousPosition = previousPosition;
+    }
+
+    public boolean isThisCharacter() {
+        return thisCharacter;
+    }
+
+    public void setThisCharacter(boolean thisCharacter) {
+        this.thisCharacter = thisCharacter;
     }
 
 }

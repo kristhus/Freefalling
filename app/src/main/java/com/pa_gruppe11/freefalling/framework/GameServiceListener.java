@@ -45,17 +45,41 @@ public class GameServiceListener implements RealTimeMessageReceivedListener,
     }
 
 
+    /**
+     * Adds the GameMenu type, if and only if its menu.class is not already added
+     * Only one notifier per class, e.g. MainMenu, GameActivity and so on
+     * @param menu
+     */
     public void addListener(GameMenu menu) {
-        listeners.put(menu.toString(), menu);
-    }
-    public void remove(GameMenu menu) {
-        listeners.remove(menu.toString());
+        String className = menu.getClass().getName();
+        listeners.put(className, menu);
+        Log.w("GameServiceListener", "added " + className);
     }
 
+    /**
+     * Removes all types of menu.class ( e.g. MainMenu )
+     * @param menu
+     */
+    public void remove(GameMenu menu) {
+        String className = menu.getClass().getName();
+        listeners.remove(className);
+        Log.w("GameServiceListener", "removed" +
+                " " + className);
+    }
+
+    public boolean contains(GameMenu menu) {
+        for(String s : listeners.keySet()) {
+            Class c = listeners.get(s).getClass();
+            if(menu.getClass().equals(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // All methods below are of the listener type
     //
-    //
+    // Descriptions of its method can be found in GameMenu, as we are most likely to acces those methods
     //
     //
     //
@@ -72,6 +96,7 @@ public class GameServiceListener implements RealTimeMessageReceivedListener,
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        Log.w("GameServiceListener", "Number of elements in listenerlist: " + listeners.size());
         if(listeners != null && listeners.keySet().size() > 0) {
             for(String key : listeners.keySet()) {
                 GameMenu m = listeners.get(key);

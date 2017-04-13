@@ -13,7 +13,6 @@ public class Player {
     private String displayName = "Default";
 
 
-
     public Player(String participantId, int placed, PowerUp[] powerups, Character character){
         this.participantId = participantId;
         this.placed = placed;
@@ -44,4 +43,7 @@ public class Player {
         if(character != null)
             character.setDisplayName(displayName);
     }
+
+
+
 }

@@ -34,6 +34,7 @@ import com.pa_gruppe11.freefalling.Models.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Kristian on 31/03/2017.
@@ -41,7 +42,7 @@ import java.util.HashMap;
 public class GameActivity extends GameMenu {
 
     // MODELS
-    private Player[] opponents;
+    private HashMap<String, Player> opponents;
     private GameMap gameMap; //
     private Player thisPlayer;
 
@@ -53,8 +54,6 @@ public class GameActivity extends GameMenu {
 
     // Controllers
     private PlayerController controller;
-
-    private GameServiceListener serviceListener;
 
     private GameMessage gameMessage; // GameMessage sent to communicate character actions and movement
     private long messageTiming = 0;
@@ -68,15 +67,6 @@ public class GameActivity extends GameMenu {
         super.onCreate(savedInstance);
         if(getIntent().hasExtra(Multiplayer.EXTRA_ROOM))
             room = (Room) getIntent().getExtras().get(Multiplayer.EXTRA_ROOM);
-        serviceListener = DataHandler.getInstance().getMessageListener();
-        serviceListener.addListener(this);
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(serviceListener)
-                .addOnConnectionFailedListener(serviceListener)
-                .addApi(Games.API)
-                .addScope(Games.SCOPE_GAMES)
-                .build();
-        mGoogleApiClient.connect();
 
         if(!getIntent().hasExtra(Multiplayer.EXTRA_ROOM))
             initiate();
@@ -86,6 +76,8 @@ public class GameActivity extends GameMenu {
     public void initiate() {
         thisPlayer = new Player();
         thisPlayer.setCharacter(new Hanz(R.drawable.stickman, 65, 112));
+        thisPlayer.getCharacter().setThisCharacter(true);
+
 
         // change back to calculated x-value
         thisPlayer.getCharacter().setDrawY(
@@ -94,7 +86,7 @@ public class GameActivity extends GameMenu {
             participants = room.getParticipants();
             int i = 0;
             if(participants != null) {
-                opponents = new Player[participants.size()-1];  //-1 is thisPlayer
+                opponents = new HashMap<>();
                 int index = 0;
                 for(Participant p : participants) {
                     //TODO: replace - debug purposes
@@ -106,7 +98,14 @@ public class GameActivity extends GameMenu {
                         Player otherPlayer = new Player(p.getParticipantId(), i, null, c);
                         String displayName = p.getDisplayName();
                         otherPlayer.setDisplayName(displayName);
-                        opponents[i] = otherPlayer;
+
+                        otherPlayer.getCharacter().setDrawY(
+                                thisPlayer.getCharacter().getDrawY() +
+                                (otherPlayer.getCharacter().getY() - thisPlayer.getCharacter().getY())
+                        );
+
+                        opponents.put(p.getParticipantId(), otherPlayer);  //-1 is thisPlayer
+//                        opponents[i] = otherPlayer;
                         i++;
                     }else {
                         thisPlayer.getCharacter().setX(200*(index+1));
@@ -168,7 +167,12 @@ public class GameActivity extends GameMenu {
         thisPlayer.getCharacter().getPreviousPosition().y = thisPlayer.getCharacter().getY();
 
         if (opponents != null) {
-            for (Player opponent : opponents) {
+            for (String key : opponents.keySet()) {
+                Player opponent = opponents.get(key);
+                opponent.getCharacter().setDrawY(
+                        thisPlayer.getCharacter().getDrawY() +
+                                (opponent.getCharacter().getY() - thisPlayer.getCharacter().getY())
+                );
                 HashMap<String, Object> mtvList =
                         opponent.getCharacter().collidesMTV(            // TODO: possible memory leak
                                 opponent.getCharacter().getBounds(),
@@ -235,12 +239,13 @@ public class GameActivity extends GameMenu {
             gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
     }
 
-    public Player[] getOpponents() {
+    public HashMap<String, Player> getOpponents() {
         return opponents;
     }
 
 
     public void notifyReady() {
+        gameInProgress = true;
         if(!GameThread.getInstance().isStarted()) {
             GameThread.getInstance().setRunning(true);
             GameThread.getInstance().start();
@@ -255,6 +260,7 @@ public class GameActivity extends GameMenu {
 
     public void finishGame() {
         //Switch View to postMatchView
+        gameInProgress = false;
         GameThread.getInstance().setSuspended(true);
     }
 
@@ -314,7 +320,8 @@ public class GameActivity extends GameMenu {
 
         if(messageReceived != null) {
             String senderId = realTimeMessage.getSenderParticipantId();
-            for(Player p : opponents) {
+            for(String participantId : opponents.keySet()) {
+                Player p = opponents.get(participantId);
                 if (p.getParticipantId().equals(senderId)) {
                     p.getCharacter().setValues(messageReceived);
                     break;
@@ -323,6 +330,12 @@ public class GameActivity extends GameMenu {
         }
         else
             Log.w("GameActivity","Got a message, but data corrupted");
+    }
+
+    public void peerLeft(Room room, List<String> participantIds) {
+        for(String pId : participantIds) {
+
+        }
     }
 
 }

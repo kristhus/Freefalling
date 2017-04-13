@@ -202,17 +202,6 @@ public class Collidable implements Drawable {
         return bounds;
     }
 
-
-    public ArrayList<PointF> getEdges(RectF rect) {
-        ArrayList<PointF> edges = new ArrayList<PointF>();
-        edges.add(0, new PointF(rect.left, rect.top));
-        edges.add(1, new PointF(rect.right, rect.top));
-        edges.add(2, new PointF(rect.left, rect.bottom));
-        edges.add(3, new PointF(rect.right, rect.bottom));
-
-        return edges;
-    }
-
     public static boolean collides(RectSAT b1, RectSAT b2) {
         return (b1.left < b2.right && b1.right > b2.left) &&
                 (b1.top < b2.bottom && b1.bottom > b2.top);

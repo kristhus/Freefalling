@@ -19,6 +19,7 @@ import com.pa_gruppe11.freefalling.R;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
 import com.pa_gruppe11.freefalling.framework.BaseGameUtils;
+import com.pa_gruppe11.freefalling.framework.GameServiceListener;
 
 import java.util.List;
 
@@ -28,14 +29,27 @@ import java.util.List;
 
 public class GameMenu extends Activity {
 
+    protected GameServiceListener serviceListener;
 
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
+
+        serviceListener = DataHandler.getInstance().getMessageListener();
+        serviceListener.addListener(this);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Games.API)
+                .addScope(Games.SCOPE_GAMES)
+                .addConnectionCallbacks(serviceListener)
+                .addOnConnectionFailedListener(serviceListener)
+                .build();
+        mGoogleApiClient.connect();
     }
 
 
     public void goTo(Class javaClass) {
+        serviceListener.remove(this);
         Intent intent = new Intent(this, javaClass);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
@@ -49,6 +63,7 @@ public class GameMenu extends Activity {
         Class thisClass = this.getClass();
         if(thisClass == MainMenu.class) {
             // Quit ?Bitmap.createBitmap
+            serviceListener.remove(this);
             Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);
             startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -66,12 +81,19 @@ public class GameMenu extends Activity {
         super.onPause();
         if(this.getClass() == GameActivity.class)
             GameThread.getInstance().setRunning(false);
-        Log.w("GameMenu", "Paused");
+        if(gameInProgress) {    // boot from game
+            Log.w("GameMenu", "Paused during game, dc");
+            GameThread.getInstance().stop_gameThread();
+            goTo(MainMenu.class);
+        }
+        Log.w("GameMenu", "Paused, disconnecting");
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if(!mGoogleApiClient.isConnected())
+            mGoogleApiClient.connect();
         if(this.getClass() == GameActivity.class)
             GameThread.getInstance().setRunning(true);
         Log.w("GameMenu", "Resumed");
@@ -142,10 +164,7 @@ public class GameMenu extends Activity {
     protected boolean mDisonnected = false;
     protected boolean mSignInClicked = false;
     protected boolean mResolvingConnectionFailure = false;
-
-    protected boolean mFinalizeLogin = false;
-    protected boolean initLogin = true;
-    protected boolean gamesAuthorized = false;
+    protected boolean gameInProgress = false;
 
     protected GoogleApiClient mGoogleApiClient;
 
@@ -345,6 +364,8 @@ public class GameMenu extends Activity {
      * @param roomId
      */
     public void leftRoom(int statusCode, String roomId) {
+        Log.w("GameMenu", "leftRoom, attempting to leave the game room");
+        gameInProgress = false;
         mIsOwner = false;
         room = null;
     }

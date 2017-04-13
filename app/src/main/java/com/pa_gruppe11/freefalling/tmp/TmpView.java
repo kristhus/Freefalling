@@ -27,10 +27,11 @@ public class TmpView extends SurfaceView{
       //  gameContext.getObstacle().draw(canvas);
         gameContext.getPlayer().getCharacter().draw(canvas);
         if(gameContext.getOpponents() != null) {
-            for (Player p : gameContext.getOpponents())
+            for (String participantIds : gameContext.getOpponents().keySet()) {
+                Player p = gameContext.getOpponents().get(participantIds);
                 p.getCharacter().draw(canvas);
+            }
         }
-
     }
 
 

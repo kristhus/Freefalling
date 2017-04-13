@@ -51,7 +51,6 @@ public class MainMenu extends GameMenu
 
 
     private int roomId = -1;
-    private GameServiceListener serviceListener;
 
     private View selector;
     private GridView characterGridView;
@@ -76,19 +75,6 @@ public class MainMenu extends GameMenu
         ResourceLoader.getInstance().setContext(this);
 
 
-
-
-        serviceListener = DataHandler.getInstance().getMessageListener();
-        serviceListener.addListener(this);
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES)
-           //     .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .addConnectionCallbacks(serviceListener)
-                .addOnConnectionFailedListener(serviceListener)
-            .build();
-
-        mGoogleApiClient.connect();
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
@@ -151,13 +137,16 @@ public class MainMenu extends GameMenu
         //ResourceLoader.getInstance().loadImage(R.drawable.bg_sky, this);
         //ResourceLoader.getInstance().loadImage(R.drawable.stickman, this);
         //ResourceLoader.getInstance().loadImage(R.drawable.bg_sky, this);
+        if(serviceListener != null)
+            serviceListener.remove(this);
+        else
+            Log.w("MainMenu", "BUG?!?!?!?!?");
         if(!mGoogleApiClient.isConnected()) {
             goTo(GameActivity.class);
             return;
         }
 
         ResourceLoader.getInstance().manualLoad(this);
-        serviceListener.remove(this); // revoke notification when changing activity;
         Intent intent = new Intent(this, GameActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         intent.putExtra(Multiplayer.EXTRA_ROOM, room);
@@ -172,8 +161,7 @@ public class MainMenu extends GameMenu
     public void connected() {
         super.connected();
         Log.w("MainMenu", "Connected successfully");
-        Toast.makeText(this, "Connected to Game Services",
-                Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, "Connected to Game Services",Toast.LENGTH_SHORT).show();
         findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
     }
 
