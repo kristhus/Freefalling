@@ -328,7 +328,6 @@ public class Collidable implements Drawable {
 
         Paint paint = new Paint();
 
-
         if(rotate) {
             Matrix rotationMatrix = new Matrix();
             rotationMatrix.setTranslate(x, drawY);
