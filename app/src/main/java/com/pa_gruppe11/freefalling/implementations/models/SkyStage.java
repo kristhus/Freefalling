@@ -47,16 +47,32 @@ public class SkyStage extends GameMap {
         block3.setX(data.getRelativeX(40));
         block3.setY(800);
 
-        SpinningKnife knife1 = new SpinningKnife(R.drawable.knife, data.getRelativeWidth(20), data.getRelativeHeight(3));
+        SpinningKnife knife1 = new SpinningKnife(R.drawable.knife, data.getRelativeWidth(20), data.getRelativeHeight(1.5f));
         knife1.setAngularVelocity((float) Math.PI/2);
         knife1.setRotate(true);
         knife1.setX(data.getRelativeX(78));
         knife1.setY(800);
 
+        Sawblade sawblade1 = new Sawblade(data.getRelativeWidth(10), data.getRelativeWidth(10));
+        sawblade1.setX(data.getRelativeX(5));
+        sawblade1.setY(1400);
+
+        Sawblade sawblade2 = new Sawblade(data.getRelativeWidth(10), data.getRelativeWidth(10));
+        sawblade2.setX(data.getRelativeX(85));
+        sawblade2.setY(1400);
+
+        Sawblade sawblade3 = new Sawblade(data.getRelativeWidth(20), data.getRelativeWidth(20));
+        sawblade3.setX(data.getRelativeX(40));
+        sawblade3.setY(1800);
+
+
         addObstacle(block1);
         addObstacle(block2);
         addObstacle(block3);
         addObstacle(knife1);
+        addObstacle(sawblade1);
+        addObstacle(sawblade2);
+        addObstacle(sawblade3);
 
 
 

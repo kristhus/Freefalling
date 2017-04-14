@@ -173,8 +173,13 @@ public class GameActivity extends GameMenu {
             for (Obstacle o : obstacles) {
                 o.setDrawY(o.getY() -
                         gameMap.getY() +
-                        DataHandler.getInstance().getScreenHeight()/2 -
-                        thisPlayer.getCharacter().getHeight()/2);  // TODO: move somewhere else?
+                        (DataHandler.getInstance().getScreenHeight()/2 -
+                        thisPlayer.getCharacter().getHeight()/2));  // TODO: move somewhere else?
+                /*
+                o.setDrawY(
+                        thisPlayer.getCharacter().getDrawY() +
+                        (o.getY() - thisPlayer.getCharacter().getY()));
+                 */
 
                 VectorSAT mtv = o.SATcollide(o, thisPlayer.getCharacter(), dt);       // TODO: Massive memory leak
                 if (mtv != null) {

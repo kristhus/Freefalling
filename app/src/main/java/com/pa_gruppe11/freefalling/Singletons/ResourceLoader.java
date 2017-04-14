@@ -30,7 +30,8 @@ public final class ResourceLoader {
             R.drawable.bg_sky,
             R.drawable.stickman,
             R.drawable.block,
-            R.drawable.knife
+            R.drawable.knife,
+            R.drawable.sawblade
     };                     // Add new resources here, or load all images from drawable
 
 

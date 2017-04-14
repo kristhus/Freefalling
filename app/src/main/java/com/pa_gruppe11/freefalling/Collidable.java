@@ -332,7 +332,7 @@ public class Collidable implements Drawable {
         if(rotate) {
             Matrix rotationMatrix = new Matrix();
             rotationMatrix.setTranslate(x, drawY);
-            rotationMatrix.postRotate((float)Math.toDegrees(angle), getCentre(this).x, drawY);
+            rotationMatrix.postRotate((float)Math.toDegrees(angle), getCentre(this).x, drawY+ height/2);
             canvas.drawBitmap(bitmap, rotationMatrix, paint);
 
         } else {
