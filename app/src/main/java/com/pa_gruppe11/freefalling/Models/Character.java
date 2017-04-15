@@ -26,13 +26,13 @@ public class Character extends Collidable{
     // The maximum distance, in percentage, the touch can be from centre of model
     //      before it gets automatically set to that max value
     // The closer the actual touch is to the centre, the less impact this gives to the player.
-    // For now, we say this radius is 10% of the height, not the width
-    private final float pMaxTouch = 10.0f;
+    // For now, we say this radius is 10% of the screen height, not the width
+    private final float pMaxTouch = 25.0f;
 
     private float maxTouchRadius;
 
 
-    private float accModifier = 40;
+    private float accModifier = 0;
 
     private ArrayList<ArrayList<Float>> touches;
 
@@ -44,6 +44,18 @@ public class Character extends Collidable{
 
     private boolean thisCharacter = false;  // If this is the current client's user
 
+    private float centreX;
+
+    private float centreY;
+
+    private float touchedX = 0.0f;
+
+    private float touchedY = 0.0f;
+
+
+    private VectorSAT oldVector;
+    private VectorSAT oldUnitVector;
+
     public Character(int id, int width, int height){
 
         super(id, width, height);
@@ -53,6 +65,8 @@ public class Character extends Collidable{
         transformationMatrix = new Matrix();
         transformationMatrix.setTranslate(0, 0);
 
+
+        // maxTouchRadius set to 10% of the screenheight.
         maxTouchRadius = DataHandler.getInstance().getScreenHeight()*(pMaxTouch/100);
         Log.w("Character", "maxTouchRadius: " + maxTouchRadius);
 
@@ -60,48 +74,96 @@ public class Character extends Collidable{
 
     @Override
     public void update(long dt){
+
         respondToTouch(); // we do this here, to assure the order is done correctly
         super.update(dt);
     }
 
-    public void respondToTouch() {
-        float centreX = x + width/2;
-        float centreY = drawY + height/2;
 
-        if(touches != null && touches.size() > 0) {
-            // TODO: handle only 1 touch to begin with, find out if loop through list would be wurt
+
+
+
+    public void respondToTouch(){
+
+        oldVector = getVector();
+        oldUnitVector = getUnitVector();
+
+        centreX = x + width/2;
+        centreY = drawY + height/2;
+
+
+        if(touches != null && touches.size() > 0){
+
             int i = 0;  // replace this with loop if necessary or wanted
-            float touchedX = touches.get(i).get(0); // x
-            float touchedY = touches.get(i).get(1); // y
+            touchedX = touches.get(i).get(0); // x
+            touchedY = touches.get(i).get(1); // y
 
-            float distX = touchedX - centreX;
-            float distY = touchedY - centreY;
+            vector = new VectorSAT(touchedX - centreX, touchedY - centreY);
 
-           // Log.w("Character", "distX: " + distX + "  distY: " + distY);
+            Log.w("Character", "dx: " + vector.x + "    dy: " + vector.y);
 
-            float distance = (float) Math.sqrt(Math.pow(centreX-touchedX,2) + Math.pow(centreY - touchedY,2));
+           // vector = new VectorSAT(centreX - touchedX, touchedY - centreY);
 
-           // Log.w("Character", "distance: " + distance);
+            vector.setMagnitude(vector.calculateMagnitude(vector.x, vector.y));
 
-            if(distance > maxTouchRadius) { // Correction for touches outside the allowed max radius
-                //float scale = (maxTouchRadius/Math.max(distX, distY));
-                float scale = Math.abs(distX) > Math.abs(distY) ? Math.abs(maxTouchRadius/distX) : Math.abs(maxTouchRadius/distY);
+            // Setting the unit vector. This is the general direction the character should be heading after a touch.
+            unitVector = new VectorSAT(vector.x / vector.magnitude, vector.y / vector.magnitude);
 
-                distX*=scale;
-                distY*=scale;
-             //   Log.w("Character", "scale: " + scale);
+            unitVector.setMagnitude(unitVector.calculateMagnitude(unitVector.x, unitVector.y));
+
+
+            Log.w("Character", "Magnitude of unit vector: " + unitVector.getMagnitude());
+
+            /*
+
+            // TODO: Possibly change this
+            if (vector.getMagnitude() > maxTouchRadius){
+
+                float scale = Math.abs(vector.x) > Math.abs(vector.y) ? Math.abs(maxTouchRadius/vector.x) : Math.abs(maxTouchRadius/vector.y);
+
+                vector.x *= scale;
+                vector.y *= scale;
+
+                dx = vector.x;
+                dy = vector.y;
+
             }
-            // TODO: This may not be correct, but need to run with valid implementationg to check first
-            accelerationX = accModifier * maxAccelerationX * distX/maxTouchRadius;
-            accelerationY = accModifier * maxAccelerationY * distY/maxTouchRadius;
 
-           // Log.w("Character", "accelerationX: " + accelerationX);
-           // Log.w("Character", "accelerationY: " + accelerationY);
+            */
+
+
+            unitVector.setMagnitude(unitVector.calculateMagnitude(unitVector.x, unitVector.y));
+
+            Log.w("Character", "vector.x: " + vector.x + "  oldVector.x: " + oldVector.x);
+            Log.w("Character", "vector.x: " + vector.y + "  oldVector.x: " + oldVector.y);
+
+
+
+            if (Math.abs(vector.x) > Math.abs(oldVector.x)){
+
+                Log.w("Character", "Blir det her kjørt?");
+                accelerationX = unitVector.x * (screenHeight * pAx / 100);
+            }else{
+                accelerationX = 0; // Should be negative??
+            }
+
+            if (Math.abs(vector.y) > Math.abs(oldVector.y)){
+                accelerationY = unitVector.y * (screenHeight * pAy / 100);
+            }else{
+                accelerationY = 0; // Should be negative??
+            }
+
+
+
+
 
         }
 
-         touches = null; // Remove when consumed ( synchronize?)
+
+
+        touches = null;
     }
+
 
     @Override
     public void draw(Canvas canvas) {

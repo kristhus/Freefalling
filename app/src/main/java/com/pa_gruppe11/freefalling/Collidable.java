@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by kjetilvaagen on 31/03/17.
@@ -37,29 +38,38 @@ public class Collidable implements Drawable {
     protected float drawX = 0.0f; // unused, as vertical falling
     protected float drawY = 0.0f;
 
+    protected VectorSAT vector;
+    protected VectorSAT unitVector;
 
     protected float periodicDx = 0.0f;
     protected float periodicDy = 0.0f;
 
     protected float dx = 0.0f;
     protected float dy = 0.0f;
-    private float maxDx = 100.0f; // max velocity    - not necessarily final (powerup?)
-    private float maxDy = 100.0f; // TODO: MAKE THIS 5% OF THE SCREEN HEIGHT
+
+    protected float pDx = 2.0f;
+    protected float pDy = 2.0f;
+    protected float pAx = 0f;
+    protected float pAy = 0f;
+
+
+
+    protected int height;
+    protected int width;
+    protected float accelerationX;
+    protected float accelerationY;
+    protected float maxAccelerationX; // max acceleration
+    protected float maxAccelerationY; // would take 5 seconds to fully change 180degrees with 10 acc, and 25 vel.
+
+    protected float screenHeight = DataHandler.getInstance().getScreenHeight();
+    protected float screenWidth = DataHandler.getInstance().getScreenWidth();
+
+    private float maxDx; // max velocity    - not necessarily final (powerup?)
+    private float maxDy; // TODO: MAKE THIS 5% OF THE SCREEN HEIGHT
 
     private float angularVelocity; // rads per second, pi/2 seems legit
     private float angle;
     private boolean rotate;
-
-    protected int height;
-    protected int width;
-    protected float accelerationX = 0.0f;
-    protected float accelerationY = 0.0f;
-    protected float maxAccelerationX = 30; // max acceleration
-    protected float maxAccelerationY = 30; // would take 5 seconds to fully change 180degrees with 10 acc, and 25 vel.
-
-    private float scale;
-    private float scaledHeight;
-    private float scaledWidth;
 
     private float importedWidth;
     private float importedtHeigt;
@@ -85,9 +95,14 @@ public class Collidable implements Drawable {
     private boolean rightCollision = false;
 
     private Bitmap bitmap;
+
+
     private String debugString = "";
 
     public Collidable(int id, int width, int height){
+
+//        float screenWidth = DataHandler.getInstance().screenWidth;
+  ///      float screenHeight = DataHandler.getInstance().screenHeight;
 
         this.id = id;
 
@@ -97,15 +112,27 @@ public class Collidable implements Drawable {
 
         periodicMaxTime = 8000; // 4 seconds to complete the movement (corresponding to 2*PI)
 
+        vector = new VectorSAT(0, 0);
+        unitVector = new VectorSAT(0, 0);
+
         boundingBox = new RectF(x, y, x + width, y + height);
+
+        maxDx = screenWidth * (pDx/100);
+        maxDy = screenHeight * (pDy/100);
+
+        //accelerationX = screenWidth * (pAx/100);
+        //accelerationY = screenHeight * (pAy/100);
 
         bitmap = ResourceLoader.getInstance().getImageList().get(id);
 
         Log.w("Collidable", "Width: " + width + "   height: " + height);
 
+        Log.w("Collidable", "Screen width: " + screenWidth + "  screen height: " + screenHeight);
+
         bitmap = ResourceLoader.getInstance().getResizedBitmap(bitmap, width, height);
 
         transformationMatrix = new Matrix();
+
     }
 
     /**
@@ -163,8 +190,9 @@ public class Collidable implements Drawable {
                     periodicTimeElapsed/periodicMaxTime));
         }
         // SETTING THE POSITION
-        setX(x + dx * (float) dt / 1000);
-        setY(y + dy * (float) dt / 1000);
+        setX(x + (dx * ((float) dt / 1000)));
+        setY(y + (dy * ((float) dt / 1000)));
+
 
 
         // SETTING THE ANGULAR VELOCITY
@@ -179,6 +207,7 @@ public class Collidable implements Drawable {
 
 
     }
+
 
 
     public RectSAT getScreenBounds() {
@@ -421,9 +450,6 @@ public class Collidable implements Drawable {
             this.dx = -maxDx;
         }
 
-
-        //Log.w("Collidable", "dx = " + this.dx);
-
     }
 
     /**
@@ -440,8 +466,31 @@ public class Collidable implements Drawable {
             this.dy = -maxDy;
         }
 
-//        Log.w("Collidable", "dy = " + this.dy);
-     }
+    }
+
+    public void setVector(VectorSAT vector) {
+        this.vector = vector;
+    }
+
+    public void setUnitVector(VectorSAT unitVector) {
+        this.unitVector = unitVector;
+    }
+
+    public void setMaxDx(float maxDx) {
+        this.maxDx = maxDx;
+    }
+
+    public void setMaxDy(float maxDy) {
+        this.maxDy = maxDy;
+    }
+
+    public void setpAx(float pAx) {
+        this.pAx = pAx;
+    }
+
+    public void setpAy(float pAy) {
+        this.pAy = pAy;
+    }
 
     public void setWidth(int width){this.width = width;}
 
@@ -497,6 +546,14 @@ public class Collidable implements Drawable {
 
     public float getDy() {
         return dy;
+    }
+
+    public VectorSAT getVector() {
+        return vector;
+    }
+
+    public VectorSAT getUnitVector() {
+        return unitVector;
     }
 
     public int getWidth(){return width;}
