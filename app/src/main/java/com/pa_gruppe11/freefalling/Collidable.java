@@ -162,26 +162,7 @@ public class Collidable implements Drawable {
      */
     public void update(long dt){
 
-///        Log.w("Collidable", this.toString() + ": dx = " + dx + "    dy: " + dy);
-
         // SETTING THE SPEED
-
-        //   Log.w("Collidable", toString() + "  dx: " + dx + "     dy: " + dy + "   accelerationX: " + accelerationX +
-     //   "   accelerationY: " + accelerationY);
-
-//        setDx(dx + ((unitVector.x / Math.abs(unitVector.x)) * accelerationX * (float) dt / 1000));
-  //      setDy(dy + ((unitVector.y / Math.abs(unitVector.y)) * accelerationY * (float) dt / 1000));
-
-
-        //setDx(dx + (unitVector.x * accelerationX * (float) dt / 1000));
-        //setDy(dy + (unitVector.y * accelerationY * (float) dt / 1000));
-
-        //setDx(dx + ((float) dt / 1000));
-        //setDy(dy + ((float) dt / 1000));
-
-
-//        setDx(vector.x);
-  //      setDy(vector.y);
 
         setDx((dx + accelerationX * (float) dt / 1000));
         setDy((dy + accelerationY * (float) dt / 1000));

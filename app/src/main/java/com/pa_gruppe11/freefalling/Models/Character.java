@@ -198,7 +198,7 @@ public class Character extends Collidable{
             Log.w("Character", "vector.x: " + vector.y + "  oldVector.x: " + oldVector.y);
 
 
-            /*
+
             if (Math.abs(vector.x) > Math.abs(oldVector.x)){
 
                 Log.w("Character", "Blir det her kjørt?");
@@ -213,7 +213,7 @@ public class Character extends Collidable{
                 accelerationY = 0; // Should be negative??
             }
 
-            */
+
 
 
 
