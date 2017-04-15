@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.pa_gruppe11.freefalling.Collidable;
 import com.pa_gruppe11.freefalling.Drawable;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
@@ -153,7 +154,8 @@ public class GameMap implements Drawable {
         }
         if(obstacles != null) {
             for(Obstacle o : obstacles) {
-                o.update(dt);
+                if(!outsideScreen(o))
+                    o.update(dt);
             }
         }
 
@@ -173,7 +175,6 @@ public class GameMap implements Drawable {
             // if()     //if image is within canvasbounds, draw it
         // if(drawY + (scaledHeight*i) < DataHandler.getInstance().getScreenHeight())
         int i = 0;
-        thisCharacter.setDebugString("drawY: " + drawY);
         while(drawY + (scaledHeight*i) < DataHandler.getInstance().getScreenHeight()) {
             canvas.drawBitmap(ResourceLoader.getInstance().getImage(id), tmpMatrix, paint);
             tmpMatrix.postTranslate(0, scaledHeight);
@@ -182,7 +183,8 @@ public class GameMap implements Drawable {
 
         if(obstacles != null) {
             for (Obstacle o : obstacles) {
-                o.draw(canvas);
+                if(!outsideScreen(o))
+                    o.draw(canvas);
             }
         }
         if(powerups != null) {
@@ -274,6 +276,11 @@ public class GameMap implements Drawable {
         }
 
         return 0.0f;
+    }
+
+    public static boolean outsideScreen(Collidable c) {
+        return c.getDrawY()+c.getHeight() < 0 - DataHandler.getInstance().getScreenHeight()*0.2 ||
+                c.getDrawY() > DataHandler.getInstance().getScreenHeight() + DataHandler.getInstance().getScreenHeight()*0.2; // 20% margin
     }
 
 }

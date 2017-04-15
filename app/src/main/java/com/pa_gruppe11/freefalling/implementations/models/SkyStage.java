@@ -63,8 +63,15 @@ public class SkyStage extends GameMap {
 
         Sawblade sawblade3 = new Sawblade(data.getRelativeWidth(20), data.getRelativeWidth(20));
         sawblade3.setX(data.getRelativeX(40));
-        sawblade3.setY(1800);
+        sawblade3.setY(1400);
+        sawblade3.setPeriodic(true, 80.0f, 0.0f);
 
+        Block pushBlock = new Block(R.drawable.block, data.getRelativeWidth(3), data.getRelativeHeight(20));
+        pushBlock.setX(data.getRelativeX(10.0f));
+        pushBlock.setY(1800.0f);
+        pushBlock.setMaxDx(1000.0f);
+        pushBlock.setPeriodic(true, 1000.0f, 0.0f);
+        pushBlock.setPeriodicMaxTime(8000);
 
         addObstacle(block1);
         addObstacle(block2);
@@ -73,6 +80,7 @@ public class SkyStage extends GameMap {
         addObstacle(sawblade1);
         addObstacle(sawblade2);
         addObstacle(sawblade3);
+        addObstacle(pushBlock);
 
 
 

@@ -38,6 +38,9 @@ public class Collidable implements Drawable {
     protected float drawY = 0.0f;
 
 
+    protected float periodicDx = 0.0f;
+    protected float periodicDy = 0.0f;
+
     protected float dx = 0.0f;
     protected float dy = 0.0f;
     private float maxDx = 100.0f; // max velocity    - not necessarily final (powerup?)
@@ -72,6 +75,9 @@ public class Collidable implements Drawable {
     private RectF nextRect;
     private Collidable collidesWith;
 
+    protected boolean periodic;
+    private long periodicTimeElapsed;
+    protected long periodicMaxTime;
 
     private boolean topCollision = false;
     private boolean bottomCollision = false;
@@ -79,8 +85,6 @@ public class Collidable implements Drawable {
     private boolean rightCollision = false;
 
     private Bitmap bitmap;
-
-
     private String debugString = "";
 
     public Collidable(int id, int width, int height){
@@ -90,6 +94,8 @@ public class Collidable implements Drawable {
         this.width = width;
         this.height = height;
 
+
+        periodicMaxTime = 8000; // 4 seconds to complete the movement (corresponding to 2*PI)
 
         boundingBox = new RectF(x, y, x + width, y + height);
 
@@ -141,11 +147,21 @@ public class Collidable implements Drawable {
      */
     public void update(long dt){
 
+        periodicTimeElapsed += dt;
+        if(periodicTimeElapsed >= periodicMaxTime)  // keep periodicTimeElapsed in [0, maxTime]
+            periodicTimeElapsed -= periodicMaxTime;
+
         // SETTING THE SPEED
-
-        setDx((dx + accelerationX * (float) dt / 1000));
-        setDy((dy + accelerationY * (float) dt / 1000));
-
+        if(!periodic) {
+            setDx((dx + accelerationX * (float) dt / 1000)); // rounds up to dx + accelerationX over 1000ms
+            setDy((dy + accelerationY * (float) dt / 1000));
+        }
+        else { // sin(2PI * [0,1]) = [-1,1]
+            setDx((periodicDx + accelerationX * (float) dt / 1000) * (float)Math.sin(2*Math.PI *
+                    periodicTimeElapsed/periodicMaxTime));
+            setDy((periodicDy + accelerationY * (float) dt / 1000) * (float)Math.sin(2*Math.PI *
+                    periodicTimeElapsed/periodicMaxTime));
+        }
         // SETTING THE POSITION
         setX(x + dx * (float) dt / 1000);
         setY(y + dy * (float) dt / 1000);
@@ -158,8 +174,6 @@ public class Collidable implements Drawable {
             else if(angle < -2*Math.PI)
                 angle += 2*Math.PI;
             angle += angularVelocity * (float) dt / 1000;
-            //DELETE THIS AFTER TESTING (edge-rotation)
-            setRotationPoints(getCorners(this, dt));
         }
 
 
@@ -340,12 +354,7 @@ public class Collidable implements Drawable {
         }
 
       // Paints the corners of a rotating object
-        if(rotationPoints != null) {
-            paint.setColor(Color.GREEN);
-            for(VectorSAT v : rotationPoints) {
-                canvas.drawRect(v.x, v.y, v.x+10, v.y+10, paint);
-            }
-        }
+
 
 
         if(!debugString.equals("")) {
@@ -370,18 +379,18 @@ public class Collidable implements Drawable {
 
     /**
      * Sets the x. Checks out of bounds and collided conditions first.
+     *
      * @param x
      */
-    public void setX(float x){
+    public void setX(float x) {
 
         // || isPinned() because objects like obstacles should move anyway
 
-        if ((x + width) < rightBounds && x > leftBounds ) {
+        if ((x + width) < rightBounds && x > leftBounds) {
             this.x = x;
-        }
-        else {
-           // Log.w("Collidable", "Width when OOB collided: " + width);
-           // Log.w("Collidable", "The object cannot go out of bounds in x-direction");
+        } else {
+            // Log.w("Collidable", "Width when OOB collided: " + width);
+            // Log.w("Collidable", "The object cannot go out of bounds in x-direction");
         }
     }
 
@@ -545,4 +554,18 @@ public class Collidable implements Drawable {
         this.drawY = drawY;
     }
 
+
+    public void setPeriodic(boolean periodic, float periodicDx, float periodicDy) {
+        this.periodic = periodic;
+        this.periodicDx = periodicDx;
+        this.periodicDy = periodicDy;
+    }
+
+    public void setPeriodicMaxTime(long max) {
+        periodicMaxTime = max;
+    }
+
+    public void setMaxDx(float maxDx) {
+        this.maxDx = maxDx;
+    }
 }

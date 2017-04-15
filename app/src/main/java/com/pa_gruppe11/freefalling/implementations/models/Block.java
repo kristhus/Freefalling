@@ -38,7 +38,6 @@ public class Block extends Obstacle{
     @Override
     public void update(long dt){
         super.update(dt);
-
         // TODO: Possibly implement some Block specifics here.
         if (isPinned()){
 

@@ -32,7 +32,14 @@ public class GameThread extends Thread { //
 
 	private static GameThread gameThread = new GameThread();
 
-	
+
+    // Debugging fields
+    private String performanceString = "";
+    private float dxs = 0.0f;
+    private float dys = 0.0f;
+
+
+
     private GameThread(){
 		// Wait for config to finish loading, then get relevant settings
     }
@@ -97,10 +104,20 @@ public class GameThread extends Thread { //
                         framesSkipped++;
                         dt = System.currentTimeMillis() - beginTime;
                     }
-                    if(framesSkipped > 0) {
+                /*    if(framesSkipped > 0) {
                         Log.w("GameThread", "Skipped " + framesSkipped + " frames");
-                    }
+                    }*/
                     //dt = System.currentTimeMillis() - beginTime;	// Time elapsed in current loop, to be used in controller's update
+                    elapsedTime+=dt;
+                    dxs += activity.getPlayer().getCharacter().getDx();
+                    dys += activity.getPlayer().getCharacter().getDy();
+                    if(elapsedTime > 1000) {
+                        elapsedTime -= 1000;
+                        performanceString = "x/s: " + dxs + "   y/s: " + dys;
+                        activity.getPlayer().getCharacter().setDebugString("x/s: " + dxs + "   y/s: " + dys);
+                        dxs = 0.0f;
+                        dys = 0.0f;
+                    }
                 }
             } catch(Exception e){
                 e.printStackTrace();
@@ -154,8 +171,9 @@ public class GameThread extends Thread { //
 	}
 
 	public void reloadValues() {
+        Log.w("GameThread", "reloadValues   old values: " + MAX_FPS + ", " + PERIOD_LENGTH + "   new: " + DataHandler.getInstance().getFPS() + ",  " + 1000/DataHandler.getInstance().getFPS());
         MAX_FPS = DataHandler.getInstance().getFPS();
-        PERIOD_LENGTH = 1000/MAX_FPS;
+        PERIOD_LENGTH = 1000/DataHandler.getInstance().getFPS();
     }
 
     public void stop_gameThread() {

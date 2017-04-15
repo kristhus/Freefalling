@@ -156,7 +156,6 @@ public class GameActivity extends GameMenu {
                                 thisPlayer.getCharacter().getBounds());
                 if((boolean) mtvList.get("boolean")) {
                     VectorSAT mtv = (VectorSAT) mtvList.get("VectorSAT");
-                    thisPlayer.getCharacter().setDebugString("Kållesjcøn");
                     thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
                     thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
                 }
@@ -168,7 +167,6 @@ public class GameActivity extends GameMenu {
 
         // Update powerups and obstacles
         ArrayList<Obstacle> obstacles = gameMap.getObstacles();
-        thisPlayer.getCharacter().setDebugString("" + gameMap.getY());
         if (obstacles != null) {
             for (Obstacle o : obstacles) {
                 o.setDrawY(o.getY() -
@@ -180,21 +178,22 @@ public class GameActivity extends GameMenu {
                         thisPlayer.getCharacter().getDrawY() +
                         (o.getY() - thisPlayer.getCharacter().getY()));
                  */
+                if(!GameMap.outsideScreen(o)) {// don't check collision if guaranteed to not collide
+                    VectorSAT mtv = o.SATcollide(o, thisPlayer.getCharacter(), dt);       // TODO: Massive memory strain
+                    if (mtv != null) {
+                        if (o.isLethal()) {
+                            // TODO: death-animation?
+                            float res = gameMap.getClosestRespawnPoint(thisPlayer.getCharacter().getY());
+                            Log.w("GameActivity", "res: " + res);
+                            thisPlayer.getCharacter().setY(res);
+                        }
+                        thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
+                        thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
 
-                VectorSAT mtv = o.SATcollide(o, thisPlayer.getCharacter(), dt);       // TODO: Massive memory leak
-                if (mtv != null) {
-                    if(o.isLethal()) {
-                        // TODO: death-animation?
-                        float res = gameMap.getClosestRespawnPoint(thisPlayer.getCharacter().getY());
-                        Log.w("GameActivity", "res: " + res);
-                        thisPlayer.getCharacter().setY(res);
+                        // Log.w("GameActivity", "Collision");
+                    } else {
+                        // thisPlayer.getCharacter().setDebugString("(" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY());
                     }
-                    thisPlayer.getCharacter().setX(thisPlayer.getCharacter().getX() + mtv.x);
-                    thisPlayer.getCharacter().setY(thisPlayer.getCharacter().getY() + mtv.y);
-
-                    // Log.w("GameActivity", "Collision");
-                } else {
-                    // thisPlayer.getCharacter().setDebugString("(" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY());
                 }
             }
         }

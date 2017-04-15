@@ -11,7 +11,7 @@ public class Sawblade extends Obstacle{
 
     public Sawblade(int width, int height) {
         super(R.drawable.sawblade, width, height);
-        setPinned(true);
+        setPinned(false);
         setRotate(true);
         setLethal(true);
         setAngularVelocity(3.0f*(float)Math.PI);    // 2 rotations per second
