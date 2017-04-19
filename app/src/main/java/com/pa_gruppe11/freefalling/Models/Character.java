@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import com.pa_gruppe11.freefalling.Collidable;
 import com.pa_gruppe11.freefalling.Drawable;
+import com.pa_gruppe11.freefalling.Singletons.AnimationHandler;
 import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
@@ -44,6 +45,8 @@ public class Character extends Collidable{
 
     private boolean thisCharacter = false;  // If this is the current client's user
 
+    public static int animation;
+
     public Character(int id, int width, int height){
 
         super(id, width, height);
@@ -62,6 +65,9 @@ public class Character extends Collidable{
     public void update(long dt){
         respondToTouch(); // we do this here, to assure the order is done correctly
         super.update(dt);
+
+
+
     }
 
     public void respondToTouch() {
@@ -106,13 +112,32 @@ public class Character extends Collidable{
     @Override
     public void draw(Canvas canvas) {
 //        canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), getX(), getY(), new Paint());
-        super.draw(canvas);
 
-        // Draw displayName atop of charactermodel
         Paint paint = new Paint();
         paint.setTextSize(32);
         paint.setColor(Color.RED);
+
+        if (animation == AnimationHandler.noAnimation) {
+            super.draw(canvas);
+        }else if (animation == AnimationHandler.moveRightAnimation) {
+
+            //setAngularVelocity(2);
+
+            AnimationHandler.getInstance().moveRightAnimation(this, canvas);
+
+        }else if (animation == AnimationHandler.moveLeftAnimation){
+            AnimationHandler.getInstance().moveLeftAnimation(this, canvas);
+        }
+
+        else{
+            canvas.drawBitmap(getBitmap(), x, drawY, paint);
+        }
+
+        // Draw displayName atop of charactermodel
         canvas.drawText(displayName, x-30 + (width/2), drawY-30, paint);
+
+
+
 
     }
 

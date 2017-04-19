@@ -13,6 +13,7 @@ import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.pa_gruppe11.freefalling.Collidable;
 import com.pa_gruppe11.freefalling.Models.GameMap;
 import com.pa_gruppe11.freefalling.Models.GameMessage;
+import com.pa_gruppe11.freefalling.Singletons.AnimationHandler;
 import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
 import com.pa_gruppe11.freefalling.framework.GameServiceListener;
 import com.pa_gruppe11.freefalling.framework.VectorSAT;
@@ -222,6 +223,16 @@ public class GameActivity extends GameMenu {
         }
 
         thisPlayer.getCharacter().update(dt);           // Update this player
+
+        // ANIMATIONS, check different events and set the corresponding animations.
+
+        if (thisPlayer.getCharacter().getDx() > 0){
+            thisPlayer.getCharacter().animation = AnimationHandler.moveRightAnimation;  // Setting the animations like this
+        }else{
+            thisPlayer.getCharacter().animation = AnimationHandler.moveLeftAnimation;
+        }
+
+
         if (gameMap != null)
             gameMap.update(dt);     // Also updates the corresponding powerups and obstacles of the stage
     }

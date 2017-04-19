@@ -511,6 +511,8 @@ public class Collidable implements Drawable {
 
     public RectF getBoundingBox(){return boundingBox;}
 
+    public Bitmap getBitmap(){return bitmap;}
+
     public boolean isTopCollision() {
         return topCollision;
     }
@@ -568,4 +570,6 @@ public class Collidable implements Drawable {
     public void setMaxDx(float maxDx) {
         this.maxDx = maxDx;
     }
+
+    public void setBitmap(Bitmap bitmap){this.bitmap = bitmap;}
 }

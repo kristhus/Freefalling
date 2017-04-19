@@ -19,6 +19,7 @@ public class Hanz extends Character {
         setY(0);
 
 
+
         //   setDx(10);
      //   setDy(10);
       //  setId(id);
