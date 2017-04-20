@@ -96,7 +96,7 @@ public class GameThread extends Thread { //
                             Thread.sleep(sleepTime);                            // Sleep for the calculated amount of time required
                         } catch (InterruptedException e) {
                         }
-                    }
+                    }/*
                     while (sleepTime < 0 && framesSkipped < MAX_SKIPS) {        // If not possible to maintain FPS, update controller to catch up
                         beginTime = System.currentTimeMillis();
                         activity.update(dt);
@@ -104,6 +104,7 @@ public class GameThread extends Thread { //
                         framesSkipped++;
                         dt = System.currentTimeMillis() - beginTime;
                     }
+                    */
                 /*    if(framesSkipped > 0) {
                         Log.w("GameThread", "Skipped " + framesSkipped + " frames");
                     }*/
@@ -113,8 +114,8 @@ public class GameThread extends Thread { //
                     dys += activity.getPlayer().getCharacter().getDy();
                     if(elapsedTime > 1000) {
                         elapsedTime -= 1000;
-                        performanceString = "x/s: " + dxs + "   y/s: " + dys;
-                        activity.getPlayer().getCharacter().setDebugString("x/s: " + dxs + "   y/s: " + dys);
+                        performanceString = "x/s: " + dxs/MAX_FPS + "   y/s: " + dys/MAX_FPS;
+                        activity.getPlayer().getCharacter().setDebugString(performanceString);
                         dxs = 0.0f;
                         dys = 0.0f;
                     }
