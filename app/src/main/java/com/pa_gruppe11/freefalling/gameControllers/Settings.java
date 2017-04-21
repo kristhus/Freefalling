@@ -34,7 +34,6 @@ public class Settings extends GameMenu implements SeekBar.OnSeekBarChangeListene
     public void save(View view){
         String msg = "Error saving changes";
         DataHandler data = DataHandler.getInstance();
-        Log.w("Settings", "show minimap set to: " + ((CheckBox) findViewById(R.id.minimapCheckbox)).isChecked() + " expected: " + false);
         if(Config.getInstance().saveFile(this)) {
             findViewById(R.id.saveButton).setVisibility(View.GONE);
             msg = "Changes saved";
@@ -47,8 +46,6 @@ public class Settings extends GameMenu implements SeekBar.OnSeekBarChangeListene
         Config.getInstance().readFile(this);
         DataHandler data = DataHandler.getInstance();
 
-        Log.w("Settings", "hide minimap was: " + data.isHideMinimap());
-
         ((CheckBox) findViewById(R.id.fpsCheckBox)).setChecked(data.getFPS() == 60 ? true : false);
         ((CheckBox) findViewById(R.id.bgmCheckBox)).setChecked(data.isBgmMuted());
         ((CheckBox) findViewById(R.id.sfxCheckBox)).setChecked(data.isSfxMuted());
@@ -58,7 +55,6 @@ public class Settings extends GameMenu implements SeekBar.OnSeekBarChangeListene
         ((SeekBar) findViewById(R.id.bgmLevelSeekbar)).setOnSeekBarChangeListener(this);
         ((SeekBar) findViewById(R.id.bgmLevelSeekbar)).setProgress(data.getBgmLevel());
 
-        Log.w("Settings", "show minimap set to: " + ((CheckBox) findViewById(R.id.minimapCheckbox)).isChecked() + " expected: " + !data.isHideMinimap());
     }
 
     public void onChange(View view) {

@@ -11,6 +11,7 @@ import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.pa_gruppe11.freefalling.Models.GameMap;
 import com.pa_gruppe11.freefalling.Models.GameMessage;
+import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 import com.pa_gruppe11.freefalling.framework.VectorSAT;
 import com.pa_gruppe11.freefalling.implementations.models.Hanz;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
@@ -198,6 +199,7 @@ public class GameActivity extends GameMenu {
                         if (o.isLethal()) {
                             // TODO: death-animation?
                             thisPlayer.incrementDeaths();
+                            ResourceLoader.getInstance().getAudioList().get(R.raw.goat).play();
                             float res = gameMap.getClosestRespawnPoint(thisPlayer.getCharacter().getY());
                             Log.w("GameActivity", "res: " + res);
                             thisPlayer.getCharacter().setY(res);

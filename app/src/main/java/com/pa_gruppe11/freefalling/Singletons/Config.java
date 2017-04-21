@@ -66,6 +66,7 @@ public class Config {
 			fos.close();
 			success = true;
 			GameThread.getInstance().reloadValues(); // Update values such as MAX_FPS
+			ResourceLoader.getInstance().reloadAudioVolume();
 			Log.w("Config", "Successfully saved file");
 		} catch(IOException e) {
 			e.printStackTrace();

@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Drawable;
 import com.pa_gruppe11.freefalling.R;
+import com.pa_gruppe11.freefalling.framework.AudioFreefalling;
 import com.pa_gruppe11.freefalling.framework.ImageItem;
 import com.pa_gruppe11.freefalling.gameControllers.GameMenu;
 
@@ -32,8 +33,15 @@ public final class ResourceLoader {
             R.drawable.block,
             R.drawable.knife,
             R.drawable.sawblade
+
     };                     // Add new resources here, or load all images from drawable
 
+    private static final int[] sfxIdList = {    // list of audio files, considered as sfx
+            R.raw.goat
+    };
+    private static final int[] bgmIdList = {    // list of audio files, considered as bgm
+
+    };
 
     private static final int[] preGameResources = {
             R.drawable.hanz,
@@ -47,6 +55,8 @@ public final class ResourceLoader {
     private ArrayList<ImageItem> data;
 
     private HashMap<Integer, Drawable> drawableList = new HashMap<>();
+    private HashMap<Integer, AudioFreefalling> audioList = new HashMap<>();
+
 
     private GameMenu context;
 
@@ -102,24 +112,25 @@ public final class ResourceLoader {
         for(int i : imageList.keySet()) {
             //Log.w("ResourceLoader", "Name: " + context.getResources().getResourceEntryName(i));
         }
-
     }
 
 
     /**
      * Add id's to resourceIdList in ResourceLoader for each new resource to be loaded.
+     * This method loads the various resources from a pre defined list into its designated HashMap
+     * The created object can then be easily accessed via the given resourceId
      * @param context
      */
     public void manualLoad(GameMenu context) {
-        for(int i : resourceIdList)
-            imageList.put(i, BitmapFactory.decodeResource(context.getResources(), i));
-    }
-
-
-
-
-    public void setImageList(Class<?> clz){
-
+        if(resourceIdList.length > 0)
+            for(int i : resourceIdList)
+                imageList.put(i, BitmapFactory.decodeResource(context.getResources(), i));
+        if(sfxIdList.length > 0)
+            for(int j : sfxIdList)
+                audioList.put(j, new AudioFreefalling(context, j, AudioFreefalling.SFX));
+        if(bgmIdList.length > 0)
+            for(int k : bgmIdList)
+                audioList.put(k, new AudioFreefalling(context, k, AudioFreefalling.BGM));
     }
 
     public Bitmap getImage(int id) {
@@ -144,10 +155,10 @@ public final class ResourceLoader {
     }
 
     public void recycleGameResources() {
-        for (int i : imageList.keySet()){
+        for (int i : imageList.keySet())
             imageList.get(i).recycle();
-            //           ((BitmapDrawable)imageList.get(i).getDrawable()).getBitmap().recycle();     // Removes element for element in the hashmap.
-        }
+        for (int j : audioList.keySet())
+            audioList.get(j).dispose();
     }
 
     public void recycleMenuResources() {
@@ -160,6 +171,10 @@ public final class ResourceLoader {
     public static ResourceLoader getInstance(){
 
         return INSTANCE;
+    }
+
+    public HashMap<Integer, AudioFreefalling> getAudioList() {
+        return audioList;
     }
 
     public HashMap<Integer, Bitmap> getImageList(){
@@ -191,5 +206,17 @@ public final class ResourceLoader {
 
     }
 
-
+    /**
+     * Reload the volume values of the audio files.
+     * Call when a Settings-related change to DataHandler has been made
+     */
+    public void reloadAudioVolume() {
+        for(int i : audioList.keySet()){
+            AudioFreefalling audio = audioList.get(i);
+            if(audio.getAudioType() == AudioFreefalling.BGM)
+                audio.mute(DataHandler.getInstance().isBgmMuted());
+            else if(audio.getAudioType() == AudioFreefalling.SFX)
+                audio.mute(DataHandler.getInstance().isSfxMuted());
+        }
+    }
 }
