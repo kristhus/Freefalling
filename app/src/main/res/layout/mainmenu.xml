@@ -2,6 +2,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/sky_blue">
+
+    <ImageView android:id="@+id/clouds"
+        android:layout_height="300dp"
+        android:layout_width="400dp"
+        android:src="@drawable/clouds" />
+
+    <ImageView android:id="@+id/logo"
+        android:layout_height="150dp"
+        android:layout_width="250dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="30dp"
+        android:src="@drawable/logo" />
+
+
+    <ImageView android:id="@+id/fly"
+        android:layout_height="250dp"
+        android:layout_width="150dp"
+        android:layout_toRightOf="@id/logo"
+        android:layout_marginLeft="-80dp"
+        android:layout_marginTop="0dp"
+        android:src="@drawable/fly" />
     android:id="@+id/mainMenuLayout"
     android:background="@android:color/background_light">
 
@@ -14,47 +36,47 @@
         android:layout_marginBottom="10dp"
         android:onClick="signIn"/>
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="28dp"
-        android:text="About"
-        android:onClick="goToAboutMenu"/>
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/button2"
-        android:layout_alignStart="@+id/button2"
-        android:layout_below="@+id/button2"
-        android:layout_marginTop="14dp"
-        android:text="Friends"
-        android:onClick="goToFriendsMenu"/>
-
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/button3"
+    <ImageView android:id="@+id/lobby"
+        android:layout_x="100dp"
+        android:layout_y="200dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        android:text="Lobby"
+        android:layout_alignTop="@id/logo"
+        android:layout_marginTop="130dp"
+        android:layout_height="150dp"
+        android:layout_width="200dp"
+        android:src="@drawable/lobby"
         android:onClick="goToLobby"/>
 
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/button4"
-        android:layout_alignStart="@+id/button4"
-        android:layout_below="@+id/button4"
-        android:layout_marginTop="15dp"
-        android:text="Settings"
-        android:onClick="goToSettings"/>
+    <ImageView android:id="@+id/friends"
+        android:layout_height="150dp"
+        android:layout_width="200dp"
+        android:layout_alignTop="@id/lobby"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="70dp"
+        android:src="@drawable/friends"
+        android:onClick="goToFriendsMenu"
+        />
+
+    <ImageView android:id="@+id/about"
+        android:layout_height="150dp"
+        android:layout_width="200dp"
+        android:layout_alignTop="@id/friends"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="70dp"
+        android:src="@drawable/about"
+        android:onClick="goToAboutMenu"
+        />
+
+    <ImageView android:id="@+id/settings"
+        android:layout_height="100dp"
+        android:layout_width="200dp"
+        android:layout_alignTop="@id/about"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/settings"
+        android:onClick="goToSettings"
+        />
 
     <Button
         android:id="@+id/button"
@@ -62,18 +84,10 @@
         android:layout_height="wrap_content"
         android:text="GameActivity"
         android:onClick="startGame"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="13dp" />
+        android:layout_below="@+id/lobby"
+        android:layout_alignLeft="@+id/button6"
+        android:layout_alignStart="@+id/button6" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Debug"
-        android:layout_below="@+id/button5"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp" />
 
     <Button
         android:id="@+id/button6"
@@ -81,9 +95,12 @@
         android:layout_height="wrap_content"
         android:text="Quickmatch"
         android:onClick="inflateLobby"
-        android:layout_above="@+id/sign_in_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="23dp" />
+        android:layout_marginBottom="10dp"
+        android:layout_alignBottom="@+id/sign_in_button"
+        android:layout_toRightOf="@+id/sign_in_button"
+        android:layout_toEndOf="@+id/sign_in_button"
+        android:layout_marginLeft="13dp"
+        android:layout_marginStart="13dp" />
 
     <RelativeLayout
         android:id="@+id/loadLayout"

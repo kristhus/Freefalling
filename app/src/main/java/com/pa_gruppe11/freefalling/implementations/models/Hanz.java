@@ -34,8 +34,8 @@ public class Hanz extends Character {
         pAx = 50;
         pAy = 50;
 
-        setMaxDx(screenHeight * pDx/100);
-        setMaxDy(screenHeight * pDy/100);
+        setMaxDx(2*screenHeight * pDx/100);
+        setMaxDy(2*screenHeight * pDy/100);
 
         accelerationX = 0;
         accelerationY = 0;

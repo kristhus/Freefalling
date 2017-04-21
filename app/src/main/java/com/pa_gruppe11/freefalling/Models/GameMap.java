@@ -118,14 +118,6 @@ public class GameMap implements Drawable {
         if(y < endY) {
             //y += Math.abs(pdy*delta); //TODO: Swap this with a modification of character y-progress
             y = thisCharacter.getY();
-        }else {
-            //TODO: init finishline
-            initFinale = true;
-        }
-
-        if(initFinale) {
-            //DONEZO
-            done = "FERDIG NO";
         }
 
 
@@ -283,4 +275,7 @@ public class GameMap implements Drawable {
                 c.getDrawY() > DataHandler.getInstance().getScreenHeight() + DataHandler.getInstance().getScreenHeight()*0.2; // 20% margin
     }
 
+    public float getEndY() {
+        return endY;
+    }
 }

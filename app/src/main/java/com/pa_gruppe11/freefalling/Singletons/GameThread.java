@@ -11,24 +11,24 @@ import com.pa_gruppe11.freefalling.gameControllers.GameActivity;
 /**
  * Created by Kristian on 21/03/2017.
  * The purpose of this class is to update and redraw the game in a way, such that the update is prioritized to achieve correct movement.
- * If the thread lags behind, it will update, and skip redrawing within that period.
+ * If the thread lags behind, it will update, and skip redrawing within that period.    (while-loop disabled for now)
  * If the thread is ajour or better, it will sleep to maintain FPS. 
  * The FPS can be changed on a need-be-basis 
  */
 public class GameThread extends Thread { //
 
-    private GameActivity activity;										// Activity to be updated
-    private SurfaceView view;												// View to be redrawn
-    private int MAX_FPS = DataHandler.getInstance().getFPS();     // We need to move objects a fixed percentage compared to a constant variable, e.g. pixels/second, not per frame, to accomodate players that can run in 60fps
-    private boolean running;												// boolean in while loop
-    private final int MAX_SKIPS = 5;	 								// Max amount of skipped draws, before drawing will be performed regardless of performance delay.
+    private GameActivity activity;									// Activity to be updated
+    private SurfaceView view;										// View to be redrawn
+    private int MAX_FPS = DataHandler.getInstance().getFPS();       // We need to move objects a fixed percentage compared to a constant variable, e.g. pixels/second, not per frame, to accomodate players that can run in 60fps
+    private boolean running;										// boolean in while loop
+    private final int MAX_SKIPS = 5;	 							// Max amount of skipped draws, before drawing will be performed regardless of performance delay.
     private int PERIOD_LENGTH = 1000/MAX_FPS;	                    // milliseconds per frame
 
-    private boolean started;												// Thread has been initialized
+    private boolean started;										// Thread has been initialized
 
     private boolean suspended = false;
 
-    private long elapsedTime = 0;										// Time in millis since execution of thread. Currently not in use
+    private long elapsedTime = 0;									// Time in millis since execution of thread.
 
 	private static GameThread gameThread = new GameThread();
 
@@ -177,8 +177,13 @@ public class GameThread extends Thread { //
         PERIOD_LENGTH = 1000/DataHandler.getInstance().getFPS();
     }
 
+    // Suspending the thread did not work as intended, so this method was required
     public void stop_gameThread() {
         gameThread = new GameThread();
     }
 
+
+    public long getElapsedTime() {
+        return elapsedTime;
+    }
 }

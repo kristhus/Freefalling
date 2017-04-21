@@ -11,6 +11,8 @@ public class Player {
     private PowerUp[] powerups;
     private Character character;
     private String displayName = "Default";
+    private int deathCounter = 0;
+    private long elapsedTime;
 
 
     public Player(String participantId, int placed, PowerUp[] powerups, Character character){
@@ -44,6 +46,27 @@ public class Player {
             character.setDisplayName(displayName);
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
 
+    public void incrementDeaths() {
+        deathCounter++;
+    }
+    
+    public int getDeathCounter() {
+        return deathCounter;
+    }
 
+    public void setDeathCounter(int deathCounter) {
+        this.deathCounter = deathCounter;
+    }
+
+    public void setElapsedTime(long elapsedTime) {
+        this.elapsedTime = elapsedTime;
+    }
+
+    public long getElapsedTime() {
+        return elapsedTime;
+    }
 }

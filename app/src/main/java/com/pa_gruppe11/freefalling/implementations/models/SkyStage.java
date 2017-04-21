@@ -19,7 +19,7 @@ public class SkyStage extends GameMap {
     public SkyStage() {
         super(R.drawable.bg_sky);
 
-        endY = 10000.0f;
+        endY = 6000.0f;
         respawnPoints = new ArrayList<>();
 
         //TODO: temporary respawnpoints

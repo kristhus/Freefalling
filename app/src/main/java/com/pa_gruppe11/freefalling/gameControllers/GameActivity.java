@@ -4,17 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
 import com.google.android.gms.games.multiplayer.realtime.Room;
-import com.pa_gruppe11.freefalling.Collidable;
 import com.pa_gruppe11.freefalling.Models.GameMap;
 import com.pa_gruppe11.freefalling.Models.GameMessage;
-import com.pa_gruppe11.freefalling.Singletons.CollisionHandler;
-import com.pa_gruppe11.freefalling.framework.GameServiceListener;
 import com.pa_gruppe11.freefalling.framework.VectorSAT;
 import com.pa_gruppe11.freefalling.implementations.models.Hanz;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
@@ -23,11 +19,14 @@ import com.pa_gruppe11.freefalling.R;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
-import com.pa_gruppe11.freefalling.implementations.models.Block;
 import com.pa_gruppe11.freefalling.implementations.models.SkyStage;
 import com.pa_gruppe11.freefalling.tmp.TmpView;
 import com.pa_gruppe11.freefalling.Models.Player;
@@ -35,6 +34,7 @@ import com.pa_gruppe11.freefalling.Models.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Kristian on 31/03/2017.
@@ -60,6 +60,13 @@ public class GameActivity extends GameMenu {
 
     private String drawPlayerName;
 
+    private boolean thisPlayerReachedGoal = false;
+    private boolean otherPlayerReachedGoal = false;
+    private ArrayList<Player> finishing_placements;
+
+    // Statistics
+    private long startTime;
+
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
@@ -68,10 +75,10 @@ public class GameActivity extends GameMenu {
 
         if(!getIntent().hasExtra(Multiplayer.EXTRA_ROOM))
             initiate();
-
     }
 
     public void initiate() {
+        finishing_placements = new ArrayList<Player>();
         thisPlayer = new Player();
         thisPlayer.setCharacter(new Hanz(R.drawable.stickman, 65, 112));
         thisPlayer.getCharacter().setThisCharacter(true);
@@ -140,6 +147,13 @@ public class GameActivity extends GameMenu {
 
     public void update(long dt) {
 
+        // Check if player has reached the goal, and run finishGame()
+        if(thisPlayer.getCharacter().getY() >= gameMap.getEndY()) {
+            finishGame();
+        }
+    //    if(otherPlayerReachedGoal)
+    //        openPostMatch();
+
         thisPlayer.getCharacter().getPreviousPosition().x = thisPlayer.getCharacter().getX();
         thisPlayer.getCharacter().getPreviousPosition().y = thisPlayer.getCharacter().getY();
 
@@ -183,6 +197,7 @@ public class GameActivity extends GameMenu {
                     if (mtv != null) {
                         if (o.isLethal()) {
                             // TODO: death-animation?
+                            thisPlayer.incrementDeaths();
                             float res = gameMap.getClosestRespawnPoint(thisPlayer.getCharacter().getY());
                             Log.w("GameActivity", "res: " + res);
                             thisPlayer.getCharacter().setY(res);
@@ -233,6 +248,7 @@ public class GameActivity extends GameMenu {
 
     public void notifyReady() {
         gameInProgress = true;
+        startTime = System.currentTimeMillis();
         if(!GameThread.getInstance().isStarted()) {
             GameThread.getInstance().setRunning(true);
             GameThread.getInstance().start();
@@ -245,10 +261,28 @@ public class GameActivity extends GameMenu {
     }
 
 
+    /**
+     * Called when thisPlayer has reached the goal line
+     */
     public void finishGame() {
         //Switch View to postMatchView
         gameInProgress = false;
-        GameThread.getInstance().setSuspended(true);
+        thisPlayerReachedGoal = true;
+        thisPlayer.setElapsedTime(System.currentTimeMillis() - startTime);
+        finishing_placements.add(thisPlayer);
+        if(mGoogleApiClient.isConnected() && participants != null) {
+            GameMessage notifyFinish = new GameMessage(GameMessage.FINISHED);
+            notifyFinish.setDeathCounter(thisPlayer.getDeathCounter());
+            notifyFinish.setElapsedTime(System.currentTimeMillis() - startTime);
+            for (Participant p : participants) {
+                if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
+                    Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, notifyFinish.toBytes(), room.getRoomId());
+                }
+            }
+        }
+        // Might not want to do this
+        // GO to postmatchview
+        openPostMatch();
     }
 
     public GameMap getGameMap() {
@@ -304,17 +338,68 @@ public class GameActivity extends GameMenu {
         GameMessage messageReceived = GameMessage.fromBytes(bytes);
 
         if(messageReceived != null) {
+            Player sender = null;
             String senderId = realTimeMessage.getSenderParticipantId();
-            for(String participantId : opponents.keySet()) {
+            for (String participantId : opponents.keySet()) {
                 Player p = opponents.get(participantId);
                 if (p.getParticipantId().equals(senderId)) {
-                    p.getCharacter().setValues(messageReceived);
+                    sender = p;
                     break;
-               }
+                }
+            }
+            switch(messageReceived.getType()) {
+                case GameMessage.GAME_POSITION:
+                    sender.getCharacter().setValues(messageReceived);
+                    break;
+                case GameMessage.FINISHED:
+                    if(!finishing_placements.contains(sender)) {
+                        finishing_placements.add(sender);
+                        sender.setDeathCounter(messageReceived.getDeathCounter());
+                        sender.setElapsedTime(messageReceived.getElapsedTime());
+                    }
+                    openPostMatch();
+                    break;
             }
         }
         else
             Log.w("GameActivity","Got a message, but data corrupted");
+    }
+
+    /**
+     * Inflate a postmatchview on top of the current view and suspend the gamethread
+     */
+    public void openPostMatch() {
+        GameThread.getInstance().setSuspended(true);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(DataHandler.getInstance().getScreenWidth(), DataHandler.getInstance().getScreenHeight());
+                addContentView(getLayoutInflater().inflate(R.layout.post_match_view, null),  params);
+                TableLayout tableLayout = (TableLayout) findViewById(R.id.ranking_table);
+
+                for(int i = 1; i < finishing_placements.size()+1; i++) {
+                    Player p = finishing_placements.get(i-1);
+                    TableRow row = (TableRow) getLayoutInflater().inflate(R.layout.table_item, null);
+                    ((TextView) row.findViewById(R.id.placement)).setText("" + i);
+                    ((TextView) row.findViewById(R.id.playername)).setText(p.getDisplayName());
+                    ((TextView) row.findViewById(R.id.deathcounter)).setText("" + p.getDeathCounter());
+                    ((TextView) row.findViewById(R.id.timeused)).setText("" + milliToTime(p.getElapsedTime()));
+                    tableLayout.addView(row);
+                }
+
+            }
+        });
+    }
+
+    public String milliToTime(long elapsedTime) {
+        String retVal = "";
+        retVal+= TimeUnit.MILLISECONDS.toMinutes(elapsedTime)+":";
+        retVal+= TimeUnit.MILLISECONDS.toSeconds(elapsedTime)%60;
+        Log.w("GameActivity", "" + elapsedTime);
+        Log.w("GameActivity", "Elapsed time: " + retVal);
+        return retVal;
+
     }
 
     public void peerLeft(Room room, List<String> participantIds) {

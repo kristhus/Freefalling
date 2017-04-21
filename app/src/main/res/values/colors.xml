@@ -25,8 +25,10 @@
 
 
 
+    <item name ="gone" type="color">#00000000</item>
     <item name="black_transparrent" type="color">#80000000</item>
     <item name="black" type="color">#000000</item>
     <item name="white" type="color">#FFFFFF</item>
     <item name="gray" type="color">#F0F0F0</item>
+    <item name="sky_blue" type="color">#CAEBEC</item>
 </resources>
