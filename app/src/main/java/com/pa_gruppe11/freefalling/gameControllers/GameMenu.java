@@ -62,7 +62,6 @@ public class GameMenu extends Activity {
     public void onBackPressed() {
         Class thisClass = this.getClass();
         if(thisClass == MainMenu.class) {
-            // Quit ?Bitmap.createBitmap
             serviceListener.remove(this);
             Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);

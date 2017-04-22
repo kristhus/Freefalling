@@ -13,6 +13,8 @@ import com.pa_gruppe11.freefalling.Models.GameMap;
 import com.pa_gruppe11.freefalling.Models.GameMessage;
 import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 import com.pa_gruppe11.freefalling.framework.VectorSAT;
+import com.pa_gruppe11.freefalling.implementations.models.Goat;
+import com.pa_gruppe11.freefalling.implementations.models.Gruber;
 import com.pa_gruppe11.freefalling.implementations.models.Hanz;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
 import com.pa_gruppe11.freefalling.Models.PowerUp;
@@ -31,6 +33,7 @@ import com.pa_gruppe11.freefalling.Singletons.GameThread;
 import com.pa_gruppe11.freefalling.implementations.models.SkyStage;
 import com.pa_gruppe11.freefalling.tmp.TmpView;
 import com.pa_gruppe11.freefalling.Models.Player;
+import com.pa_gruppe11.freefalling.Models.Character;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,46 +84,62 @@ public class GameActivity extends GameMenu {
     public void initiate() {
         finishing_placements = new ArrayList<Player>();
         thisPlayer = new Player();
-        thisPlayer.setCharacter(new Hanz(R.drawable.stickman, 65, 112));
-        thisPlayer.getCharacter().setThisCharacter(true);
 
-
-        // change back to calculated x-value
-        thisPlayer.getCharacter().setDrawY(
-                DataHandler.getInstance().getScreenHeight()/2 - thisPlayer.getCharacter().getHeight()/2);
-        if(room != null) {
+        if(room != null) {  // if multiplayer
             participants = room.getParticipants();
+            int selectedCharacterId = (Integer) getIntent().getExtras().get("role");
+            GameMessage selectionMessage = new GameMessage(GameMessage.CHARACTER_SELECTED);
+            selectionMessage.setCharacterSelected(selectedCharacterId);
+            for (Participant p : participants) {
+                if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
+                    Games.RealTimeMultiplayer.sendUnreliableMessage(mGoogleApiClient, selectionMessage.toBytes(), room.getRoomId(), p.getParticipantId());   // sendUnreliableMessageToOthers
+                }
+            }
             int i = 0;
             if(participants != null) {
                 opponents = new HashMap<>();
                 int index = 0;
+                HashMap<String, Integer> opponentSelections =
+                        (HashMap<String, Integer>) getIntent().getExtras().get("opponentSelections");
                 for(Participant p : participants) {
                     //TODO: replace - debug purposes
                     if(p.getPlayer() == null ||
                             !p.getPlayer().getPlayerId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
-                        Hanz c = new Hanz(R.drawable.stickman, 65, 112);
+                        int opponentId =  (opponentSelections.keySet().size() > 0 ? opponentSelections.get(p.getParticipantId()) : -1);
+                        Character c = createSelectedCharacter(opponentId);
                         c.setX(200*(index+1));
                         c.setY(200);
                         Player otherPlayer = new Player(p.getParticipantId(), i, null, c);
                         String displayName = p.getDisplayName();
                         otherPlayer.setDisplayName(displayName);
 
-                        otherPlayer.getCharacter().setDrawY(
-                                thisPlayer.getCharacter().getDrawY() +
-                                (otherPlayer.getCharacter().getY() - thisPlayer.getCharacter().getY())
-                        );
 
                         opponents.put(p.getParticipantId(), otherPlayer);  //-1 is thisPlayer
-//                        opponents[i] = otherPlayer;
                         i++;
                     }else {
+                        thisPlayer.setCharacter(createSelectedCharacter(selectedCharacterId));
                         thisPlayer.getCharacter().setX(200*(index+1));
                         thisPlayer.getCharacter().setY(200);
                         thisPlayer.setParticipantId(p.getParticipantId());
                         thisPlayer.setDisplayName(p.getDisplayName());
+                        // change back to calculated x-value
+                        thisPlayer.getCharacter().setDrawY(
+                                DataHandler.getInstance().getScreenHeight()/2 - thisPlayer.getCharacter().getHeight()/2);
                     }
                 }
+                for(String s : opponents.keySet()) {
+                    opponents.get(s).getCharacter().setDrawY(
+                            thisPlayer.getCharacter().getDrawY() +
+                                    (opponents.get(s).getCharacter().getY() - thisPlayer.getCharacter().getY())
+                    );
+                }
             }
+        }else { // If room == null, then it is a practice game, and no opponents
+            thisPlayer.setCharacter(new Hanz(R.drawable.roger, 65, 112));
+            // change back to calculated x-value
+            thisPlayer.getCharacter().setDrawY(
+                    DataHandler.getInstance().getScreenHeight()/2 - thisPlayer.getCharacter().getHeight()/2);
+            thisPlayer.getCharacter().setThisCharacter(true);
         }
 
 
@@ -144,6 +163,18 @@ public class GameActivity extends GameMenu {
         addContentView(controller, params);
 
         notifyReady();
+    }
+
+    private Character createSelectedCharacter(int selectedCharacterId) {
+        switch(selectedCharacterId) {
+            case R.drawable.hanz:
+                return new Hanz(R.drawable.stickman, 65, 112);
+            case R.drawable.gruber:
+                return new Gruber(R.drawable.grubermann, 65, 112);
+            case R.drawable.goat:
+                return new Goat(R.drawable.goat, 125, 133);
+        }
+        return new Hanz(R.drawable.roger, 65, 112);  // Defaults to Hanz
     }
 
     public void update(long dt) {
@@ -199,7 +230,10 @@ public class GameActivity extends GameMenu {
                         if (o.isLethal()) {
                             // TODO: death-animation?
                             thisPlayer.incrementDeaths();
-                            ResourceLoader.getInstance().getAudioList().get(R.raw.goat).play();
+
+                            if (thisPlayer.getCharacter() instanceof Goat)
+                                ResourceLoader.getInstance().getAudioList().get(R.raw.goat).play();
+
                             float res = gameMap.getClosestRespawnPoint(thisPlayer.getCharacter().getY());
                             Log.w("GameActivity", "res: " + res);
                             thisPlayer.getCharacter().setY(res);
@@ -232,7 +266,7 @@ public class GameActivity extends GameMenu {
 //                byte[] message = ("Other person = (" + thisPlayer.getCharacter().getX() + ", " + thisPlayer.getCharacter().getY() + ")").getBytes();
                 for (Participant p : participants) {
                     if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
-                        Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, gameMessage.toBytes(), room.getRoomId());
+                        Games.RealTimeMultiplayer.sendUnreliableMessage(mGoogleApiClient, gameMessage.toBytes(), room.getRoomId(), p.getParticipantId());   // sendUnreliableMessageToOthers
                     }
                 }
             }
@@ -278,7 +312,7 @@ public class GameActivity extends GameMenu {
             notifyFinish.setElapsedTime(System.currentTimeMillis() - startTime);
             for (Participant p : participants) {
                 if (!p.getParticipantId().equals(Games.Players.getCurrentPlayerId(mGoogleApiClient))) {
-                    Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, notifyFinish.toBytes(), room.getRoomId());
+                    Games.RealTimeMultiplayer.sendUnreliableMessage(mGoogleApiClient, notifyFinish.toBytes(), room.getRoomId(), p.getParticipantId());
                 }
             }
         }
@@ -317,6 +351,9 @@ public class GameActivity extends GameMenu {
         super.connected();
         initiate();
         Log.w("GameActivity", "Connected!");
+
+
+
     }
 
 
@@ -360,6 +397,13 @@ public class GameActivity extends GameMenu {
                         sender.setElapsedTime(messageReceived.getElapsedTime());
                     }
                     openPostMatch();
+                    break;
+                case GameMessage.CHARACTER_SELECTED:
+                    Log.w("GameActivity", "character_selected");
+                    Character c =createSelectedCharacter(messageReceived.getCharacterSelected());
+                    c.setX(sender.getCharacter().getX());
+                    c.setY(sender.getCharacter().getY());
+                    sender.setCharacter(c);
                     break;
             }
         }

@@ -4,17 +4,19 @@ import android.util.Log;
 
 import com.pa_gruppe11.freefalling.Models.Character;
 import com.pa_gruppe11.freefalling.R;
-import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 
 /**
- * Created by Thomas on 03.04.2017.
+ * Created by Kristian on 21/04/2017.
+ * Ridiculous movement speed, but larger bounds
+ * Screams like an idiot upon death
  */
 
-public class Hanz extends Character {
+public class Goat extends Character {
 
     protected final int identifier = R.drawable.hanz;
 
-    public Hanz(int id, int width, int height) {
+
+    public Goat(int id, int width, int height) {
         super(id, width, height);
         setX(420);
         setY(0);
@@ -32,21 +34,21 @@ public class Hanz extends Character {
 
         pDx = 10;
         pDy = 10;
-        pAx = 50;
-        pAy = 50;
+        pAx = 100;  // Ridiculous acceleration
+        pAy = 100;
 
-        setMaxDx(2*screenHeight * pDx/100);
-        setMaxDy(2*screenHeight * pDy/100);
+        setMaxDx(6*screenHeight * pDx/100);
+        setMaxDy(6*screenHeight * pDy/100);
 
         accelerationX = 0;
         accelerationY = 0;
 
 
-     //   setDx(10);
-     //   setDy(10);
-      //  setId(id);
-        Log.w("Hanz", "Constructed a new Hanz");
-        Log.w("Hanz", "Width: " + width + "     height: " + height);
+        //   setDx(10);
+        //   setDy(10);
+        //  setId(id);
+        Log.w("Goat", "Constructed a new Goat");
+        Log.w("Goat", "Width: " + width + "     height: " + height);
 
     }
 
@@ -63,3 +65,4 @@ public class Hanz extends Character {
     }
 
 }
+

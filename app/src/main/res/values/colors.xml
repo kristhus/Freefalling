@@ -31,4 +31,8 @@
     <item name="white" type="color">#FFFFFF</item>
     <item name="gray" type="color">#F0F0F0</item>
     <item name="sky_blue" type="color">#CAEBEC</item>
+
+    <item name="button_red" type="color">#C10E46</item>
+    <item name="button_shad" type="color">#7A1C3A</item>
+
 </resources>

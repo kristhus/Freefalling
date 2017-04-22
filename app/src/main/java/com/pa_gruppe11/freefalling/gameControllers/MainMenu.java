@@ -11,6 +11,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -26,9 +27,11 @@ import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 
+import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
+import com.pa_gruppe11.freefalling.Models.GameMessage;
 import com.pa_gruppe11.freefalling.R;
 import com.pa_gruppe11.freefalling.Singletons.Config;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
@@ -37,6 +40,7 @@ import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 import com.pa_gruppe11.freefalling.framework.GridViewAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -56,7 +60,8 @@ public class MainMenu extends GameMenu
     private GridView characterGridView;
     private GridViewAdapter characterAdapter;
 
-
+    private int selectedCharacterId = -1;
+    private HashMap<String, Integer> opponentSelection = new HashMap<>(); // participantId and the characterId
 
     @Override
     public void onCreate(Bundle savedInstance){
@@ -83,6 +88,10 @@ public class MainMenu extends GameMenu
     public void inflateLobby(View view) {
         ResourceLoader.getInstance().getCharacters();
         setContentView(R.layout.lobby);
+    }
+
+    public void inflateMenu(View view) {
+        setContentView(R.layout.mainmenu);
     }
 
     public void startQuickGame(View view) {
@@ -150,7 +159,9 @@ public class MainMenu extends GameMenu
         Intent intent = new Intent(this, GameActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         intent.putExtra(Multiplayer.EXTRA_ROOM, room);
+        intent.putExtra("role", selectedCharacterId);
         intent.putExtra("CURRENT_PLAYER_ID", Games.Players.getCurrentPlayer(mGoogleApiClient));
+        intent.putExtra("opponentSelections", opponentSelection);
         startActivity(intent);
         finish();
 
@@ -231,7 +242,6 @@ public class MainMenu extends GameMenu
                 Games.RealTimeMultiplayer.create(mGoogleApiClient, roomConfig);
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-                // TODO: disable the view, and show loading, until room is created
                 showLoading();
                 break;
             case RC_SIGN_IN:
@@ -245,9 +255,10 @@ public class MainMenu extends GameMenu
                 break;
             case RC_WAITING_ROOM:
                 Log.w("MainMenu", "RC_WAITING_ROOM");
-                if(resultCode == Activity.RESULT_OK)
+                if(resultCode == Activity.RESULT_OK) {
+                    //waitForPlayers();
                     startGame(null);
-                else if(resultCode == Activity.RESULT_CANCELED) {
+                } else if(resultCode == Activity.RESULT_CANCELED) {
                     // TODO: pressed back button or similar. leave room? run in background?
                 }
                 else if(resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
@@ -257,6 +268,15 @@ public class MainMenu extends GameMenu
                 break;
         }
     }
+
+    public void waitForPlayers() {
+        try {
+            showLoading();
+            Thread.sleep(10000);
+            dismissLoading();
+        } catch (InterruptedException e) {}
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -271,7 +291,17 @@ public class MainMenu extends GameMenu
 
     @Override
     public void messageReceived(RealTimeMessage realTimeMessage) {
-        Log.w("MainMenu", "Received message from " + realTimeMessage.getSenderParticipantId() + " : " + realTimeMessage.getMessageData());
+        Log.w("MainMenu", "Message received");
+        byte[] bytes = realTimeMessage.getMessageData();
+        GameMessage messageReceived = GameMessage.fromBytes(bytes);
+
+        if(messageReceived != null) {
+            switch(messageReceived.getType()) {
+                case GameMessage.CHARACTER_SELECTED:
+                    opponentSelection.put(realTimeMessage.getSenderParticipantId(), messageReceived.getCharacterSelected());
+                    break;
+            }
+        }
     }
 
     @Override
@@ -293,6 +323,14 @@ public class MainMenu extends GameMenu
             Log.w("MainMenu", "Error");
             return;
         }
+        if(room.getParticipants().size() > 1) { // If someone in the room, tell them of your selection
+            GameMessage selectionMessage = new GameMessage(GameMessage.CHARACTER_SELECTED);
+            selectionMessage.setCharacterSelected(selectedCharacterId);
+            for(Participant p : room.getParticipants()) {
+                Games.RealTimeMultiplayer.sendUnreliableMessage(mGoogleApiClient, selectionMessage.toBytes(), room.getRoomId(), p.getParticipantId());
+
+            }
+        }
         Intent intent = Games.RealTimeMultiplayer.getWaitingRoomIntent(mGoogleApiClient, room, Integer.MAX_VALUE);
         startActivityForResult(intent, RC_WAITING_ROOM);
     }
@@ -311,6 +349,17 @@ public class MainMenu extends GameMenu
     @Override
     public void roomConnecting(Room room) {
         Log.w("MainMenu", "onRoomConnecting");
+    }
+
+    @Override
+    public void peerJoined(Room room, List<String> participantIds) {
+        Log.w("MainMenu", "peerJoined");
+        if(participantIds.size() != 0) {
+            Log.w("MainMenu", "sending message about character selection");
+            GameMessage selectionMessage = new GameMessage(GameMessage.CHARACTER_SELECTED);
+            selectionMessage.setCharacterSelected(selectedCharacterId);
+            Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGoogleApiClient, selectionMessage.toBytes(), room.getRoomId());
+        }
     }
 
 
@@ -335,34 +384,43 @@ public class MainMenu extends GameMenu
         */
     }
 
+    /**
+     * Inflates an xml-layout with custom ArrayAdapter with characters as defined in strings.xml strings-array
+     *
+     */
     public void openCharacterSelection(View view) {
-
+        Log.w("MainMenu", "openCharacterSelection()");
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(DataHandler.getInstance().getScreenWidth(), DataHandler.getInstance().getScreenHeight());
-        RelativeLayout layout = (RelativeLayout) findViewById(R.id.lobbyLayout);
         selector = getLayoutInflater().inflate(R.layout.character_selection, null);
-
-        //addContentView(selector, params);
 
         characterGridView = (GridView) selector.findViewById(R.id.gridView);
         if(characterGridView == null)
             Log.w("MainMenu", "characterGridView == null");
-        characterAdapter = new GridViewAdapter(this, R.layout.grid_item_layout, ResourceLoader.getInstance().getCharacters());
+        characterAdapter = new GridViewAdapter(this,
+                R.layout.grid_item_layout,
+                ResourceLoader.getInstance().getCharacters());
         characterGridView.setAdapter(characterAdapter);
+        characterGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int identifier = characterAdapter.getImageItem(position).getIdentifier();
+                String name = characterAdapter.getImageItem(position).getTitle();
+                Toast.makeText(getApplicationContext(),
+                        "Item Clicked: " + name + " " + identifier, Toast.LENGTH_SHORT).show();
+                selectedCharacterId = identifier;
+                closeSelector(null);
+            }
+        });
 
 
         addContentView(selector, params);
 
-        //layout.addView(selector);
-    }
-
-    public void selectedCharacter(View view) {
-        Log.w("MainMenu", "Selected some character");
-        // Close, then recycle
     }
 
     public void closeSelector(View view) {
         ((ViewGroup) selector.getParent()).removeView(selector);
     }
+
 
 }
 

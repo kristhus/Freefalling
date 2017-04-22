@@ -32,7 +32,10 @@ public final class ResourceLoader {
             R.drawable.stickman,
             R.drawable.block,
             R.drawable.knife,
-            R.drawable.sawblade
+            R.drawable.sawblade,
+            R.drawable.roger,
+            R.drawable.goat,
+            R.drawable.grubermann
 
     };                     // Add new resources here, or load all images from drawable
 
@@ -45,7 +48,8 @@ public final class ResourceLoader {
 
     private static final int[] preGameResources = {
             R.drawable.hanz,
-            R.drawable.gruber
+            R.drawable.gruber,
+            R.drawable.goat
     };
 
 
@@ -195,16 +199,15 @@ public final class ResourceLoader {
             int id = imageIds.getResourceId(i, -1);
             String resourceName = context.getResources().getResourceEntryName(id);
             Log.w("ResourceLoader", "resourceName: " + resourceName);
-            data.add(
-                    new ImageItem(BitmapFactory.decodeResource(
-                            context.getResources(), imageIds.getResourceId(i, -1)
-                    )
-                    , resourceName));
+            data.add(new ImageItem(
+                            BitmapFactory.decodeResource(
+                                    context.getResources(), imageIds.getResourceId(i, -1))
+                            , resourceName
+                            , id));
         }
-
         return data;
-
     }
+
 
     /**
      * Reload the volume values of the audio files.

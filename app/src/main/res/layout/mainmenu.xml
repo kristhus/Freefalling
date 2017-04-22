@@ -5,8 +5,12 @@
     android:background="@color/sky_blue">
 
     <ImageView android:id="@+id/clouds"
-        android:layout_height="300dp"
-        android:layout_width="400dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/logo"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+        android:layout_width="match_parent"
+        android:layout_alignParentRight="true"
         android:src="@drawable/clouds" />
 
     <ImageView android:id="@+id/logo"
@@ -14,18 +18,18 @@
         android:layout_width="250dp"
         android:layout_marginTop="50dp"
         android:layout_marginLeft="30dp"
+        android:layout_marginBottom="20dp"
         android:src="@drawable/logo" />
 
 
     <ImageView android:id="@+id/fly"
         android:layout_height="250dp"
         android:layout_width="150dp"
-        android:layout_toRightOf="@id/logo"
-        android:layout_marginLeft="-80dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="40dp"
         android:layout_marginTop="0dp"
         android:src="@drawable/fly" />
-    android:id="@+id/mainMenuLayout"
-    android:background="@android:color/background_light">
+
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
@@ -35,72 +39,79 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
         android:onClick="signIn"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/logo"
+        android:orientation="horizontal"
+        android:weightSum="1">
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.38"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="0.24"
+            android:weightSum="4">
 
 
-    <ImageView android:id="@+id/lobby"
-        android:layout_x="100dp"
-        android:layout_y="200dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignTop="@id/logo"
-        android:layout_marginTop="130dp"
-        android:layout_height="150dp"
-        android:layout_width="200dp"
-        android:src="@drawable/lobby"
-        android:onClick="goToLobby"/>
+            <ImageButton
+                android:id="@+id/button6"
+                android:layout_height="0dp"
+                android:layout_width="match_parent"
+                android:onClick="inflateLobby"
+                android:layout_marginBottom="10dp"
+                android:scaleType="fitCenter"
+                android:layout_weight=".7"
+                android:foreground="@drawable/ontouch_selector"
+                android:background="@color/gone"
+                android:src="@drawable/quickmatch"/>
 
-    <ImageView android:id="@+id/friends"
-        android:layout_height="150dp"
-        android:layout_width="200dp"
-        android:layout_alignTop="@id/lobby"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="70dp"
-        android:src="@drawable/friends"
-        android:onClick="goToFriendsMenu"
-        />
+            <ImageButton
+                android:id="@+id/button"
+                android:layout_height="0dp"
+                android:layout_width="match_parent"
+                android:foreground="@drawable/ontouch_selector"
+                android:background="@color/gone"
+                android:src="@drawable/practice"
+                android:scaleType="fitCenter"
+                android:layout_weight=".7"
+                android:layout_marginBottom="10dp"
+                android:onClick="startGame"/>
 
-    <ImageView android:id="@+id/about"
-        android:layout_height="150dp"
-        android:layout_width="200dp"
-        android:layout_alignTop="@id/friends"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="70dp"
-        android:src="@drawable/about"
-        android:onClick="goToAboutMenu"
-        />
+            <ImageButton android:id="@+id/settings"
+                android:layout_height="0dp"
+                android:layout_width="match_parent"
+                android:foreground="@drawable/ontouch_selector"
+                android:background="@color/gone"
+                android:src="@drawable/settings"
+                android:scaleType="fitCenter"
+                android:layout_weight=".7"
+                android:layout_marginBottom="10dp"
+                android:onClick="goToSettings"
+                />
 
-    <ImageView android:id="@+id/settings"
-        android:layout_height="100dp"
-        android:layout_width="200dp"
-        android:layout_alignTop="@id/about"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
-        android:src="@drawable/settings"
-        android:onClick="goToSettings"
-        />
+            <ImageButton android:id="@+id/about"
+                android:layout_height="0dp"
+                android:layout_width="match_parent"
+                android:foreground="@drawable/ontouch_selector"
+                android:background="@color/gone"
+                android:src="@drawable/about"
+                android:scaleType="fitCenter"
+                android:layout_weight=".7"
+                android:onClick="goToAboutMenu"
+                />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="GameActivity"
-        android:onClick="startGame"
-        android:layout_below="@+id/lobby"
-        android:layout_alignLeft="@+id/button6"
-        android:layout_alignStart="@+id/button6" />
-
-
-    <Button
-        android:id="@+id/button6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Quickmatch"
-        android:onClick="inflateLobby"
-        android:layout_marginBottom="10dp"
-        android:layout_alignBottom="@+id/sign_in_button"
-        android:layout_toRightOf="@+id/sign_in_button"
-        android:layout_toEndOf="@+id/sign_in_button"
-        android:layout_marginLeft="13dp"
-        android:layout_marginStart="13dp" />
+        </LinearLayout>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.38">
+        </Space>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/loadLayout"

@@ -14,6 +14,7 @@ import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceived
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListener;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
+import com.pa_gruppe11.freefalling.Models.GameMessage;
 import com.pa_gruppe11.freefalling.gameControllers.GameMenu;
 
 import java.util.HashMap;
@@ -92,6 +93,15 @@ public class GameServiceListener implements RealTimeMessageReceivedListener,
                 m.messageReceived(realTimeMessage);
             }
         }
+
+        byte[] bytes = realTimeMessage.getMessageData();
+        GameMessage messageReceived = GameMessage.fromBytes(bytes);
+
+        if(messageReceived != null) {
+            if(messageReceived.getType() == GameMessage.CHARACTER_SELECTED)
+                Log.w("listener", "message received: " + messageReceived.getType());
+        }
+
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
  * Followed tutorial by Nilanchala Panigrahy
  */
 
-public class GridViewAdapter extends ArrayAdapter{
+public class GridViewAdapter extends ArrayAdapter {
 
     private Context context;
     private int resource;
@@ -51,11 +52,6 @@ public class GridViewAdapter extends ArrayAdapter{
             titledImage = (TitledImage) row.getTag();
         }
         ImageItem item = data.get(position);
-        if(item == null){
-            Log.w("GridViewAdapter", "Item is null");
-        }if(titledImage == null) {
-            Log.w("GridViewAdapter", "titledImage is null");
-        }
         titledImage.imageTitle.setText(item.getTitle());
         titledImage.image.setImageBitmap(item.getImage());
         return row;
@@ -64,6 +60,10 @@ public class GridViewAdapter extends ArrayAdapter{
     public static class TitledImage {
         public TextView imageTitle;
         public ImageView image;
+    }
+
+    public ImageItem getImageItem(int i) {
+        return data.get(i);
     }
 
 

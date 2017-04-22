@@ -19,6 +19,7 @@ public class GameMessage implements Serializable{
     public static final int GAME_POSITION = 200;
     public static final int POWERUP = 201;
     public static final int FINISHED = 300;
+    public static final int CHARACTER_SELECTED = 400;
 
     private int type = GAME_POSITION;   // Default value
 
@@ -31,6 +32,7 @@ public class GameMessage implements Serializable{
     private float ax;
     private float ay;
 
+    private int selectedCharacterId = -1;
 
     private long elapsedTime = -1;
     private int deathCounter = 0;
@@ -187,4 +189,13 @@ public class GameMessage implements Serializable{
     public void setDeathCounter(int deathCounter) {
         this.deathCounter = deathCounter;
     }
+
+    public void setCharacterSelected(int selectedCharacterId){
+        this.selectedCharacterId = selectedCharacterId;
+    }
+
+    public int getCharacterSelected() {
+        return selectedCharacterId;
+    }
+
 }

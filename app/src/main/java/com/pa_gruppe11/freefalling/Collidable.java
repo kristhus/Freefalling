@@ -622,5 +622,4 @@ public class Collidable implements Drawable {
         periodicMaxTime = max;
     }
 
-
 }

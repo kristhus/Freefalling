@@ -22,6 +22,7 @@
     <string-array name="menu_resource_ids">
         <item>@drawable/hanz</item>
         <item>@drawable/gruber</item>
+        <item>@drawable/goat</item>
     </string-array>
 
 </resources>

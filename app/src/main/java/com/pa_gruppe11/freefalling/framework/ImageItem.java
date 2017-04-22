@@ -10,11 +10,13 @@ public class ImageItem {
 
     private Bitmap image;
     private String title;
+    private int identifier;
 
 
-    public ImageItem(Bitmap image, String title) {
+    public ImageItem(Bitmap image, String title, int identifier) {
         this.image = image;
         this.title = title;
+        this.identifier = identifier;
     }
 
     public Bitmap getImage() {
@@ -36,4 +38,12 @@ public class ImageItem {
     public void recycle() {
         image.recycle();
     }
+
+    public int getIdentifier() {
+        return identifier;
+    }
+    public void setIdentifier(int identifier) {
+        this.identifier = identifier;
+    }
+
 }
