@@ -72,6 +72,11 @@ public class Character extends Collidable{
 
     }
 
+    /**
+     * This update function update everything that
+     * specifically happens to the character. I.e respondToTouch().
+     * @param dt
+     */
     @Override
     public void update(long dt){
 
@@ -80,9 +85,11 @@ public class Character extends Collidable{
     }
 
 
-
-
-
+    /**
+     * Sets the vectors and acceeleration for the character which is used for
+     * its movement. The vector is calculated from the characters center and the point that
+     * is touchec.
+     */
     public void respondToTouch(){
 
         oldVector = getVector();
@@ -164,7 +171,10 @@ public class Character extends Collidable{
         touches = null;
     }
 
-
+    /**
+     * Draws all the character specifics
+     * @param canvas
+     */
     @Override
     public void draw(Canvas canvas) {
 //        canvas.drawBitmap(ResourceLoader.getInstance().getImageList().get(id), getX(), getY(), new Paint());
@@ -178,15 +188,27 @@ public class Character extends Collidable{
 
     }
 
+    /**
+     * Returns "Character"
+     * @return
+     */
     @Override
     public String toString(){
         return "Character";
     }
 
+    /**
+     * Sets the 2D ArrayList of touches which is floats.
+     * @param touches
+     */
     public void setTouches(ArrayList<ArrayList<Float>> touches) {
         this.touches = touches;
     }
 
+    /**
+     * Sets the the values for x, y, dx and y from gameMessage.
+     * @param gameMessage
+     */
     public void setValues(GameMessage gameMessage) {
         x = gameMessage.getX();
         y = gameMessage.getY();
@@ -198,9 +220,18 @@ public class Character extends Collidable{
         this.displayName = displayName;
     }
 
+    /**
+     * Returns the the direction of the previous postion
+     * @return
+     */
     public VectorSAT getPreviousPosition() {
         return previousPosition;
     }
+
+    /**
+     * Sets the direction of the previous position
+     * @param previousPosition
+     */
     public void setPreviousPosition(VectorSAT previousPosition) {
         this.previousPosition = previousPosition;
     }
@@ -209,6 +240,10 @@ public class Character extends Collidable{
         return thisCharacter;
     }
 
+    /**
+     * Sets the character
+     * @param thisCharacter
+     */
     public void setThisCharacter(boolean thisCharacter) {
         this.thisCharacter = thisCharacter;
     }

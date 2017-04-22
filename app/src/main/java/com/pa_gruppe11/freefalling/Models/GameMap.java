@@ -109,7 +109,10 @@ public class GameMap implements Drawable {
      */
     protected GameMap() {}
 
-
+    /**
+     * Updates all obstacles and poweups that is a part of the GameMap
+     * @param dt
+     */
     public void update(long dt){
         float delta = (float)dt/1000;  // If fps is really choppy, try using another method.
         drawY += (thisCharacter.getPreviousPosition().y - thisCharacter.getY());
@@ -257,6 +260,12 @@ public class GameMap implements Drawable {
         return respawnPoints;
     }
 
+
+    /**
+     * Returns the closest respawn point based on the current y
+     * @param posY
+     * @return
+     */
     public float getClosestRespawnPoint(float posY) {
         float closest = 0;
         for(float respawnY : respawnPoints) {
@@ -270,6 +279,12 @@ public class GameMap implements Drawable {
         return 0.0f;
     }
 
+    /**
+     * Return true if the Collidable object is outside the screen at the top or
+     * the bottom by a margin of 20%.
+     * @param c
+     * @return
+     */
     public static boolean outsideScreen(Collidable c) {
         return c.getDrawY()+c.getHeight() < 0 - DataHandler.getInstance().getScreenHeight()*0.2 ||
                 c.getDrawY() > DataHandler.getInstance().getScreenHeight() + DataHandler.getInstance().getScreenHeight()*0.2; // 20% margin
