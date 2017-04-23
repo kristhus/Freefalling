@@ -70,6 +70,13 @@ public final class ResourceLoader {
 //        imageList.put(R.drawable.bg_sky, BitmapFactory.decodeResource(context.getResources(), R.drawable.bg_sky));
     }
 
+    /**
+     * Returns a new bitmap which is resized accordint to the newWidht and newHeight
+     * @param bm
+     * @param newWidth
+     * @param newHeight
+     * @return
+     */
     public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
@@ -149,13 +156,16 @@ public final class ResourceLoader {
         }
     }
 
+    /**
+     * Recycle all game resources
+     */
     public void recycleAll(){
         recycleGameResources();
         recycleMenuResources();
     }
 
     /**
-     * Remove resources connected to the game
+     * Removes game resources from memory
      */
     public void recycleGameResources() {
         for (int i : imageList.keySet())
@@ -165,7 +175,7 @@ public final class ResourceLoader {
     }
 
     /**
-     * Remove resources connected to the menus
+     * Removes menu resources from memory
      */
     public void recycleMenuResources() {
         if(data != null) {
@@ -194,6 +204,10 @@ public final class ResourceLoader {
     }
 
 
+    /**
+     * Return an ArrayList of Imageitems that resolves to specific characters
+     * @return
+     */
     public ArrayList<ImageItem> getCharacters() {
         data = new ArrayList<ImageItem>();
         TypedArray imageIds = context.getResources().obtainTypedArray(R.array.menu_resource_ids);

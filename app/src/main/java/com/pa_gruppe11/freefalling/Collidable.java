@@ -220,6 +220,10 @@ public class Collidable implements Drawable {
         return bounds;
     }
 
+    /**
+     * Returns the bounds of a rectangle (corners)
+     * @return
+     */
     public RectSAT getBounds() {
         RectSAT bounds = new RectSAT();
         bounds.topLeft = new PointF(x, y);
@@ -235,6 +239,12 @@ public class Collidable implements Drawable {
         return bounds;
     }
 
+    /**
+     * Detects if b1 is overlapping b2
+     * @param b1
+     * @param b2
+     * @return
+     */
     public static boolean collides(RectSAT b1, RectSAT b2) {
         return (b1.left < b2.right && b1.right > b2.left) &&
                 (b1.top < b2.bottom && b1.bottom > b2.top);
@@ -309,10 +319,25 @@ public class Collidable implements Drawable {
         return axis;
     }
 
+    /**
+     * Calculates the dotProduct between two vectors
+     * @param v1
+     * @param v2
+     * @return
+     */
     public static float dotProduct(VectorSAT v1, VectorSAT v2) {
         return v1.x * v2.x + v1.y * v2.y;
     }
 
+    /**
+     *
+     * Return the minimal translation vector between two colliding objects.
+     *
+     * @param collidable1
+     * @param collidable2
+     * @param dt
+     * @return
+     */
     public static VectorSAT SATcollide(Collidable collidable1, Collidable collidable2, long dt) {
         ArrayList<VectorSAT> c1 = getCorners(collidable1, dt);  // The rotated corners of collidable1
         ArrayList<VectorSAT> c2 = getCorners(collidable2, dt);
