@@ -12,8 +12,6 @@ import com.pa_gruppe11.freefalling.R;
 
 public class AboutMenu extends GameMenu {
 
-    private String info;
-
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);

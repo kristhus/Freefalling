@@ -68,6 +68,11 @@ public class GameServiceListener implements RealTimeMessageReceivedListener,
                 " " + className);
     }
 
+    /**
+     * returns true if the menu is added as a listener
+     * @param menu
+     * @return
+     */
     public boolean contains(GameMenu menu) {
         for(String s : listeners.keySet()) {
             Class c = listeners.get(s).getClass();

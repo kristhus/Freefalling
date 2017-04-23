@@ -5,6 +5,8 @@ import android.util.Log;
 
 /**
  * Created by Kristian on 10/04/2017.
+ * A custom vector with direction and position
+ * Contains some basic vector calculation
  */
 
 public class VectorSAT implements Comparable<VectorSAT>{
@@ -20,6 +22,11 @@ public class VectorSAT implements Comparable<VectorSAT>{
 
     }
 
+    /**
+     * Used to compare two vectors
+     * @param another
+     * @return greater, larger or equal
+     */
     @Override
     public int compareTo(@NonNull VectorSAT another) {
         float thisLength = getLength();
@@ -34,6 +41,11 @@ public class VectorSAT implements Comparable<VectorSAT>{
     }
 
 
+    /**
+     * Get the unitvector for the given vector
+     * @param vector the vector to perform calculations on
+     * @return
+     */
     public static VectorSAT getUnitVector(VectorSAT vector) {
         VectorSAT v = new VectorSAT(vector.x, vector.y);    // copy of vector
         float vLength = (float) Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2));
@@ -47,6 +59,12 @@ public class VectorSAT implements Comparable<VectorSAT>{
         return getUnitVector(new VectorSAT(v.y, -v.x));
     }
 
+    /**
+     * returns the magnitude for a vector given as two floats
+     * @param x point x
+     * @param y point y
+     * @return ||[x,y]||
+     */
     public float calculateMagnitude(float x, float y){
         return (float)Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
     }

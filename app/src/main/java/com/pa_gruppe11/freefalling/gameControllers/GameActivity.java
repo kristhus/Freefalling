@@ -17,12 +17,10 @@ import com.pa_gruppe11.freefalling.implementations.models.Goat;
 import com.pa_gruppe11.freefalling.implementations.models.Gruber;
 import com.pa_gruppe11.freefalling.implementations.models.Hanz;
 import com.pa_gruppe11.freefalling.Models.Obstacle;
-import com.pa_gruppe11.freefalling.Models.PowerUp;
 import com.pa_gruppe11.freefalling.R;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -31,13 +29,12 @@ import android.widget.TextView;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
 import com.pa_gruppe11.freefalling.implementations.models.SkyStage;
-import com.pa_gruppe11.freefalling.tmp.TmpView;
+import com.pa_gruppe11.freefalling.View.GameView;
 import com.pa_gruppe11.freefalling.Models.Player;
 import com.pa_gruppe11.freefalling.Models.Character;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -82,6 +79,7 @@ public class GameActivity extends GameMenu {
     }
 
     public void initiate() {
+        ResourceLoader.getInstance().manualLoad(this);
         finishing_placements = new ArrayList<Player>();
         thisPlayer = new Player();
 
@@ -152,9 +150,9 @@ public class GameActivity extends GameMenu {
 
         gameMap.setThisCharacter(thisPlayer.getCharacter());
 
-        TmpView tmpView = new TmpView(this);
-        setContentView(tmpView);
-        GameThread.getInstance().setView(tmpView);
+        GameView gameView = new GameView(this);
+        setContentView(gameView);
+        GameThread.getInstance().setView(gameView);
 
         controller = new PlayerController(this);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
@@ -249,13 +247,15 @@ public class GameActivity extends GameMenu {
             }
         }
 
-        ArrayList<PowerUp> powerUps = gameMap.getPowerups();
+        /*
+        ArrayList<PowerUp> powerUps = gameMap.getPowerups();    // Powerups not implemented
         if (powerUps != null) {
             for (PowerUp p : powerUps) {
-                //if(thisPlayer.getCharacter().collides(p))
-                //  thisPlayer.getCharacter().setCollidesWith(p);
+
             }
         }
+        */
+
 
         // SEND GameMessage
         messageTiming+=dt;
@@ -331,17 +331,6 @@ public class GameActivity extends GameMenu {
 
     public PlayerController getController() {
         return controller;
-    }
-
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.w("GameActivity", "onActivityResult");
-        switch(requestCode) {
-
-        }
     }
 
 
@@ -448,10 +437,5 @@ public class GameActivity extends GameMenu {
 
     }
 
-    public void peerLeft(Room room, List<String> participantIds) {
-        for(String pId : participantIds) {
-
-        }
-    }
 
 }

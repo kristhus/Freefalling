@@ -20,6 +20,7 @@ import java.util.ArrayList;
 /**
  * Created by Kristian on 08/04/2017.
  * Followed tutorial by Nilanchala Panigrahy
+ * Custom made adapter to be used with GridView and a selection of some data
  */
 
 public class GridViewAdapter extends ArrayAdapter {

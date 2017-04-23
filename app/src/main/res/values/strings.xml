@@ -25,4 +25,14 @@
         <item>@drawable/goat</item>
     </string-array>
 
+    <string name="about_text">
+        We in Mandroid studio are an almost independent group
+        of software associates that have tried to create a game.
+        Our goal is to not to deny the story but to defy the ending.
+        This will be accomplished by using synergetic design paradigms with a complex base.
+        We believe that to live a creative life,
+        one must lose their fear of being wrong and have tried to incorporate this in our game.
+    </string>
+
+
 </resources>

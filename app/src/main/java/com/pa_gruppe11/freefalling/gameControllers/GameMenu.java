@@ -18,6 +18,7 @@ import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.pa_gruppe11.freefalling.R;
 import com.pa_gruppe11.freefalling.Singletons.DataHandler;
 import com.pa_gruppe11.freefalling.Singletons.GameThread;
+import com.pa_gruppe11.freefalling.Singletons.ResourceLoader;
 import com.pa_gruppe11.freefalling.framework.BaseGameUtils;
 import com.pa_gruppe11.freefalling.framework.GameServiceListener;
 
@@ -48,6 +49,10 @@ public class GameMenu extends Activity {
     }
 
 
+    /**
+     * Go to the specified class
+     * @param javaClass SomeGameMenu.class
+     */
     public void goTo(Class javaClass) {
         serviceListener.remove(this);
         Intent intent = new Intent(this, javaClass);
@@ -58,6 +63,15 @@ public class GameMenu extends Activity {
         overridePendingTransition(0, 0);
     }
 
+    public void goToMainMenu(View view) {
+        if(this.getClass() == GameActivity.class)
+            ResourceLoader.getInstance().manualLoad(this);
+        goTo(MainMenu.class);
+    }
+
+    /**
+     * navigate to menus depending on which menu the user is in
+     */
     @Override
     public void onBackPressed() {
         Class thisClass = this.getClass();
@@ -75,6 +89,11 @@ public class GameMenu extends Activity {
         }
     }
 
+
+    /**
+     * Forcefully disconnect the user from Game Services,
+     * stop the gamethread and go to MainMenu
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -88,6 +107,9 @@ public class GameMenu extends Activity {
         Log.w("GameMenu", "Paused, disconnecting");
     }
 
+    /**
+     * Try connecting to Game Services
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -98,6 +120,10 @@ public class GameMenu extends Activity {
         Log.w("GameMenu", "Resumed");
     }
 
+    /**
+     * Open a dialog which prompts the user if he wants to leave a game in progress
+     * Goes to MainMenu if yes.
+     */
     private void alertPrompt() {
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setMessage("Quit game in progress?");
@@ -112,6 +138,7 @@ public class GameMenu extends Activity {
                         if(room != null)    // debug, as room != null at intended gamephase
                             Games.RealTimeMultiplayer.leave(mGoogleApiClient, DataHandler.getMessageListener(), room.getRoomId());
                         //Log.w("GM", "Suspend: " + GameThread.getInstance().isSuspended());
+                        ResourceLoader.getInstance().recycleGameResources();
                         goTo(MainMenu.class);
                     }
                 });
@@ -126,11 +153,6 @@ public class GameMenu extends Activity {
 
         AlertDialog alert11 = builder1.create();
         alert11.show();
-    }
-
-    public void goToMainMenu(View view) {
-        if(getClass() != MainMenu.class)
-            goTo(MainMenu.class);
     }
 
     /**

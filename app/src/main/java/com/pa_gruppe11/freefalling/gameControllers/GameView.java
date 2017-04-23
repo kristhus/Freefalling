@@ -20,11 +20,21 @@ public class GameView extends SurfaceView {
     private Drawable[] drawList;
     Canvas c;
 
+    /**
+     * Initialize a SurfaceView which gives its canvas
+     * to the Drawables in drawableList whenever draw is called
+     * @param context GameActivity
+     * @param drawableList the elements to be drawed
+     */
     public GameView(Context context, Drawable[] drawableList) {
         super(context);
         drawList=drawableList;
     }
 
+    /**
+     * Give canvas to all drawables and let them draw themselves
+     * @param c
+     */
     @Override
     public void draw(Canvas c) {
         super.draw(c);

@@ -54,6 +54,7 @@ public class GameThread extends Thread { //
         int sleepTime = PERIOD_LENGTH;    // ms to sleep (<0 if behind)
         int framesSkipped = 0;            // Number of frames being skipped
 
+        int fpsCounter = 0;
         while (running) {
             while(suspended)              // suspend run-method, as advised by Oracle
                 try {
@@ -112,12 +113,14 @@ public class GameThread extends Thread { //
                     elapsedTime+=dt;
                     dxs += activity.getPlayer().getCharacter().getDx();
                     dys += activity.getPlayer().getCharacter().getDy();
+                    fpsCounter++;
                     if(elapsedTime > 1000) {
                         elapsedTime -= 1000;
-                        performanceString = "x/s: " + dxs/MAX_FPS + "   y/s: " + dys/MAX_FPS;
+                        performanceString = "FPS: " + fpsCounter;
                         activity.getPlayer().getCharacter().setDebugString(performanceString);
                         dxs = 0.0f;
                         dys = 0.0f;
+                        fpsCounter = 0;
                     }
                 }
             } catch(Exception e){

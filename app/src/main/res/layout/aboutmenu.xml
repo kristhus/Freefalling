@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="1">
+    android:background="@drawable/bg_sky"
+    android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="About"
-        android:layout_weight="0.05" />
+
+        <TextView
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/back_button"
+            android:layout_alignParentRight="true"
+            android:layout_weight="1"
+            android:text="@string/about_text"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/back_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="goToMainMenu"
-        android:text="Back" />
+        android:text="Back"
+        android:textSize="@dimen/back_btn_text"
+        android:padding="@dimen/back_btn_padding"
+        android:background="@drawable/button_style"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-</LinearLayout>
+</RelativeLayout>

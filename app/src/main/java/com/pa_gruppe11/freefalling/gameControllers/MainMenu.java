@@ -47,19 +47,12 @@ import java.util.List;
  * Created by skars on 31.03.2017.
  */
 
-public class MainMenu extends GameMenu
-        implements View.OnClickListener{
+public class MainMenu extends GameMenu implements View.OnClickListener{
 
-  //  private GoogleApiClient mGoogleApiClient;
-
-
-
-    private int roomId = -1;
-
+    // Character selection
     private View selector;
     private GridView characterGridView;
     private GridViewAdapter characterAdapter;
-
     private int selectedCharacterId = -1;
     private HashMap<String, Integer> opponentSelection = new HashMap<>(); // participantId and the characterId
 
@@ -73,30 +66,38 @@ public class MainMenu extends GameMenu
         Point size = new Point();
         display.getSize(size);
 
-        // TODO: REMOVE AFTER TESTING
         DataHandler.getInstance().setScreenWidth(size.x);
         DataHandler.getInstance().setScreenHeight(size.y);
 
         ResourceLoader.getInstance().setContext(this);
 
-
-
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
     }
 
+    /**
+     * Set the activities view to lobby
+     * @param view
+     */
     public void inflateLobby(View view) {
-        ResourceLoader.getInstance().getCharacters();
+        ResourceLoader.getInstance().getCharacters();   // loads characters to be used in lobby
         setContentView(R.layout.lobby);
     }
-
+    /**
+     * Set the activities view to mainmenu
+     * @param view
+     */
     public void inflateMenu(View view) {
         setContentView(R.layout.mainmenu);
     }
 
+    /**
+     * Start a an automated search for other players with similar criterias
+     * @param view
+     */
     public void startQuickGame(View view) {
         Log.w("MainMenu", "StartQuickGame");
-        Bundle am = RoomConfig.createAutoMatchCriteria(1, 3, 0);
+        Bundle am = RoomConfig.createAutoMatchCriteria(1, 3, 0);    // minimum 1 opponent, maximum 3, no role dependency
         RoomConfig.Builder roomConfigBuilder = createDefaultRoom();
         roomConfigBuilder.setAutoMatchCriteria(am);
         RoomConfig roomConfig = roomConfigBuilder.build();
@@ -105,10 +106,12 @@ public class MainMenu extends GameMenu
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         showLoading();
 
-
-        //go to game screen
     }
 
+    /**
+     * Open activity for player selection
+     * @param view
+     */
     public void onInvitePlayersClicked(View view) {
         Log.w("MainMenu", "invite players");
         Intent intent = Games.RealTimeMultiplayer.getSelectOpponentsIntent(mGoogleApiClient, 1, 3);
@@ -117,6 +120,10 @@ public class MainMenu extends GameMenu
         startActivityForResult(intent, RC_SELECT_PLAYERS);
     }
 
+    /**
+     * Create a default room with GameServiceListener
+     * @return
+     */
     public RoomConfig.Builder createDefaultRoom() {
         return RoomConfig.builder(serviceListener)
                 .setMessageReceivedListener(serviceListener)
@@ -128,16 +135,8 @@ public class MainMenu extends GameMenu
         goTo(AboutMenu.class);
     }
 
-    public void goToFriendsMenu(View view){
-        goTo(FriendsMenu.class);
-    }
-
     public void goToSettings(View view){
         goTo(Settings.class);
-    }
-
-    public void goToLobby(View view){
-        goTo(Lobby.class);
     }
 
     public void startGame(View view) {
@@ -155,7 +154,7 @@ public class MainMenu extends GameMenu
             return;
         }
 
-        ResourceLoader.getInstance().manualLoad(this);
+        ResourceLoader.getInstance().recycleMenuResources();    // Recycle resources used in menus
         Intent intent = new Intent(this, GameActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         intent.putExtra(Multiplayer.EXTRA_ROOM, room);

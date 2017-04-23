@@ -27,7 +27,7 @@ import java.util.HashMap;
 
 public final class ResourceLoader {
 
-    private static final int[] resourceIdList = {
+    private static final int[] resourceIdList = {// Add new resources here, or load all images from drawable
             R.drawable.bg_sky,
             R.drawable.stickman,
             R.drawable.block,
@@ -37,7 +37,7 @@ public final class ResourceLoader {
             R.drawable.goat,
             R.drawable.grubermann
 
-    };                     // Add new resources here, or load all images from drawable
+    };
 
     private static final int[] sfxIdList = {    // list of audio files, considered as sfx
             R.raw.goat
@@ -58,14 +58,10 @@ public final class ResourceLoader {
     private HashMap<Integer, Bitmap> imageList = new HashMap<Integer, Bitmap>();
     private ArrayList<ImageItem> data;
 
-    private HashMap<Integer, Drawable> drawableList = new HashMap<>();
     private HashMap<Integer, AudioFreefalling> audioList = new HashMap<>();
 
 
     private GameMenu context;
-
-    //private LoadingScreen view;
-
 
     private ResourceLoader() {
 //        loadDrawables(R.drawable.class);
@@ -158,6 +154,9 @@ public final class ResourceLoader {
         recycleMenuResources();
     }
 
+    /**
+     * Remove resources connected to the game
+     */
     public void recycleGameResources() {
         for (int i : imageList.keySet())
             imageList.get(i).recycle();
@@ -165,10 +164,15 @@ public final class ResourceLoader {
             audioList.get(j).dispose();
     }
 
+    /**
+     * Remove resources connected to the menus
+     */
     public void recycleMenuResources() {
-        for(int i = 0; i < data.size(); i++) {
-            data.get(i).recycle();  // baade
-            data.remove(i);         // i pose
+        if(data != null) {
+            for (int i = 0; i < data.size(); i++) {
+                data.get(i).recycle();  // baade
+                data.remove(i);         // i pose
+            }
         }
     }
 

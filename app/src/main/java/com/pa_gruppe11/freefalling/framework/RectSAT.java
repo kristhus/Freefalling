@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
  * Created by Kristian on 10/04/2017.
  */
 
+/**
+ * Contains float-points for the corners of a rectangle
+ */
 public class RectSAT extends RectF {
 
     public static PointF topLeft;
